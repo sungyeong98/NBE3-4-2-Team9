@@ -3,9 +3,9 @@ spring:
     name: backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/build
+    url: jdbc:mysql://localhost:3360/build
     username: root
-    password: build1234
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: update
