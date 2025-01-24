@@ -7,9 +7,11 @@ import lombok.Builder;
 /**
  * GenericResponse
  * <p>공통 응답 객체 입니다.</p>
+ *
  * @author Kim Dong O
  */
 public class GenericResponse<T> {
+
 	private final ZonedDateTime timestamp;
 	private final boolean isSuccess;
 	private final String code;
@@ -25,15 +27,17 @@ public class GenericResponse<T> {
 		this.message = message;
 	}
 
-/**
+	/**
 	 * isSuccess, code, data, message가 있을 때
-     * @param isSuccess 요청 성공 여부
-	 * @param code 응답 상태 코드
-	 * @param data 응답 데이터
-	 * @param message 응답 메세지
+	 *
+	 * @param isSuccess 요청 성공 여부
+	 * @param code      응답 상태 코드
+	 * @param data      응답 데이터
+	 * @param message   응답 메세지
 	 * @return {@link GenericResponse<T>}
 	 */
-	public static <T>GenericResponse<T> of(boolean isSuccess, String code, T data, String message) {
+	public static <T> GenericResponse<T> of(boolean isSuccess, String code, T data,
+		String message) {
 		return GenericResponse.<T>builder()
 			.isSuccess(isSuccess)
 			.code(code)
@@ -44,12 +48,13 @@ public class GenericResponse<T> {
 
 	/**
 	 * isSuccess, code, data만 있을 때
+	 *
 	 * @param isSuccess 요청 성공 여부
-	 * @param code 응답 상태 코드
-	 * @param data 응답 데이터
+	 * @param code      응답 상태 코드
+	 * @param data      응답 데이터
 	 * @return {@link GenericResponse<T>}
 	 */
-	public static <T>GenericResponse<T> of(boolean isSuccess, String code, T data) {
+	public static <T> GenericResponse<T> of(boolean isSuccess, String code, T data) {
 		return GenericResponse.<T>builder()
 			.isSuccess(isSuccess)
 			.code(code)
@@ -59,11 +64,12 @@ public class GenericResponse<T> {
 
 	/**
 	 * isSuccess, code만 있을 때
+	 *
 	 * @param isSuccess 요청 성공 여부
-	 * @param code 응답 상태 코드
+	 * @param code      응답 상태 코드
 	 * @return {@link GenericResponse<T>}
 	 */
-	public static <T>GenericResponse<T> of(boolean isSuccess, String code) {
+	public static <T> GenericResponse<T> of(boolean isSuccess, String code) {
 		return GenericResponse.<T>builder()
 			.isSuccess(isSuccess)
 			.code(code)
