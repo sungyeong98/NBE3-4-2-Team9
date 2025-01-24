@@ -25,5 +25,19 @@ public class GenericResponse<T> {
 		this.message = message;
 	}
 
-
+/**
+	 * 요청이 성공하고 code, data, message가 있을 때
+	 * @param code 응답 상태 코드
+	 * @param data 응답 데이터
+	 * @param message 응답 메세지
+	 * @return {@link GenericResponse<T>}
+	 */
+	public static <T>GenericResponse<T> of(String code, T data, String message) {
+		return GenericResponse.<T>builder()
+			.isSuccess(true)
+			.code(code)
+			.data(data)
+			.message(message)
+			.build();
+	}
 }
