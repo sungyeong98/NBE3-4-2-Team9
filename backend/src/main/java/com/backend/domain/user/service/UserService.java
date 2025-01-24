@@ -8,6 +8,7 @@ import com.backend.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AuthTokenService authTokenService;
 
     public SiteUser getUserById(long id) {
         SiteUser siteUser = userRepository.findById(id).orElseThrow(
@@ -32,6 +34,31 @@ public class UserService {
 
     public Optional<SiteUser> findById(long id) {
         return userRepository.findById(id);
+    }
+
+    public Optional<SiteUser> findByApiKey(String apiKey) {
+        return userRepository.findByApiKey(apiKey);
+    }
+
+    public String genAccessToken(SiteUser siteUser) {
+        return authTokenService.genAccessToken(siteUser);
+    }
+
+    public String genAuthToken(SiteUser siteUser) {
+        return siteUser.getApiKey() + " " + genAccessToken(siteUser);
+    }
+
+    public SiteUser getUserFromAccessToken(String accessToken) {
+        Map<String, Object> payload = authTokenService.payload(accessToken);
+
+        if (payload == null) return null;
+
+        long id = (long) payload.get("id");
+        String username = (String) payload.get("username");
+
+        SiteUser siteUser = new SiteUser(id, username);
+
+        return siteUser;
     }
 
 }

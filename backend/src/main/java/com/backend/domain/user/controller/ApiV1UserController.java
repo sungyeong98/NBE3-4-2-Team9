@@ -34,7 +34,7 @@ public class ApiV1UserController {
 
     @PatchMapping("/users/{user_id}")
     @Transactional
-    public GenericResponse<UserModifyProfileRequest> modifyProfile(
+    public GenericResponse<Void> modifyProfile(
             @PathVariable Long user_id,
             @RequestBody UserModifyProfileRequest req
     ) {

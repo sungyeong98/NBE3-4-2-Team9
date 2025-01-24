@@ -15,3 +15,8 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
         time_zone: Asia/Seoul
+custom:
+  jwt:
+    secretKey: abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789
+  accessToken:
+    expirationSeconds: "#{60*20}"
