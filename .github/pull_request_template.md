@@ -25,8 +25,9 @@
 
 ## 🔎 작업 내용
 
-<!--#{Issue번호} + Enter
-ex) #17
+<!--resolves #{Issue번호} + Enter
+ex) resolves #17
+ex) close #17
 이슈와 PR 연결을 위해 사용합니다!-->
 
 - 기능에서 어떤 부분이
