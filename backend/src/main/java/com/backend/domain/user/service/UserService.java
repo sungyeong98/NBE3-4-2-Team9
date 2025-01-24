@@ -8,6 +8,8 @@ import com.backend.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -26,6 +28,10 @@ public class UserService {
 
     public void modifyUser(SiteUser siteUser, UserModifyProfileRequest req) {
         siteUser.modifyProfile(req.getIntroduction(), req.getJob(), req.getSkill());
+    }
+
+    public Optional<SiteUser> findById(long id) {
+        return userRepository.findById(id);
     }
 
 }
