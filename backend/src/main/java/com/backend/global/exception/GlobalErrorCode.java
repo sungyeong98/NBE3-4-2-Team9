@@ -15,6 +15,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum GlobalErrorCode {
+
+	// 유저 도메인 에러 코드
+	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "400", "유저가 존재하지 않습니다."),
+
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, "5001", "요청하신 유효성 검증에 실패하였습니다.");
 
