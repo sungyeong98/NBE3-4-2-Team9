@@ -56,4 +56,17 @@ public class GenericResponse<T> {
 			.data(data)
 			.build();
 	}
+
+	/**
+	 * isSuccess, code만 있을 때
+	 * @param isSuccess 요청 성공 여부
+	 * @param code 응답 상태 코드
+	 * @return {@link GenericResponse<T>}
+	 */
+	public static <T>GenericResponse<T> of(boolean isSuccess, String code) {
+		return GenericResponse.<T>builder()
+			.isSuccess(isSuccess)
+			.code(code)
+			.build();
+	}
 }
