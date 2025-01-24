@@ -26,15 +26,16 @@ public class GenericResponse<T> {
 	}
 
 /**
-	 * 요청이 성공하고 code, data, message가 있을 때
+	 * isSuccess, code, data, message가 있을 때
+     * @param isSuccess 요청 성공 여부
 	 * @param code 응답 상태 코드
 	 * @param data 응답 데이터
 	 * @param message 응답 메세지
 	 * @return {@link GenericResponse<T>}
 	 */
-	public static <T>GenericResponse<T> of(String code, T data, String message) {
+	public static <T>GenericResponse<T> of(boolean isSuccess, String code, T data, String message) {
 		return GenericResponse.<T>builder()
-			.isSuccess(true)
+			.isSuccess(isSuccess)
 			.code(code)
 			.data(data)
 			.message(message)
@@ -42,14 +43,15 @@ public class GenericResponse<T> {
 	}
 
 	/**
-	 * 요청이 성공하고 code, data만 있을 때
+	 * isSuccess, code, data만 있을 때
+	 * @param isSuccess 요청 성공 여부
 	 * @param code 응답 상태 코드
 	 * @param data 응답 데이터
 	 * @return {@link GenericResponse<T>}
 	 */
-	public static <T>GenericResponse<T> of(String code, T data) {
+	public static <T>GenericResponse<T> of(boolean isSuccess, String code, T data) {
 		return GenericResponse.<T>builder()
-			.isSuccess(true)
+			.isSuccess(isSuccess)
 			.code(code)
 			.data(data)
 			.build();
