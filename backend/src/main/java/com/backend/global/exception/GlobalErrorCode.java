@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
  * 응답시 상태 코드, 커스텀 코드, 메세지를 정의합니다. <br>
  * 커스텀 코드는 각 도메인 별로 100 단위로 코드를 정의해주시면 됩니다. <br>
  * ex) Board - 100 -> 커스텀 코드 1001, 1002 순으로 정의하시면 됩니다.</p>
+ * @author Kim Dong O
  */
 @Getter
 @RequiredArgsConstructor
