@@ -75,4 +75,8 @@ public class GenericResponse<T> {
 			.code(code)
 			.build();
 	}
+
+	public Integer getCodeAsInt() {
+		return Integer.parseInt(code);
+	}
 }
