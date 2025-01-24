@@ -35,6 +35,10 @@ public class UserService {
     public Optional<SiteUser> findById(long id) {
         return userRepository.findById(id);
     }
+    
+    public Optional<SiteUser> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
     public Optional<SiteUser> findByApiKey(String apiKey) {
         return userRepository.findByApiKey(apiKey);
