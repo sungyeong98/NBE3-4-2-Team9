@@ -7,6 +7,9 @@ import com.backend.global.security.filter.JwtAuthenticationFilter;
 import com.backend.global.security.filter.JwtAuthorizationFilter;
 import com.backend.global.security.handler.JwtLogoutHandler;
 import com.backend.global.security.handler.JwtLogoutSuccessHandler;
+import com.backend.global.security.handler.OAuth2LoginFailureHandler;
+import com.backend.global.security.handler.OAuth2LoginSuccessHandler;
+import com.backend.global.security.oauth.CustomOAuth2UserService;
 import com.backend.standard.util.AuthResponseUtil;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +42,9 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final RedisRepository redisRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     @Value("${jwt.token.access-expiration}")
     private long ACCESS_EXPIRATION;
@@ -74,7 +80,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/h2-console/**", "/login/oauth2/code/kakao", "/oauth2/authorization/kakao").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -94,6 +100,13 @@ public class SecurityConfig {
                         .logoutUrl("/api/v1/logout")
                         .addLogoutHandler(new JwtLogoutHandler(jwtUtil, redisRepository))
                         .logoutSuccessHandler(new JwtLogoutSuccessHandler(objectMapper))
+                )
+                .oauth2Login(oauth2 -> oauth2
+                    .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService)
+                    )
+                    .successHandler(oAuth2LoginSuccessHandler)
+                    .failureHandler(oAuth2LoginFailureHandler)
                 );
 
         return http.build();
@@ -105,6 +118,8 @@ public class SecurityConfig {
 
         // 허용할 HTTP 메서드 설정
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        // CORS 설정
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         // 자격 증명 허용 설정
         configuration.setAllowCredentials(true);
         // 허용할 헤더 설정

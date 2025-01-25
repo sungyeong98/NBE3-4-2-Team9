@@ -49,10 +49,20 @@ public class SiteUser extends BaseEntity {
     @Column(name = "user_role", nullable = false)
     private String userRole;
 
+    private String kakaoId;
+
+    private String profileImg;
+
     public void modifyProfile(String introduction, String job, String skill) {
         if (introduction != null) this.introduction = introduction;
         if (job != null) this.job = job;
         if (skill != null) this.skill = skill;
+    }
+
+    public SiteUser update(String name, String profileImg) {
+        this.name = name;
+        this.profileImg = profileImg;
+        return this;
     }
 
 }
