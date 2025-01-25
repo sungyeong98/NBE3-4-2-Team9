@@ -19,12 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         SiteUser siteUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        return new SecurityUser(
-                siteUser.getId(),
-                siteUser.getEmail(),
-                siteUser.getPassword(),
-                siteUser.getAuthorities()
-        );
+        return new CustomUserDetails(siteUser);
     }
 
 }
