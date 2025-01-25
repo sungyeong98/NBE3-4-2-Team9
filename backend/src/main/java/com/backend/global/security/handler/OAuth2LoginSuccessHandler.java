@@ -1,5 +1,7 @@
 package com.backend.global.security.handler;
 
+import com.backend.domain.user.dto.response.KakaoLoginResponse;
+import com.backend.domain.user.dto.response.LoginResponse;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.entity.UserRole;
 import com.backend.global.redis.repository.RedisRepository;
@@ -8,6 +10,7 @@ import com.backend.global.security.custom.CustomUserDetails;
 import com.backend.standard.util.AuthResponseUtil;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +22,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -55,12 +59,20 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         redisRepository.save(userDetails.getUsername(), refreshToken, REFRESH_EXPIRATION, TimeUnit.MILLISECONDS);
 
+        resp.setHeader("Authorization", "Bearer " + accessToken);
+
+        KakaoLoginResponse kakaoLoginResponse = KakaoLoginResponse.builder()
+                .email(username + "kakao.com")
+                .name(siteUser.getName())
+                .profileImg(siteUser.getProfileImg())
+                .build();
+
         AuthResponseUtil.success(
                 resp,
                 accessToken,
                 jwtUtil.setJwtCookie("refreshToken", refreshToken, REFRESH_EXPIRATION),
                 HttpServletResponse.SC_OK,
-                GenericResponse.of(true, "200", userDetails.getUsername(), "카카오 로그인에 성공하였습니다."),
+                GenericResponse.of(true, "200", kakaoLoginResponse, "카카오 로그인에 성공하였습니다."),
                 objectMapper
         );
     }

@@ -42,7 +42,7 @@ public class ResponseAspect {
 
         if (proceed instanceof GenericResponse<?>) {
             GenericResponse<?> rsData = (GenericResponse<?>) proceed;
-            response.setStatus(rsData.getCodeAsInt());
+//            response.setStatus(rsData.getCodeAsInt());
         }
 
         return proceed;

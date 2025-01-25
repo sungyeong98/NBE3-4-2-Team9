@@ -52,7 +52,7 @@ public class OAuthAttributes {
         return SiteUser.builder()
                 .name(name)
                 .password("")
-                .email(name + "@temp.com")
+                .email(name + "@kakao.com")
                 .profileImg(profileImg)
                 .kakaoId(kakaoId)
                 .userRole(UserRole.ROLE_USER.toString())
