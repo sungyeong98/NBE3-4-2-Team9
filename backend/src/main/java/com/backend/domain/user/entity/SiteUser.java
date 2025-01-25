@@ -49,34 +49,10 @@ public class SiteUser extends BaseEntity {
     @Column(name = "user_role", nullable = false)
     private String userRole;
 
-    @Column(name = "api_key", unique = true, length = 50)
-    private String apiKey;
-
     public void modifyProfile(String introduction, String job, String skill) {
         if (introduction != null) this.introduction = introduction;
         if (job != null) this.job = job;
         if (skill != null) this.skill = skill;
-    }
-
-    public SiteUser(long id, String email) {
-        this.id = id;
-        this.email = email;
-    }
-
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getAuthoritiesAsStringList()
-                .stream()
-                .map(SimpleGrantedAuthority::new)
-                .toList();
-    }
-
-    public List<String> getAuthoritiesAsStringList() {
-        List<String> authorities = new ArrayList<>();
-
-//        if ()
-//            authorities.add("ROLE_ADMIN");
-
-        return authorities;
     }
 
 }

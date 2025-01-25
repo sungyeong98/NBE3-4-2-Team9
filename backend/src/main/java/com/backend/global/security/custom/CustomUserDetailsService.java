@@ -1,4 +1,4 @@
-package com.backend.global.security;
+package com.backend.global.security.custom;
 
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.repository.UserRepository;

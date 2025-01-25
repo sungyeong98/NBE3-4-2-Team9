@@ -2,6 +2,7 @@ package com.backend.domain.user.service;
 
 import com.backend.domain.user.dto.request.UserModifyProfileRequest;
 import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.entity.UserRole;
 import com.backend.domain.user.repository.UserRepository;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
@@ -16,7 +17,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final AuthTokenService authTokenService;
 
     public SiteUser getUserById(long id) {
         SiteUser siteUser = userRepository.findById(id).orElseThrow(
@@ -30,39 +30,6 @@ public class UserService {
 
     public void modifyUser(SiteUser siteUser, UserModifyProfileRequest req) {
         siteUser.modifyProfile(req.getIntroduction(), req.getJob(), req.getSkill());
-    }
-
-    public Optional<SiteUser> findById(long id) {
-        return userRepository.findById(id);
-    }
-    
-    public Optional<SiteUser> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public Optional<SiteUser> findByApiKey(String apiKey) {
-        return userRepository.findByApiKey(apiKey);
-    }
-
-    public String genAccessToken(SiteUser siteUser) {
-        return authTokenService.genAccessToken(siteUser);
-    }
-
-    public String genAuthToken(SiteUser siteUser) {
-        return siteUser.getApiKey() + " " + genAccessToken(siteUser);
-    }
-
-    public SiteUser getUserFromAccessToken(String accessToken) {
-        Map<String, Object> payload = authTokenService.payload(accessToken);
-
-        if (payload == null) return null;
-
-        long id = (long) payload.get("id");
-        String username = (String) payload.get("username");
-
-        SiteUser siteUser = new SiteUser(id, username);
-
-        return siteUser;
     }
 
 }
