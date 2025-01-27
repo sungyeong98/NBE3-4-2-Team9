@@ -59,7 +59,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         resp.setHeader("Authorization", "Bearer " + accessToken);
 
         KakaoLoginResponse kakaoLoginResponse = KakaoLoginResponse.builder()
-                .email(username + "kakao.com")
+                .email(username + "@kakao.com")
                 .name(siteUser.getName())
                 .profileImg(siteUser.getProfileImg())
                 .build();

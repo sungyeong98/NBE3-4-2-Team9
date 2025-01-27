@@ -2,6 +2,7 @@ package com.backend.global.security.filter;
 
 import com.backend.domain.user.dto.request.LoginRequest;
 import com.backend.domain.user.dto.response.LoginResponse;
+import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.redis.repository.RedisRepository;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;

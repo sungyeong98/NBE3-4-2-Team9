@@ -33,6 +33,7 @@ public class JwtUtilTest {
         CustomUserDetails userDetails = new CustomUserDetails(
             SiteUser.builder()
                     .email("test@gmail.com")
+                    .id(10L)
                     .userRole("ROLE_ADMIN")
                     .build()
         );
@@ -45,6 +46,9 @@ public class JwtUtilTest {
 
         String role = jwtUtil.getRole(accessToken);
         assertEquals("ROLE_ADMIN", role);
+
+        long id = jwtUtil.getUserId(accessToken);
+        assertEquals(10L, id);
     }
 
     @Test
@@ -53,6 +57,7 @@ public class JwtUtilTest {
         CustomUserDetails userDetails = new CustomUserDetails(
                 SiteUser.builder()
                         .email("test@gmail.com")
+                        .id(10L)
                         .userRole("ROLE_ADMIN")
                         .build()
         );
@@ -65,6 +70,9 @@ public class JwtUtilTest {
 
         String role = jwtUtil.getRole(refreshToken);
         assertEquals("ROLE_ADMIN", role);
+
+        long id = jwtUtil.getUserId(refreshToken);
+        assertEquals(10L, id);
     }
 
     @Test

@@ -67,7 +67,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        CustomUserDetails userDetails = new CustomUserDetails(SiteUser.builder().email(username).userRole(role).build());
+        CustomUserDetails userDetails = new CustomUserDetails(
+                SiteUser.builder()
+                        .email(username)
+                        .userRole(role)
+                        .id(jwtUtil.getUserId(refreshToken))
+                        .build()
+        );
 
         String newAccessToken = jwtUtil.createAccessToken(userDetails, ACCESS_EXPIRATION);
         String newRefreshToken = jwtUtil.createRefreshToken(userDetails, REFRESH_EXPIRATION);
@@ -115,7 +121,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
-        CustomUserDetails userDetails = new CustomUserDetails(SiteUser.builder().email(username).userRole(role).build());
+        CustomUserDetails userDetails = new CustomUserDetails(
+                SiteUser.builder()
+                        .email(username)
+                        .id(jwtUtil.getUserId(accessToken))
+                        .userRole(role)
+                        .build()
+        );
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
