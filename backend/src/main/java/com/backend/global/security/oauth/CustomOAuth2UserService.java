@@ -38,7 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         );
     }
 
-    private SiteUser saveOrUpdate(OAuthAttributes attributes) {
+    protected SiteUser saveOrUpdate(OAuthAttributes attributes) {
         SiteUser user = userRepository.findByKakaoId(attributes.getKakaoId())
                 .map(entity -> entity.update(attributes.getName(), attributes.getProfileImg()))
                 .orElse(attributes.toEntity());
