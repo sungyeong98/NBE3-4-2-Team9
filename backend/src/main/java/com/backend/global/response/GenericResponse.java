@@ -63,6 +63,22 @@ public class GenericResponse<T> {
 	}
 
 	/**
+	 * isSuccess, code, message만 있을 때
+	 *
+	 * @param isSuccess 요청 성공 여부
+	 * @param code      응답 상태 코드
+	 * @param message      응답 메세지
+	 * @return {@link GenericResponse<T>}
+	 */
+	public static <T>GenericResponse<T> of(boolean isSuccess, int code, String message) {
+		return GenericResponse.<T>builder()
+			.isSuccess(isSuccess)
+			.code(code)
+			.message(message)
+			.build();
+	}
+
+	/**
 	 * isSuccess, code만 있을 때
 	 *
 	 * @param isSuccess 요청 성공 여부
