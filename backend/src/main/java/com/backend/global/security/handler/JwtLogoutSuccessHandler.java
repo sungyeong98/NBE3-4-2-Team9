@@ -21,7 +21,7 @@ public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         resp.setStatus(HttpServletResponse.SC_OK);
-        resp.getWriter().write(objectMapper.writeValueAsString(GenericResponse.of(true, "200")));
+        resp.getWriter().write(objectMapper.writeValueAsString(GenericResponse.of(true, 200)));
     }
 
 }

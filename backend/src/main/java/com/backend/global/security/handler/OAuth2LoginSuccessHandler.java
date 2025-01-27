@@ -69,7 +69,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 accessToken,
                 jwtUtil.setJwtCookie("refreshToken", refreshToken, REFRESH_EXPIRATION),
                 HttpServletResponse.SC_OK,
-                GenericResponse.of(true, "200", kakaoLoginResponse, "카카오 로그인에 성공하였습니다."),
+                GenericResponse.of(true, 200, kakaoLoginResponse, "카카오 로그인에 성공하였습니다."),
                 objectMapper
         );
     }
