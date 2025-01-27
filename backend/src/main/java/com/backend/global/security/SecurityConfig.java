@@ -107,6 +107,8 @@ public class SecurityConfig {
                     )
                     .successHandler(oAuth2LoginSuccessHandler)
                     .failureHandler(oAuth2LoginFailureHandler)
+                        .defaultSuccessUrl("/")
+                        .failureUrl("/login/oauth2/code/kakao")
                 );
 
         return http.build();

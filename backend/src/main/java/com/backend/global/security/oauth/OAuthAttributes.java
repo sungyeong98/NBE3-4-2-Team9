@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Getter
 public class OAuthAttributes {

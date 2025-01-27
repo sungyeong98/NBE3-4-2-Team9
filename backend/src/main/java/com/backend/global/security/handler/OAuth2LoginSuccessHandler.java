@@ -1,7 +1,6 @@
 package com.backend.global.security.handler;
 
 import com.backend.domain.user.dto.response.KakaoLoginResponse;
-import com.backend.domain.user.dto.response.LoginResponse;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.entity.UserRole;
 import com.backend.global.redis.repository.RedisRepository;
@@ -10,7 +9,6 @@ import com.backend.global.security.custom.CustomUserDetails;
 import com.backend.standard.util.AuthResponseUtil;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +20,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 

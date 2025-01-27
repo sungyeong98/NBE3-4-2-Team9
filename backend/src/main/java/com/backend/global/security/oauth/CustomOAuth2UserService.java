@@ -31,7 +31,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         
         SiteUser user = saveOrUpdate(attributes);
 
-        // TODO
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(user.getUserRole())),
                 attributes.getAttributes(),
