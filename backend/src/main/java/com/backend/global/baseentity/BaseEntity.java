@@ -7,7 +7,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import java.time.ZonedDateTime;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 /**
  * BaseEntity

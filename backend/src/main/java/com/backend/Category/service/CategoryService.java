@@ -5,7 +5,6 @@ import com.backend.Category.entity.Category;
 import com.backend.Category.repository.CategoryRepository;
 import com.backend.global.response.GenericResponse;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,5 +24,17 @@ public class CategoryService {
     public GenericResponse<Category> AddCategory(Category category) {
         Category savedCategory = categoryRepository.save(category);
         return GenericResponse.of(true, "201", savedCategory, "카테고리가 생성 되었습니다.");
+    }
+
+    // 카테고리 매핑
+    public List<CategoryDto> mappingCategory(List<Category> categoryList) {
+        return categoryList.stream()
+                .map(category -> CategoryDto.builder()
+                        .id(category.getId())
+                        .name(category.getName())
+                        .createdAt(category.getCreatedAt().toLocalDateTime())
+                        .modifiedAt(category.getModifiedAt().toLocalDateTime())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
