@@ -1,5 +1,6 @@
 package com.backend.global.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
  * }
  * @author Kim Dong O
  */
+@Getter
 public class GlobalException extends RuntimeException {
 	private final GlobalErrorCode globalErrorCode;
 
