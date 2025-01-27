@@ -14,12 +14,12 @@ public class GenericResponse<T> {
 
 	private final ZonedDateTime timestamp;
 	private final boolean isSuccess;
-	private final String code;
+	private final int code;
 	private final T data;
 	private final String message;
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private GenericResponse(boolean isSuccess, String code, T data, String message) {
+	private GenericResponse(boolean isSuccess, int code, T data, String message) {
 		this.timestamp = ZonedDateTime.now();
 		this.isSuccess = isSuccess;
 		this.code = code;
@@ -36,7 +36,7 @@ public class GenericResponse<T> {
 	 * @param message   응답 메세지
 	 * @return {@link GenericResponse<T>}
 	 */
-	public static <T> GenericResponse<T> of(boolean isSuccess, String code, T data,
+	public static <T> GenericResponse<T> of(boolean isSuccess, int code, T data,
 		String message) {
 		return GenericResponse.<T>builder()
 			.isSuccess(isSuccess)
@@ -54,7 +54,7 @@ public class GenericResponse<T> {
 	 * @param data      응답 데이터
 	 * @return {@link GenericResponse<T>}
 	 */
-	public static <T> GenericResponse<T> of(boolean isSuccess, String code, T data) {
+	public static <T> GenericResponse<T> of(boolean isSuccess, int code, T data) {
 		return GenericResponse.<T>builder()
 			.isSuccess(isSuccess)
 			.code(code)
@@ -69,7 +69,7 @@ public class GenericResponse<T> {
 	 * @param code      응답 상태 코드
 	 * @return {@link GenericResponse<T>}
 	 */
-	public static <T> GenericResponse<T> of(boolean isSuccess, String code) {
+	public static <T> GenericResponse<T> of(boolean isSuccess, int code) {
 		return GenericResponse.<T>builder()
 			.isSuccess(isSuccess)
 			.code(code)
