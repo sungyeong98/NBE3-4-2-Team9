@@ -16,9 +16,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum GlobalErrorCode {
 	//공통 서버 에러 코드 500
-	NOT_VALID(HttpStatus.BAD_REQUEST, "5001", "요청하신 유효성 검증에 실패하였습니다.");
+	NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다.");
 
 	private final HttpStatus httpStatus;
-	private final String code;
+	private final int code;
 	private final String message;
 }

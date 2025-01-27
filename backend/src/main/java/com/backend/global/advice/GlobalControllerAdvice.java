@@ -37,8 +37,11 @@ public class GlobalControllerAdvice {
 		GlobalException globalException) {
 		log.error("handlerGlobalException: ", globalException);
 
-		GenericResponse<Void> genericResponse = GenericResponse.of(false,
-			globalException.getMessage());
+		GenericResponse<Void> genericResponse = GenericResponse.of(
+			false,
+			globalException.getGlobalErrorCode().getCode(),
+			globalException.getMessage()
+		);
 
 		return ResponseEntity.status(globalException.getStatus().value()).body(genericResponse);
 	}
