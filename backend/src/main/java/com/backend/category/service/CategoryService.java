@@ -1,9 +1,8 @@
-package com.backend.Category.service;
+package com.backend.category.service;
 
-import com.backend.Category.dto.CategoryDto;
-import com.backend.Category.entity.Category;
-import com.backend.Category.repository.CategoryRepository;
-import com.backend.global.response.GenericResponse;
+import com.backend.category.dto.CategoryDto;
+import com.backend.category.entity.Category;
+import com.backend.category.repository.CategoryRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

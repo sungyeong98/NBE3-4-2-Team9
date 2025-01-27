@@ -1,11 +1,10 @@
-package com.backend.Category.dto;
+package com.backend.category.dto;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Local;
 
 @Builder
 @Getter

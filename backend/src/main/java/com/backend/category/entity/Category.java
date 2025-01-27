@@ -1,4 +1,4 @@
-package com.backend.Category.entity;
+package com.backend.category.entity;
 
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.Column;
@@ -6,20 +6,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.Size;
 import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Builder
 @Getter
-@Table(name = "Category")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Category extends BaseEntity {
 
@@ -28,6 +26,7 @@ public class Category extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Size(max = 25)
     private String name;
 
     // category 객체의 값이 동일한지 비교하는 메서드
