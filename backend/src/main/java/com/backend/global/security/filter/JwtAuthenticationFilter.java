@@ -76,7 +76,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 accessToken,
                 jwtUtil.setJwtCookie("refreshToken", refreshToken, REFRESH_EXPIRATION),
                 HttpServletResponse.SC_OK,
-                GenericResponse.of(true, "200", new LoginResponse(userDetails.getUsername()), "로그인이 성공적으로 이루어졌습니다."),
+                GenericResponse.of(true, 200, new LoginResponse(userDetails.getUsername()), "로그인이 성공적으로 이루어졌습니다."),
                 objectMapper
         );
     }

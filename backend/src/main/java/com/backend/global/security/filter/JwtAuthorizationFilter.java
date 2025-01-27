@@ -87,7 +87,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 newAccessToken,
                 jwtUtil.setJwtCookie("refreshToken", newRefreshToken, REFRESH_EXPIRATION),
                 HttpServletResponse.SC_OK,
-                GenericResponse.of(true, "200", userDetails.getUsername(), "AccessToken 재발급 성공"),
+                GenericResponse.of(true, 200, userDetails.getUsername(), "AccessToken 재발급 성공"),
                 objectMapper);
     }
 

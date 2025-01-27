@@ -88,13 +88,13 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) ->
                                 {
                                     AuthResponseUtil.failLogin(
-                                        response, GenericResponse.of(false, "400"), HttpServletResponse.SC_BAD_REQUEST, objectMapper);
+                                        response, GenericResponse.of(false, 400), HttpServletResponse.SC_BAD_REQUEST, objectMapper);
                                 }))
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler((request, response, authException) ->
                         {
                             AuthResponseUtil.failLogin(
-                                    response, GenericResponse.of(false, "403"), HttpServletResponse.SC_FORBIDDEN, objectMapper);
+                                    response, GenericResponse.of(false, 403), HttpServletResponse.SC_FORBIDDEN, objectMapper);
                         }))
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/logout")
