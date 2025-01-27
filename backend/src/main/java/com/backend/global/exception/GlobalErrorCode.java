@@ -17,8 +17,11 @@ import org.springframework.http.HttpStatus;
 public enum GlobalErrorCode {
 
 	// 유저 도메인 에러 코드
-	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "400", "유저가 존재하지 않습니다."),
-	UNAUTHORIZATION_USER(HttpStatus.FORBIDDEN, "401", "접근 권한이 없는 유저입니다."),	// 내용 수정해야 될 수도 있음
+	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "유저가 존재하지 않습니다."),
+	UNAUTHENTICATION_USER(HttpStatus.UNAUTHORIZED, "4002", "인증되지 않은 사용자입니다."),
+	UNAUTHORIZATION_USER(HttpStatus.FORBIDDEN, "4003", "접근 권한이 없는 유저입니다."),
+	BAD_REQUEST(HttpStatus.BAD_REQUEST, "4004", "잘못된 접근입니다."),
+	KAKAO_LOGIN_FAIL(HttpStatus.BAD_REQUEST, "4005", "카카오 로그인에 실패하였습니다."),
 
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, "5001", "요청하신 유효성 검증에 실패하였습니다.");

@@ -3,6 +3,7 @@ package com.backend.global.security.filter;
 import com.backend.domain.user.dto.request.LoginRequest;
 import com.backend.domain.user.dto.response.LoginResponse;
 import com.backend.domain.user.entity.SiteUser;
+import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.redis.repository.RedisRepository;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
@@ -53,7 +54,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse resp, AuthenticationException failed) throws IOException {
         AuthResponseUtil.failLogin(
                 resp,
-                GenericResponse.of(false, "400"),
+                GenericResponse.of(false, GlobalErrorCode.UNAUTHORIZATION_USER.getCode()),
                 HttpServletResponse.SC_UNAUTHORIZED,
                 objectMapper
         );

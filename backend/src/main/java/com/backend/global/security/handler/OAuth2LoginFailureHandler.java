@@ -1,5 +1,6 @@
 package com.backend.global.security.handler;
 
+import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.response.GenericResponse;
 import com.backend.standard.util.AuthResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +25,7 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
     ) throws IOException {
         AuthResponseUtil.failLogin(
                 response,
-                GenericResponse.of(false, "400", "카카오 로그인 실패: " + exception.getMessage()),
+                GenericResponse.of(false, GlobalErrorCode.KAKAO_LOGIN_FAIL.getCode(), GlobalErrorCode.KAKAO_LOGIN_FAIL.getMessage()),
                 HttpServletResponse.SC_BAD_REQUEST,
                 objectMapper
         );

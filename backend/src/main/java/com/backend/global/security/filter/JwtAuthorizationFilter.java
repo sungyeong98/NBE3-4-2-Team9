@@ -1,6 +1,7 @@
 package com.backend.global.security.filter;
 
 import com.backend.domain.user.entity.SiteUser;
+import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.redis.repository.RedisRepository;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
@@ -48,7 +49,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (refreshToken == null) {
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, "400"),
+                    GenericResponse.of(false, GlobalErrorCode.BAD_REQUEST.getCode()),
                     HttpServletResponse.SC_BAD_REQUEST,
                     objectMapper);
             return;
@@ -60,7 +61,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (!redisRepository.get(username).equals(refreshToken)) {
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, "400"),
+                    GenericResponse.of(false, GlobalErrorCode.BAD_REQUEST.getCode()),
                     HttpServletResponse.SC_BAD_REQUEST,
                     objectMapper
             );
@@ -105,14 +106,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, "401"),
+                    GenericResponse.of(false, GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
                     HttpServletResponse.SC_UNAUTHORIZED,
                     objectMapper);
             return;
         } catch (JwtException e) {
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, "400"),
+                    GenericResponse.of(false, GlobalErrorCode.BAD_REQUEST.getCode()),
                     HttpServletResponse.SC_BAD_REQUEST,
                     objectMapper);
             return;
