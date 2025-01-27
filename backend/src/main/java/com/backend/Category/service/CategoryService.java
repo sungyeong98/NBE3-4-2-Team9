@@ -1,6 +1,12 @@
 package com.backend.Category.service;
 
+import com.backend.Category.dto.CategoryDto;
+import com.backend.Category.entity.Category;
 import com.backend.Category.repository.CategoryRepository;
+import com.backend.global.response.GenericResponse;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,4 +16,14 @@ public class CategoryService {
 
     private CategoryRepository categoryRepository;
 
+    // 카테고리 전체 조회
+    public List<Category> categoryList() {
+        return categoryRepository.findAll();
+    }
+
+    // 카테고리 등록
+    public GenericResponse<Category> AddCategory(Category category) {
+        Category savedCategory = categoryRepository.save(category);
+        return GenericResponse.of(true, "201", savedCategory, "카테고리가 생성 되었습니다.");
+    }
 }
