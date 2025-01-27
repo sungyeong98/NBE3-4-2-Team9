@@ -1,6 +1,6 @@
 package com.backend.category.controller;
 
-import com.backend.category.dto.CategoryDto;
+import com.backend.category.dto.response.CategoryResponse;
 import com.backend.category.service.CategoryService;
 import com.backend.global.response.GenericResponse;
 import java.util.List;
@@ -18,8 +18,8 @@ public class CategoryController {
 
     // 카테고리 전체 조회
     @GetMapping
-    public GenericResponse<List<CategoryDto>> getAllCategory() {
-        List<CategoryDto> categorieList = categoryService.categoryList();
+    public GenericResponse<List<CategoryResponse>> getAllCategory() {
+        List<CategoryResponse> categorieList = categoryService.categoryList();
         return GenericResponse.of(true, "200", categorieList);
     }
 }

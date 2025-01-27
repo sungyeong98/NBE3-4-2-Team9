@@ -25,8 +25,7 @@ public class Category extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    @Size(max = 25)
+    @Column(nullable = false, length = 25)
     private String name;
 
     // category 객체의 값이 동일한지 비교하는 메서드

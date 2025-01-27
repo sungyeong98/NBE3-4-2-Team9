@@ -1,4 +1,4 @@
-package com.backend.category.dto;
+package com.backend.category.dto.response;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDto {
+public class CategoryResponse {
     private Long id;
     private String name;
     private LocalDateTime createdAt;

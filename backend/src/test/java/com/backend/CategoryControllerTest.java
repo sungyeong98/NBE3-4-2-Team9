@@ -2,7 +2,7 @@ package com.backend;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.backend.category.dto.CategoryDto;
+import com.backend.category.dto.response.CategoryResponse;
 import com.backend.category.entity.Category;
 import com.backend.category.repository.CategoryRepository;
 import com.backend.category.service.CategoryService;
@@ -36,15 +36,15 @@ public class CategoryControllerTest {
     @Test
     void testCategoryList_shouldReturnCategoryDtos() {
         // 카테고리 전체 조회 (DTO 반환)
-        List<CategoryDto> categoryDtos = categoryService.categoryList();
+        List<CategoryResponse> categoryResponses = categoryService.categoryList();
 
         // 카테고리 전체 조회 결과가 2개인지 확인
-        assertThat(categoryDtos.size()).isEqualTo(2);
+        assertThat(categoryResponses.size()).isEqualTo(2);
 
         // 첫 번째 카테고리 DTO의 name이 "Category 1"인지 확인
-        assertThat(categoryDtos.get(0).getName()).isEqualTo("Category 1");
+        assertThat(categoryResponses.get(0).getName()).isEqualTo("Category 1");
 
         // 두 번째 카테고리 DTO의 name이 "Category 2"인지 확인
-        assertThat(categoryDtos.get(1).getName()).isEqualTo("Category 2");
+        assertThat(categoryResponses.get(1).getName()).isEqualTo("Category 2");
     }
 }
