@@ -3,6 +3,7 @@ package com.backend.global.response;
 import java.time.ZonedDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 
 /**
  * GenericResponse
@@ -10,6 +11,7 @@ import lombok.Builder;
  *
  * @author Kim Dong O
  */
+@Getter
 public class GenericResponse<T> {
 
 	private final ZonedDateTime timestamp;
@@ -91,4 +93,8 @@ public class GenericResponse<T> {
 			.code(code)
 			.build();
 	}
+
+//	public Integer getCodeAsInt() {
+//		return Integer.parseInt(code);
+//	}
 }

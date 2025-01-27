@@ -38,3 +38,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### CUSTOM ###
+application.yml
+application-build.yml
+application-oauth.yml
+.env
