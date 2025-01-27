@@ -1,5 +1,6 @@
 package com.backend.Category.controller;
 
+import com.backend.Category.dto.CategoryDto;
 import com.backend.Category.entity.Category;
 import com.backend.Category.repository.CategoryRepository;
 import com.backend.Category.service.CategoryService;
@@ -22,8 +23,8 @@ public class CategoryController {
 
     // 카테고리 전체 조회
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategory() {
-        List<Category> categorieList = categoryService.categoryList();
+    public ResponseEntity<List<CategoryDto>> getAllCategory() {
+        List<CategoryDto> categorieList = categoryService.categoryList();
         return ResponseEntity.ok(categorieList);
     }
 

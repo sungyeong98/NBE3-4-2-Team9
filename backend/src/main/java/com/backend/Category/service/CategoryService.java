@@ -13,17 +13,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     // 카테고리 전체 조회
-    public List<Category> categoryList() {
-        return categoryRepository.findAll();
-    }
-
-    // 카테고리 등록
-    public GenericResponse<Category> AddCategory(Category category) {
-        Category savedCategory = categoryRepository.save(category);
-        return GenericResponse.of(true, "201", savedCategory, "카테고리가 생성 되었습니다.");
+    public List<CategoryDto> categoryList() {
+        List<Category> categoryList = categoryRepository.findAll();
+        return mappingCategory(categoryList);
     }
 
     // 카테고리 매핑
