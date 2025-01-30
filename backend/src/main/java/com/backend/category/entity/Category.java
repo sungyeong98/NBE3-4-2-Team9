@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class Category extends BaseEntity {
 
