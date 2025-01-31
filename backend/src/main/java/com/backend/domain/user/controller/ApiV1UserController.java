@@ -43,7 +43,7 @@ public class ApiV1UserController {
 //
 //        return GenericResponse.of(
 //                true,
-//                "200",
+//                200,
 //                new UserGetProfileResponse(siteUser)
 //        );
 //    }
@@ -62,7 +62,7 @@ public class ApiV1UserController {
 //
 //        return GenericResponse.of(
 //                true,
-//                "200"
+//                200
 //        );
 //    }
 
