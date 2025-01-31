@@ -2,10 +2,10 @@ package com.backend;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.backend.category.dto.response.CategoryResponse;
-import com.backend.category.entity.Category;
-import com.backend.category.repository.CategoryRepository;
-import com.backend.category.service.CategoryService;
+import com.backend.domain.category.dto.response.CategoryResponse;
+import com.backend.domain.category.entity.Category;
+import com.backend.domain.category.repository.CategoryRepository;
+import com.backend.domain.category.service.CategoryService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

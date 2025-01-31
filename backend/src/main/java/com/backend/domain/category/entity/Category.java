@@ -1,4 +1,4 @@
-package com.backend.category.entity;
+package com.backend.domain.category.entity;
 
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.Column;
@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Size;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

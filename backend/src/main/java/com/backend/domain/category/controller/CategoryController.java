@@ -1,7 +1,7 @@
-package com.backend.category.controller;
+package com.backend.domain.category.controller;
 
-import com.backend.category.dto.response.CategoryResponse;
-import com.backend.category.service.CategoryService;
+import com.backend.domain.category.dto.response.CategoryResponse;
+import com.backend.domain.category.service.CategoryService;
 import com.backend.global.response.GenericResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,6 @@ public class CategoryController {
     @GetMapping
     public GenericResponse<List<CategoryResponse>> getAllCategory() {
         List<CategoryResponse> categorieList = categoryService.categoryList();
-        return GenericResponse.of(true, "200", categorieList);
+        return GenericResponse.of(true, 200, categorieList);
     }
 }

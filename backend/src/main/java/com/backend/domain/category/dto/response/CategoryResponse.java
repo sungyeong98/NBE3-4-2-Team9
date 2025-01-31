@@ -1,4 +1,4 @@
-package com.backend.category.dto.response;
+package com.backend.domain.category.dto.response;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
