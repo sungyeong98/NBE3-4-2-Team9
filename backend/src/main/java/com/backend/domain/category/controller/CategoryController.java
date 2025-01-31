@@ -5,6 +5,7 @@ import com.backend.domain.category.service.CategoryService;
 import com.backend.global.response.GenericResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,6 @@ public class CategoryController {
     @GetMapping
     public GenericResponse<List<CategoryResponse>> getAllCategory() {
         List<CategoryResponse> categorieList = categoryService.categoryList();
-        return GenericResponse.of(true, 200, categorieList);
+        return GenericResponse.of(true, HttpStatus.OK.value(), categorieList);
     }
 }

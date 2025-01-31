@@ -17,11 +17,11 @@ public class CategoryService {
     // 카테고리 전체 조회
     public List<CategoryResponse> categoryList() {
         List<Category> categoryList = categoryRepository.findAll();
-        return mappingCategory(categoryList);
+        return mappingCategoryList(categoryList);
     }
 
     // 카테고리 매핑
-    public List<CategoryResponse> mappingCategory(List<Category> categoryList) {
+    private List<CategoryResponse> mappingCategoryList(List<Category> categoryList) {
         return categoryList.stream()
                 .map(category -> CategoryResponse.builder()
                         .id(category.getId())
@@ -30,5 +30,15 @@ public class CategoryService {
                         .modifiedAt(category.getModifiedAt().toLocalDateTime())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    // 카테고리 매핑 (단일 객체)
+    private CategoryResponse mappingCategory(Category category) {
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .createdAt(category.getCreatedAt().toLocalDateTime())
+                .modifiedAt(category.getModifiedAt().toLocalDateTime())
+                .build();
     }
 }
