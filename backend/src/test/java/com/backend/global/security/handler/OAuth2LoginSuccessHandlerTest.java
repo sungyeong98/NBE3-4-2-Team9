@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class OAuth2LoginSuccessHandlerTest {
 
