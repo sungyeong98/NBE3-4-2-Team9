@@ -5,6 +5,7 @@ import com.backend.domain.board.dto.PostResponseDto;
 import com.backend.domain.board.entity.Post;
 import com.backend.domain.board.service.PostService;
 import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1")
@@ -32,10 +34,16 @@ public class ApiV1PostController {
 //        return ResponseEntity.ok(createdPost);
 //    }
 
-    // 전체 게시글 조회 (DTO 적용)
+    // 전체 게시글 조회 (DTO 적용) + 카테고리, 정렬, 검색, 페이징 기능 추가
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponseDto>> getAllPosts(){
-        List<PostResponseDto> posts = postService.getAllPosts();
+    public ResponseEntity<Page<PostResponseDto>> getAllPosts(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "latest") String sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+
+        Page<PostResponseDto> posts = postService.getAllPosts(category, keyword, sort, page, size);
         return ResponseEntity.ok(posts);
     }
 

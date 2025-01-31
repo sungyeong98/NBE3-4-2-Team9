@@ -4,9 +4,12 @@ import com.backend.domain.board.dto.PostCreateRequestDto;
 import com.backend.domain.board.dto.PostResponseDto;
 import com.backend.domain.board.entity.Post;
 import com.backend.domain.board.repository.PostRepository;
-import java.util.List;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,10 +44,21 @@ public class PostService {
 //    }
 
     // 게시글 전체 조회 (DTO 적용)
-    public List<PostResponseDto> getAllPosts(){
-        return postRepository.findAll().stream()
-                .map(PostResponseDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<PostResponseDto> getAllPosts(String category, String keyword, String sort, int page, int size){
+        Pageable pageable;
+
+        // 정렬 방식 설정
+        if ("popular".equals(sort)){
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "viewCount"));
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"createdAt"));
+        }
+
+        // Repository에서 검색, 페이징 처리된 게시글 리스트 반환
+        Page<Post> posts = postRepository.findBySubjectContainingOrContentContaining(category, keyword, pageable);
+
+        // Entity -> DTO 변환 후 반환
+        return posts.map(PostResponseDto::fromEntity);
     }
 
     // 게시글 상세 조회 (DTO 적용)
