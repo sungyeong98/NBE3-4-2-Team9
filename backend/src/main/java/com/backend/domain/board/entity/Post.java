@@ -6,11 +6,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 // 게시판 엔티티
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name="Board")
 public class Post extends BaseEntity {
 
@@ -28,21 +36,22 @@ public class Post extends BaseEntity {
     private String content;
 
     // category: 카테고리
+    // 게시글의 카테고리 이름을 저장하는 필드
     @Column(nullable = false)
     private String category;
 
     // createDate: 생성일자, BaseEntity 상속
     // modifyDate: 수정일자, BaseEntity 상속
 
-    // 카테고리 ID -> 카테고리 테이블이랑 이어짐
-    // 다대일 관계, board의 여러 게시글이 하나의 카테고리 참조
+    // 카테고리 ID -> 카테고리 테이블과의 관계 설정 | 다대일 관계, board의 여러 게시글이 하나의 카테고리 참조
+    // TODO: category, jobposting 미구현, 구현 이후 다시 작업
 //    @ManyToOne
 //    @JoinColumn(name = "category_id", nullable = false)
-//    private Category category_id;
+//    private Category categoryId;
 
     // 채용 ID -> JopPosting table에 채용ID랑 이어짐
 //    @ManyToOne
 //    @JoinColumn(name = "job_id", nullable = false)
-//    private JobPosting job_id;
+//    private JobPosting jobId;
 
 }
