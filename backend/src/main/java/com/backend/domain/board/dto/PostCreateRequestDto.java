@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 public class PostCreateRequestDto {
     private String subject;
     private String content;
-    private String category; // 게시글 카테고리명
-    private Long categoryId; // 카테고리 ID
-    private Long jobId; // 채용 공고 ID
 
     // DTO -> Entity
     // TODO: category, jobposting 미구현, 구현 이후 다시 작업
