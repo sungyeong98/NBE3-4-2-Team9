@@ -22,24 +22,17 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CategoryController.class)
 @ActiveProfiles("test")
-@Import({CategoryControllerTest.TestSecurityConfig.class, CategoryControllerTest.PropertyConfig.class})
 class CategoryControllerTest {
 
     @Autowired
@@ -48,47 +41,28 @@ class CategoryControllerTest {
     private ObjectMapper objectMapper;
 
     // CategoryController가 의존하는 서비스 빈을 Mock 객체로 주입
-    @MockitoBean
+    @MockBean
     private CategoryService categoryService;
 
-    @InjectMocks
-    private CategoryController categoryController;
-
-    private Category category;
-    private CategoryResponse categoryResponse;
-    private ZonedDateTime now;
-
     // Jwt 관련 빈들은 SecurtiyConfig에 의해 사용, 여기선 Mock 객체로 주입
-    @Mock
+    @MockBean
     private JwtUtil jwtUtil;
-    @Mock
+    @MockBean
     private RedisRepository redisRepository;
-    @Mock
+    @MockBean
     private CustomOAuth2UserService customOAuth2UserService;
-    @Mock
+    @MockBean
     private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-    @Mock
+    @MockBean
     private OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
-    @TestConfiguration
-    static class PropertyConfig {
-        @Bean
-        public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-            return new PropertySourcesPlaceholderConfigurer();
-        }
-    }
-
-    @TestConfiguration
-    static class TestSecurityConfig {
-        @Bean
-        public JwtUtil jwtUtil() {
-            return new JwtUtil("test-secret-key-for-testing");
-        }
-    }
+    private CategoryController categoryController;
+    private Category category;
+    private CategoryResponse categoryResponse;
 
     @BeforeEach
     void setUp() {
-        now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
 
         // 테스트용 Category 객체 생성 (id = null, name = "Tech")
         category = new Category(null, "Tech");

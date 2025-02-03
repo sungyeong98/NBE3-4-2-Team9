@@ -1,5 +1,7 @@
 package com.backend.global.category;
 
+import static com.backend.domain.category.converter.CategoryConverter.mappingCategory;
+import static com.backend.domain.category.converter.CategoryConverter.mappingCategoryList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -112,7 +114,7 @@ class CategoryServiceTest {
         when(categoryRepository.findAll()).thenReturn(categories);
 
         // categoryConverter의 동작을 정의 (Mock 객체는 기본적으로 동작 X)
-        when(categoryConverter.mappingCategoryList(anyList()))
+        when(mappingCategoryList(anyList()))
                 .thenReturn(Arrays.asList(
                         new CategoryResponse(1L, "Tech", now, now),
                         new CategoryResponse(2L, "Science", now, now)
@@ -153,7 +155,7 @@ class CategoryServiceTest {
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
         // categoryConverter의 동작을 정의 (Mock 객체는 기본적으로 동작 X)
-        when(categoryConverter.mappingCategory(any()))
+        when(mappingCategory(any()))
                 .thenReturn(
                         new CategoryResponse(1L, "Tech", now, now)
                 );
