@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 //상속 관계로 테이블 정의시 전략 설정
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
-@Table(name="Board")
+@Table(name="Post")
 @AllArgsConstructor
 public class Post extends BaseEntity {
 
