@@ -1,5 +1,6 @@
 package com.backend.domain.category.service;
 
+import com.backend.domain.category.converter.CategoryConverter;
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
@@ -8,7 +9,6 @@ import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import com.backend.global.security.custom.CustomUserDetails;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.Authentication;
@@ -20,11 +20,12 @@ import org.springframework.stereotype.Service;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryConverter categoryConverter;
 
     // 카테고리 전체 조회
     public List<CategoryResponse> categoryList() {
         List<Category> categoryList = categoryRepository.findAll();
-        return mappingCategoryList(categoryList);
+        return categoryConverter.mappingCategoryList(categoryList);
     }
 
     // 카테고리 추가 (관리자만 등록 가능)
@@ -46,7 +47,7 @@ public class CategoryService {
 
             // 관리자일 경우 카테고리 등록 로직 실행
             Category saveCategory = categoryRepository.save(category);
-            return mappingCategory(saveCategory);
+            return categoryConverter.mappingCategory(saveCategory);
 
         } catch (DataAccessException e) {
             // 데이터베이스 예외 처리
@@ -58,25 +59,5 @@ public class CategoryService {
         }
     }
 
-    // 카테고리 매핑
-    private List<CategoryResponse> mappingCategoryList(List<Category> categoryList) {
-        return categoryList.stream()
-                .map(category -> CategoryResponse.builder()
-                        .id(category.getId())
-                        .name(category.getName())
-                        .createdAt(category.getCreatedAt())
-                        .modifiedAt(category.getModifiedAt())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    // 카테고리 매핑 (단일 객체)
-    private CategoryResponse mappingCategory(Category category) {
-        return CategoryResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .createdAt(category.getCreatedAt())
-                .modifiedAt(category.getModifiedAt())
-                .build();
-    }
+    // TODO : 카테고리 수정 추가
 }

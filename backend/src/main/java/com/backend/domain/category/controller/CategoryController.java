@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,9 +29,10 @@ public class CategoryController {
 
     // 카테고리 추가 (관리자만 가능)
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public GenericResponse<CategoryResponse> createCategory(@RequestBody Category category) {
         CategoryResponse categoryResponse = categoryService.createCategory(category);
         return GenericResponse.of(true, HttpStatus.CREATED.value(), categoryResponse);
     }
+
+    // TODO : 카테고리 수정 추가
 }
