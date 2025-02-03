@@ -17,31 +17,31 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ApiV1UserController {
-//
-//    private final UserService userService;
-//
-//    @GetMapping("/users/{user_id}")
-//    @Transactional(readOnly = true)
-//    public GenericResponse<UserGetProfileResponse> getProfile(
-//            @PathVariable Long user_id,
-//            @AuthenticationPrincipal CustomUserDetails customUserDetails
-//            ) {
-//        SiteUser siteUser = userService.getUserById(user_id);
-//
-//        if (customUserDetails == null) {
-//            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-//        }
-//
-//        if (!user_id.equals(customUserDetails.getSiteUser().getId())) {
-//            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
-//        }
-//
-//        return GenericResponse.of(
-//                true,
-//                200,
-//                new UserGetProfileResponse(siteUser)
-//        );
-//    }
+
+    private final UserService userService;
+
+    @GetMapping("/users/{user_id}")
+    @Transactional(readOnly = true)
+    public GenericResponse<UserGetProfileResponse> getProfile(
+            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            ) {
+        SiteUser siteUser = userService.getUserById(user_id);
+
+        if (customUserDetails == null) {
+            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
+        }
+
+        if (!user_id.equals(customUserDetails.getSiteUser().getId())) {
+            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
+        }
+
+        return GenericResponse.of(
+                true,
+                200,
+                new UserGetProfileResponse(siteUser)
+        );
+    }
 //
 //    @PatchMapping("/users/{user_id}")
 //    @Transactional
