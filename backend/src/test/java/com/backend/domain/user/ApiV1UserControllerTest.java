@@ -43,9 +43,9 @@ public class ApiV1UserControllerTest {
     @BeforeEach
     void setUp() {
         testUser = userRepository.save(SiteUser.builder()
-                .name("testUser")
+                .name("test")
                 .email("test@test.com")
-                .password("password")
+                .password("test")
                 .userRole(UserRole.ROLE_USER.toString())
                 .build());
 
