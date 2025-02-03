@@ -35,17 +35,17 @@ public class ApiV1PostController {
 //    }
 
     // 전체 게시글 조회 (DTO 적용) + 카테고리, 정렬, 검색, 페이징 기능 추가
-    @GetMapping("/posts")
-    public ResponseEntity<Page<PostResponseDto>> getAllPosts(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "latest") String sort,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-
-        Page<PostResponseDto> posts = postService.getAllPosts(category, keyword, sort, page, size);
-        return ResponseEntity.ok(posts);
-    }
+//    @GetMapping("/posts")
+//    public ResponseEntity<Page<PostResponseDto>> getAllPosts(
+//            @RequestParam(required = false) Long category,
+//            @RequestParam(required = false) String keyword,
+//            @RequestParam(defaultValue = "latest") String sort,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size){
+//
+//        Page<PostResponseDto> posts = postService.getAllPosts(category, keyword, sort, page, size);
+//        return ResponseEntity.ok(posts);
+//    }
 
     // 특정 게시글 조회 (DTO 적용)
     @GetMapping("/posts/{id}")

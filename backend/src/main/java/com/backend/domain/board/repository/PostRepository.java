@@ -4,11 +4,24 @@ import com.backend.domain.board.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    // 제목이나 게시글 내용에 keyword 포함하여 검색
-    Page<Post> findBySubjectContainingOrContentContaining(String subject, String content, Pageable pageable);
+    // 카테고리와 제목, 내용에서 검색어 포함 여부를 처리하는 쿼리
+    // category 참조 때문에 추후에 작업 예정
+//    @Query("SELECT p FROM Post p WHERE " +
+//            "(:categoryId IS NULL OR p.categoryId.id = :categoryId) AND " +
+//            "(:keyword IS NULL OR p.subject LIKE %:keyword% OR p.content LIKE %:keyword%)")
+//    Page<Post> findByCategoryAndKeyword(@Param("categoryId") Long categoryId,
+//            @Param("keyword") String keyword,
+//            Pageable pageable);
 
-    // TODO: 카테고리별 게시글 조회
+    // 제목 또는 내용에서 검색어만 검색하는 쿼리
+    @Query("SELECT p FROM Post p WHERE " +
+            "(:keyword IS NULL OR p.subject LIKE %:keyword% OR p.content LIKE %:keyword%)")
+    Page<Post> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }
