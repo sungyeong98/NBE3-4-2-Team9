@@ -83,7 +83,7 @@ public class OAuth2LoginSuccessHandlerTest {
         Map<String, Object> properties = new HashMap<>();
         properties.put("nickname", "testUser");
         properties.put("profile_image", "test.jpg");
-        attributes.put("id", "12345");
+        attributes.put("id", 12345L);
         attributes.put("properties", properties);
 
         return new DefaultOAuth2User(
