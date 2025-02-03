@@ -3,8 +3,10 @@ package com.backend.global.category;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
+import com.backend.domain.category.converter.CategoryConverter;
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
@@ -33,6 +35,9 @@ class CategoryServiceTest {
     // Repository를 Mock 객체로 주입
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private CategoryConverter categoryConverter;
 
     // Security 관련 Mock 객체들
     @Mock
@@ -106,6 +111,13 @@ class CategoryServiceTest {
         List<Category> categories = Arrays.asList(category, category2);
         when(categoryRepository.findAll()).thenReturn(categories);
 
+        // categoryConverter의 동작을 정의 (Mock 객체는 기본적으로 동작 X)
+        when(categoryConverter.mappingCategoryList(anyList()))
+                .thenReturn(Arrays.asList(
+                        new CategoryResponse(1L, "Tech", now, now),
+                        new CategoryResponse(2L, "Science", now, now)
+                ));
+
         // when: service의 categoryList() 호출
         List<CategoryResponse> result = categoryService.categoryList();
 
@@ -139,6 +151,12 @@ class CategoryServiceTest {
 
         // Repository의 save() 호출 시, 미리 설정한 category 객체 반환
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
+        // categoryConverter의 동작을 정의 (Mock 객체는 기본적으로 동작 X)
+        when(categoryConverter.mappingCategory(any()))
+                .thenReturn(
+                        new CategoryResponse(1L, "Tech", now, now)
+                );
 
         // when: CategoryService의 createCategory() 호출
         CategoryResponse result = categoryService.createCategory(category);
