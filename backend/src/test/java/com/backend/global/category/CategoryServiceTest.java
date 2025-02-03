@@ -1,14 +1,10 @@
 package com.backend.global.category;
 
-import static com.backend.domain.category.converter.CategoryConverter.mappingCategory;
-import static com.backend.domain.category.converter.CategoryConverter.mappingCategoryList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
-import com.backend.domain.category.converter.CategoryConverter;
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
@@ -22,24 +18,22 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
 class CategoryServiceTest {
 
     // Repository를 Mock 객체로 주입
     @Mock
     private CategoryRepository categoryRepository;
-
-    @Mock
-    private CategoryConverter categoryConverter;
 
     // Security 관련 Mock 객체들
     @Mock
@@ -50,6 +44,8 @@ class CategoryServiceTest {
     // 테스트 대상 객체(CategoryService) 생성, 목 객체들이 주입됨
     @InjectMocks
     private CategoryService categoryService;
+
+    // 테스트에서 사용할 Category, 사용자 정보, 현재 시간 변수
     private Category category;
     private CustomUserDetails adminDetails;
     private CustomUserDetails userDetails;
@@ -91,74 +87,58 @@ class CategoryServiceTest {
     }
 
     /**
+     * SecurityContext를 Mocking하여 설정하는 유틸리티 메서드
+     * 각 테스트에서 사용자가 다를 경우, 이 메서드를 호출하여 보안 정보를 설정
+     */
+    private void setSecurityContext(CustomUserDetails userDetails) {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
+    /**
      * 테스트: categoryList_ShouldReturnAllCategories
      *
      * 목적:
      * - CategoryService의 categoryList() 메서드가 CategoryRepository에서 조회한 모든 카테고리를
      *   CategoryResponse 리스트로 변환하여 반환하는지 검증.
-     *
-     * 동작:
-     * - 두 개의 Category 객체(예: "Tech", "Science")를 Repository가 반환하도록 설정.
-     * - 반환된 리스트의 사이즈와 각 요소의 name 값이 예상과 일치하는지 확인.
      */
     @Test
     void categoryList_ShouldReturnAllCategories() {
 
-        // given: "Science" 카테고리 객체 생성 및 createdAt, modifiedAt 값 설정
+        // given: "Tech" 및 "Science" 카테고리 객체 생성 및 createdAt, modifiedAt 값 설정
         Category category2 = new Category(2L, "Science");
         ReflectionTestUtils.setField(category2, "createdAt", now);
         ReflectionTestUtils.setField(category2, "modifiedAt", now);
 
-        // 두 개의 Category 객체를 포함하는 리스트를 목 객체에서 반환하도록 설정
-        List<Category> categories = Arrays.asList(category, category2);
-        when(categoryRepository.findAll()).thenReturn(categories);
+        // 두 개의 Category 객체를 포함하는 리스트를 Mock Repository에서 반환하도록 설정
+        List<Category> categoryList = Arrays.asList(category, category2);
+        when(categoryRepository.findAll()).thenReturn(categoryList);
 
-        // categoryConverter의 동작을 정의 (Mock 객체는 기본적으로 동작 X)
-        when(mappingCategoryList(anyList()))
-                .thenReturn(Arrays.asList(
-                        new CategoryResponse(1L, "Tech", now, now),
-                        new CategoryResponse(2L, "Science", now, now)
-                ));
-
-        // when: service의 categoryList() 호출
+        // when: CategoryService의 categoryList() 메서드 호출
         List<CategoryResponse> result = categoryService.categoryList();
 
         // then: 반환된 리스트의 사이즈와 각 CategoryResponse 객체의 값 검증
-        assertThat(result).hasSize(2);
-        assertThat(result.get(0).getName()).isEqualTo("Tech");
-        assertThat(result.get(1).getName()).isEqualTo("Science");
+        assertThat(result).hasSize(2);                                  // 두 개의 카테고리가 반환되었는지 확인
+        assertThat(result.get(0).getName()).isEqualTo("Tech");        // 첫 번째 카테고리 이름 검증
+        assertThat(result.get(1).getName()).isEqualTo("Science");     // 두 번째 카테고리 이름 검증
     }
 
     /**
      * 테스트: createCategory_WithAdminRole_ShouldCreateCategory
      *
      * 목적:
-     * - ADMIN 권한을 가진 사용자가 카테고리 생성 요청을 했을 때, CategoryService가 정상적으로
+     * - 관리자 권한을 가진 사용자가 카테고리 생성 요청을 했을 때, CategoryService가 정상적으로
      *   카테고리를 저장하고 생성된 CategoryResponse를 반환하는지 검증.
-     *
-     * 동작:
-     * - SecurityContextHolder에 목(SecurityContext) 객체를 설정하고, 인증 정보로 adminDetails를 반환하도록 설정.
-     * - Repository의 save() 메서드를 호출하면 미리 설정한 Category 객체를 반환하도록 설정.
-     * - 반환된 CategoryResponse의 값이 예상대로 생성되었는지 확인.
      */
     @Test
     void createCategory_WithAdminRole_ShouldCreateCategory() {
 
-        // given: SecurityContextHolder에 목(SecurityContext) 객체 설정
-        SecurityContextHolder.setContext(securityContext);
+        // given: 관리자 권한을 가진 사용자의 SecurityContext 설정
+        setSecurityContext(adminDetails);
 
-        // 인증(Authentication) 객체가 adminDetails를 반환하도록 설정
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(adminDetails);
-
-        // Repository의 save() 호출 시, 미리 설정한 category 객체 반환
+        // Repository의 save() 메서드 호출 시, 미리 설정한 category 객체 반환하도록 설정
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
-
-        // categoryConverter의 동작을 정의 (Mock 객체는 기본적으로 동작 X)
-        when(mappingCategory(any()))
-                .thenReturn(
-                        new CategoryResponse(1L, "Tech", now, now)
-                );
 
         // when: CategoryService의 createCategory() 호출
         CategoryResponse result = categoryService.createCategory(category);
@@ -174,20 +154,12 @@ class CategoryServiceTest {
      *
      * 목적:
      * - 일반 사용자(ROLE_USER)가 카테고리 생성 요청을 했을 때, 권한 부족으로 인해 GlobalException이 발생하는지 검증.
-     *
-     * 동작:
-     * - SecurityContextHolder에 목(SecurityContext) 객체 설정 후, 인증 정보로 userDetails를 반환하도록 설정.
-     * - CategoryService의 createCategory() 호출 시, 예외가 발생하는지 확인.
      */
     @Test
     void createCategory_WithUserRole_ShouldThrowException() {
 
-        // given: SecurityContextHolder에 목(SecurityContext) 객체 설정
-        SecurityContextHolder.setContext(securityContext);
-
-        // 인증(Authentication) 객체가 userDetails를 반환하도록 설정 (일반 사용자)
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(userDetails);
+        // given: 일반 사용자 권한을 가진 사용자의 SecurityContext 설정
+        setSecurityContext(userDetails);
 
         // when & then: createCategory() 호출 시 GlobalException이 발생하는지 검증
         assertThatThrownBy(() -> categoryService.createCategory(category))

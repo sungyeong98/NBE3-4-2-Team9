@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.backend.domain.category.controller.CategoryController;
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.service.CategoryService;
@@ -23,7 +22,8 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -31,7 +31,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(CategoryController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 class CategoryControllerTest {
 
@@ -56,94 +57,85 @@ class CategoryControllerTest {
     @MockBean
     private OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
-    private CategoryController categoryController;
     private Category category;
     private CategoryResponse categoryResponse;
 
     @BeforeEach
     void setUp() {
+        // 테스트용 Category 객체 및 CategoryResponse 객체 초기화
         ZonedDateTime now = ZonedDateTime.now();
-
-        // 테스트용 Category 객체 생성 (id = null, name = "Tech")
-        category = new Category(null, "Tech");
-        ReflectionTestUtils.setField(category, "createdAt", now);
-        ReflectionTestUtils.setField(category, "modifiedAt", now);
-
-        // CategoryResponse 빌더로 응답 객체 생성
-        categoryResponse = CategoryResponse.builder()
-                .id(1L)
-                .name("Tech")
-                .createdAt(now)
-                .modifiedAt(now)
-                .build();
+        category = createCategory(now, "Tech");
+        categoryResponse = createCategoryResponse(now, "Tech");
     }
+
+        // 카테고리 생성 메서드
+        private Category createCategory(ZonedDateTime now, String name) {
+            Category category = new Category(null, name);
+            ReflectionTestUtils.setField(category, "createdAt", now);
+            ReflectionTestUtils.setField(category, "modifiedAt", now);
+            return category;
+        }
+
+        // CategoryResponse 생성 메서드
+        private CategoryResponse createCategoryResponse(ZonedDateTime now, String name) {
+            return CategoryResponse.builder()
+                    .id(1L)
+                    .name(name)
+                    .createdAt(now)
+                    .modifiedAt(now)
+                    .build();
+        }
 
     /**
      * GET /api/v1/category 요청 테스트
-     *
-     * 이 테스트는 인증된 사용자(@WithMockUser가 추가된 경우)로 GET 요청을 보내,
-     * 카테고리 목록을 정상적으로 조회하는지 확인합니다.
-     *
-     * - categoryService.categoryList()를 목 객체에서 미리 정의한 응답(categoryResponse 리스트)을 반환하도록 설정합니다.
-     * - 응답 JSON의 success 필드가 true인지, 그리고 첫 번째 데이터의 name 필드가 "Tech"인지 확인합니다.
+     * 인증된 사용자(@WithMockUser)로 GET 요청을 보내 카테고리 목록을 정상적으로 조회하는지 확인
+     * - categoryService.categoryList()에서 반환된 응답이 올바른지 검증
      */
     @Test
     @WithMockUser
     void getAllCategory_ShouldReturnCategoryList() throws Exception {
+        // given: 미리 정의된 categoryResponse 리스트 반환 설정
+        when(categoryService.categoryList()).thenReturn(Arrays.asList(categoryResponse));
 
-        // given: 서비스의 categoryList() 메서드 호출 시, 미리 정의된 categoryResponse 리스트 반환
-        when(categoryService.categoryList()).thenReturn(
-                Arrays.asList(categoryResponse)
-        );
-
-        // when & then: GET 요청을 보내고, 응답 상태가 200, JSON 응답의 특정 필드 값 검증
+        // when & then: GET 요청 보내고, JSON 응답의 특정 필드 값 검증
         mockMvc.perform(get("/api/v1/category"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].name").value("Tech"));
+                .andExpect(status().isOk())  // HTTP 200 OK 상태 코드 확인
+                .andExpect(jsonPath("$.success").value(true))  // success 필드 값이 true 인지 확인
+                .andExpect(jsonPath("$.data[0].name").value("Tech"));  // 첫 번째 데이터의 name이 "Tech" 인지 확인
     }
 
     /**
      * POST /api/v1/category 요청 테스트 (관리자 권한)
-     *
-     * 이 테스트는 ADMIN 권한을 가진 사용자가 POST 요청을 보내 새로운 카테고리를 생성하는 경우,
-     * 정상적으로 생성되었는지(201 상태 코드, success: true, 그리고 생성된 카테고리의 name 필드가 "Tech")를 검증합니다.
-     *
-     * - CSRF 보호를 위해 요청에 CSRF 토큰을 함께 전송합니다.
+     * ADMIN 권한을 가진 사용자가 POST 요청을 보내 새로운 카테고리를 생성하는 경우 정상적으로 생성되었는지 확인
+     * - 응답 상태 코드 201, success: true, 생성된 카테고리의 name 필드가 "Tech"인지 확인
      */
     @Test
     @WithMockUser(roles = "ADMIN")  // ADMIN 권한으로 인증된 사용자로 요청
     void createCategory_WithAdminRole_ShouldReturnCreated() throws Exception {
-
-        // given: 서비스의 createCategory() 메서드 호출 시, 미리 정의된 categoryResponse 반환
+        // given: categoryService.createCategory()에서 반환될 categoryResponse 설정
         when(categoryService.createCategory(any(Category.class))).thenReturn(categoryResponse);
 
-        // when & then: POST 요청을 보낼 때 CSRF 토큰 추가, 응답 상태가 201(Created)임을 확인하고, JSON 응답의 success와 data.name 필드 검증
+        // when & then: POST 요청을 보낼 때 CSRF 토큰 추가, 응답 상태가 201(Created) 확인
         mockMvc.perform(post("/api/v1/category")
-                        .with(csrf())
+                        .with(csrf())  // CSRF 보호 활성화
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.name").value("Tech"));
+                .andExpect(status().isCreated())  // 응답 상태 코드가 201인지 확인
+                .andExpect(jsonPath("$.success").value(true))  // 응답의 success가 true인지 확인
+                .andExpect(jsonPath("$.data.name").value("Tech"));  // 생성된 카테고리의 name이 "Tech"인지 확인
     }
 
     /**
      * POST /api/v1/category 요청 테스트 (일반 사용자 권한)
-     *
-     * 이 테스트는 USER 권한을 가진 사용자가 POST 요청을 보내 새로운 카테고리를 생성하려 할 때,
-     * 권한 부족으로 인해 요청이 거부되어 403 Forbidden 상태 코드가 반환되는지 검증합니다.
-     *
-     * - USER 권한으로 인증된 경우에는 ADMIN 전용 기능인 카테고리 생성에 접근할 수 없어야 합니다.
+     * USER 권한을 가진 사용자가 POST 요청을 보내 새로운 카테고리를 생성하려 할 때 권한 부족으로 인해 403 Forbidden 상태 코드가 반환되는지 검증
      */
     @Test
     @WithMockUser(roles = "USER")  // USER 권한으로 인증된 사용자로 요청
     void createCategory_WithUserRole_ShouldReturnForbidden() throws Exception {
-
-        // when & then: POST 요청 시 CSRF 토큰 추가, 응답 상태가 403(Forbidden)임을 확인
+        // when & then: POST 요청 시, 응답 상태가 403(Forbidden)임을 확인
         mockMvc.perform(post("/api/v1/category")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden());  // 권한 부족으로 인해 403 Forbidden이 반환되어야 함
     }
 }
