@@ -44,6 +44,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
         SiteUser siteUser = extractUserFromOAuth2User(oAuth2User);
+        
         CustomUserDetails userDetails = new CustomUserDetails(siteUser);
 
         String username = userDetails.getUsername();
@@ -80,11 +81,14 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
             String nickname = (String) properties.get("nickname");
 
+            Long userId = ((Number) attributes.get("id")).longValue();
+
             if (nickname == null || nickname.isEmpty()) {
                 throw new OAuth2AuthenticationException("nickname cannot be empty");
             }
 
             return SiteUser.builder()
+                    .id(userId)
                     .name(nickname)
                     .email(nickname + "@kakao.com")
                     .kakaoId(String.valueOf(attributes.get("id")))
@@ -93,6 +97,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .userRole(UserRole.ROLE_USER.toString())
                     .build();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new OAuth2AuthenticationException("카카오 사용자 정보 변환에 실패했습니다");
         }
     }

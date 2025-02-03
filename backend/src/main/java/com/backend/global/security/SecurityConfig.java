@@ -80,7 +80,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(HttpMethod.GET, "/h2-console/**", "/login/oauth2/code/kakao", "/oauth2/authorization/kakao").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/login/oauth2/code/kakao", "/oauth2/authorization/kakao").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/login/oauth2/code/kakao", "/oauth2/authorization/kakao").permitAll()
+//                        .requestMatchers("/").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -107,8 +110,8 @@ public class SecurityConfig {
                     )
                     .successHandler(oAuth2LoginSuccessHandler)
                     .failureHandler(oAuth2LoginFailureHandler)
-                        .defaultSuccessUrl("/")
-                        .failureUrl("/login/oauth2/code/kakao")
+//                        .defaultSuccessUrl("/")
+//                        .failureUrl("/login/oauth2/code/kakao")
                 );
 
         return http.build();
@@ -131,6 +134,7 @@ public class SecurityConfig {
         // CORS 설정을 소스에 등록
         org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
+
         return source;
     }
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ApiV1UserController {
-
+//
 //    private final UserService userService;
 //
 //    @GetMapping("/users/{user_id}")
@@ -28,10 +28,6 @@ public class ApiV1UserController {
 //            ) {
 //        SiteUser siteUser = userService.getUserById(user_id);
 //
-//        System.out.println("요청된 user_id: " + user_id);
-//        System.out.println("토큰의 user: " + customUserDetails.getSiteUser().getId());
-//
-//        // TODO (유저 인증 코드 추가 예정)
 //        if (customUserDetails == null) {
 //            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
 //        }
@@ -40,10 +36,9 @@ public class ApiV1UserController {
 //            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
 //        }
 //
-//
 //        return GenericResponse.of(
 //                true,
-//                "200",
+//                200,
 //                new UserGetProfileResponse(siteUser)
 //        );
 //    }
@@ -62,7 +57,7 @@ public class ApiV1UserController {
 //
 //        return GenericResponse.of(
 //                true,
-//                "200"
+//                200
 //        );
 //    }
 
