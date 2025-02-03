@@ -23,6 +23,8 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(
             HttpServletRequest request, HttpServletResponse response, AuthenticationException exception
     ) throws IOException {
+        exception.printStackTrace();
+        
         AuthResponseUtil.failLogin(
                 response,
                 GenericResponse.of(false, GlobalErrorCode.KAKAO_LOGIN_FAIL.getCode(), GlobalErrorCode.KAKAO_LOGIN_FAIL.getMessage()),
