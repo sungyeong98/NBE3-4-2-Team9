@@ -17,13 +17,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class JobSkill {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "job_skill_id")
 	private Long id;
 
-	@Column(length = 30, unique = true, nullable = false)
+	@Column(name = "job_skill_name", length = 30, unique = true, nullable = false)
 	private String name;
 
-	@Column(unique = true, nullable = false)
-	private Long code;
+	@Column(name = "job_skill_code", unique = true, nullable = false)
+	private Integer code;
 }
