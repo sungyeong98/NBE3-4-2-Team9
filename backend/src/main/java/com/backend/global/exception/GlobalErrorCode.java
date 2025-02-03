@@ -23,6 +23,10 @@ public enum GlobalErrorCode {
 	BAD_REQUEST(HttpStatus.BAD_REQUEST, 4004, "잘못된 접근입니다."),
 	KAKAO_LOGIN_FAIL(HttpStatus.BAD_REQUEST, 4005, "카카오 로그인에 실패하였습니다."),
 
+	// 게시글 도메인 에러 코드
+	POST_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "해당 게시글이 존재하지 않습니다."),
+	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1002, "존재하지 않는 카테고리입니다."),
+
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다.");
 
