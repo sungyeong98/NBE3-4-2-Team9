@@ -2,11 +2,11 @@ package com.backend.domain.category.converter;
 
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
-import jakarta.persistence.Converter;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
-@Converter
+@Component
 public class CategoryConverter {
 
     // 카테고리 리스트 매핑
