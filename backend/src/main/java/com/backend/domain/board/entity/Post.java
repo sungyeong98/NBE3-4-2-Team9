@@ -9,9 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,13 +19,12 @@ import lombok.NoArgsConstructor;
 // 게시판 엔티티
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true) // 기본 생성자 강제 추가
 //상속 관계로 테이블 정의시 전략 설정
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
 @Table(name="Board")
 @AllArgsConstructor
-@Builder
 public class Post extends BaseEntity {
 
     // board_id: 게시글의 고유 식별자(PK, Auto Increment)
@@ -56,7 +54,7 @@ public class Post extends BaseEntity {
 //    @JoinColumn(name = "job_id", nullable = false)
 //    private JobPosting jobId;
 
-    public void fetch(String subject, String content) {
+    public void updatePost(String subject, String content) {
         // 게시글 수정 로직
         // 기존 제목과 다를 때
         if (!this.subject.equals(subject)) {
@@ -66,5 +64,6 @@ public class Post extends BaseEntity {
         if (!this.content.equals(content)) {
             this.content = content;
         }
+
     }
 }
