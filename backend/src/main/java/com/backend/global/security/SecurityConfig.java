@@ -91,7 +91,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) ->
                                 {
                                     AuthResponseUtil.failLogin(
-                                        response, GenericResponse.of(false, 400), HttpServletResponse.SC_BAD_REQUEST, objectMapper);
+                                        response, GenericResponse.of(false, 401), HttpServletResponse.SC_UNAUTHORIZED, objectMapper);
                                 }))
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler((request, response, authException) ->
