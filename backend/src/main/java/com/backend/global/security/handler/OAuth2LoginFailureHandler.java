@@ -23,7 +23,6 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(
             HttpServletRequest request, HttpServletResponse response, AuthenticationException exception
     ) throws IOException {
-        System.out.println("OAuth2 로그인 실패 - 에러 메시지: " + exception.getMessage());
         exception.printStackTrace();
         
         AuthResponseUtil.failLogin(
