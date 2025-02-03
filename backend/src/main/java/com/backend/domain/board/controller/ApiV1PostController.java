@@ -2,9 +2,7 @@ package com.backend.domain.board.controller;
 
 import com.backend.domain.board.dto.PostCreateRequestDto;
 import com.backend.domain.board.dto.PostResponseDto;
-import com.backend.domain.board.entity.Post;
 import com.backend.domain.board.service.PostService;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
@@ -26,26 +24,26 @@ public class ApiV1PostController {
     // PostService 주입
     private final PostService postService;
 
-    // 게시글 생성 (DTO 적용)
-    // TODO: category, jobposting 미구현, 구현 이후 다시 작업
+//     게시글 생성 (DTO 적용)
+//     TODO: category, jobposting 미구현, 구현 이후 다시 작업
 //    @PostMapping("/posts")
-//    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostResponseDto responseDto){
+//    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostCreateRequestDto responseDto){
 //        PostResponseDto createdPost = postService.creatPost(responseDto);
 //        return ResponseEntity.ok(createdPost);
 //    }
 
-    // 전체 게시글 조회 (DTO 적용) + 카테고리, 정렬, 검색, 페이징 기능 추가
-//    @GetMapping("/posts")
-//    public ResponseEntity<Page<PostResponseDto>> getAllPosts(
-//            @RequestParam(required = false) Long category,
-//            @RequestParam(required = false) String keyword,
-//            @RequestParam(defaultValue = "latest") String sort,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size){
-//
-//        Page<PostResponseDto> posts = postService.getAllPosts(category, keyword, sort, page, size);
-//        return ResponseEntity.ok(posts);
-//    }
+//     전체 게시글 조회 (DTO 적용) + 조건 없이 전체 글 조회, 카테고리, 정렬, 검색, 페이징
+    @GetMapping("/posts")
+    public ResponseEntity<Page<PostResponseDto>> getAllPosts(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "latest") String sort,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+
+        Page<PostResponseDto> posts = postService.getAllPosts(categoryId, keyword, sort, page, size);
+        return ResponseEntity.ok(posts);
+    }
 
     // 특정 게시글 조회 (DTO 적용)
     @GetMapping("/posts/{id}")

@@ -1,16 +1,17 @@
 package com.backend.domain.board.entity;
 
+import com.backend.domain.category.entity.Category;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 @DiscriminatorValue(value = "Free")
 public class FreeBoard extends Post {
 
-    public FreeBoard(Long boardId, String subject, String content) {
-        super(boardId, subject, content);
+    public FreeBoard(Long boardId, String subject, String content, Category categoryId) {
+        super(boardId, subject, content, categoryId);
     }
 }

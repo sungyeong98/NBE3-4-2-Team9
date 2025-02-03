@@ -1,5 +1,6 @@
 package com.backend.domain.board.entity;
 
+import com.backend.domain.category.entity.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -33,10 +34,10 @@ public class RecruitmentBoard extends Post {
 
     // Lombok의 전체 생성자 어노테이션은 super 생성자가 포함되있지 않아서 따로 작성
     @Builder
-    private RecruitmentBoard(Long boardId, String subject, String content,
+    private RecruitmentBoard(Long boardId, String subject, String content, Category categoryId,
             ZonedDateTime recruitmentClosingDate, RecruitmentStatus recruitmentStatus,
             Long numOfApplicants) {
-        super(boardId, subject, content);
+        super(boardId, subject, content, categoryId);
         this.recruitmentClosingDate = recruitmentClosingDate;
         this.recruitmentStatus = recruitmentStatus;
         this.numOfApplicants = numOfApplicants;

@@ -5,7 +5,15 @@ import com.backend.domain.board.dto.PostResponseDto;
 import com.backend.domain.board.entity.Post;
 import com.backend.domain.board.repository.PostRepository;
 
+import com.backend.domain.category.entity.Category;
+import com.backend.domain.category.repository.CategoryRepository;
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,16 +24,16 @@ public class PostService {
     // PostRepository, CategoryRepository, JobPostingRepository 주입
     private final PostRepository postRepository;
     // TODO: category, jobposting 미구현, 구현 이후 다시 작업
-//    private final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 //    private final JobPostingRepository jobPostingRepository;
 
-    // 게시글 생성 (DTO 적용)
-    // TODO: category, jobposting 미구현, 구현 이후 다시 작업
+//     게시글 생성 (DTO 적용)
+//     TODO: category, jobposting 미구현, 구현 이후 다시 작업
 //    @Transactional
 //    public PostResponseDto creatPost(PostCreateRequestDto requestDto){
 //        // 필수값인 categoryId, jobId 기반 엔티티 조회
 //        Category category = categoryRepository.findById(requestDto.getCategoryId())
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+//                .orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
 //
 //        // DTO -> Entity 변환
 //        Post post = requestDto.toEntity(category, jobPosting);
@@ -36,36 +44,42 @@ public class PostService {
 //        return PostResponseDto.fromEntity(savedPost);
 //    }
 
-    // 게시글 전체 조회 (DTO 적용)
-//    @Transactional(readOnly = true)
-//    public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort, int page,
-//            int size) {
-//        Pageable pageable;
+//     게시글 전체 조회 (DTO 적용)
+    @Transactional(readOnly = true)
+    public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort, int page,
+            int size) {
+        Pageable pageable;
 
-        // TODO: categoryId가 Null일 때 동작하는지
-        // sort 조건이 많아질 수 있다면 enum으로 관리
-        // 정렬 방식 설정
-//        if ("popular".equals(sort)) {
-//            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "viewCount"));
-//        } else {
-//            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-//        }
+//      TODO: categoryId가 Null일 때 동작하는지
+//      sort 조건이 많아질 수 있다면 enum으로 관리
+//      정렬 방식 설정
+        if ("popular".equals(sort)) {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "viewCount"));
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        }
 
-        // Repository에서 검색
-//        Page<Post> posts;
-//        if (categoryId != null) {
-//            posts = postRepository.findByCategoryAndKeyword(categoryId, keyword, pageable);
-//        } else {
-//            posts = postRepository.findByKeyword(keyword, pageable);
-//        }
-//        // Entity -> DTO 변환 후 반환
-//        return posts.map(PostResponseDto::fromEntity);
-//    }
+//      Repository에서 검색
+        Page<Post> posts;
+        if ((keyword == null || keyword.trim().isEmpty()) && categoryId == null) {
+            // 검색어와 카테고리가 없으면 전체 조회
+            posts = postRepository.findAllPosts(pageable);
+        } else if (categoryId != null) {
+            // 특정 카테고리 내에서 조회
+            posts = postRepository.findByCategoryAndKeyword(categoryId, keyword, pageable);
+        } else {
+            // 키워드 기반 검색
+            posts = postRepository.findByKeyword(keyword, pageable);
+        }
+
+        // Entity -> DTO 변환 후 반환
+        return posts.map(PostResponseDto::fromEntity);
+    }
 
     // 게시글 상세 조회 (DTO 적용)
     public PostResponseDto getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. ID: " + id));
+                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
         return PostResponseDto.fromEntity(post);
     }
 
@@ -73,7 +87,7 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePost(Long id, PostCreateRequestDto requestDto) {
         Post post = postRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("해당 게시물이 존재하지 않습니다. ID: " + id));
+                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
         post.updatePost(requestDto.getSubject(), requestDto.getContent());
 
@@ -84,7 +98,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. ID: " + id));
+                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
         postRepository.delete(post);
     }
 }

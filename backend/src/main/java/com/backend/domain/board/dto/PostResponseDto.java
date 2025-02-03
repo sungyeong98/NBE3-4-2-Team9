@@ -25,7 +25,7 @@ public class PostResponseDto {
                 .subject(post.getSubject())
                 .content(post.getContent())
             // TODO: category, jobposting 미구현, 구현 이후 다시 작업
-//                .categoryId(post.getCategoryId().getId())
+                .categoryId(post.getCategoryId().getId())
 //                .jobId(post.getJobId().getId())
                 .createdAt(post.getCreatedAt())
                 .build();
