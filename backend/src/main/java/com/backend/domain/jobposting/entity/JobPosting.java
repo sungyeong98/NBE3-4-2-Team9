@@ -56,13 +56,14 @@ public class JobPosting {
 	@Embedded
 	private ExperienceLevel experienceLevel; //직무 경력
 
-	private String requireEducate; //학력 정보 (추후 Enum으로 수정 예정)
+	@Embedded
+	private RequireEducate requireEducate; //학력
 
 	@Enumerated(EnumType.STRING)
 	private JobPostingStatus jobPostingStatus; //공고 상태
 
 	@Embedded
-	private Salary salary; //연봉 추후 Enum으로 관리
+	private Salary salary; //연봉
 
 	@OneToMany
 	private List<JobSkill> jobSkillList;
