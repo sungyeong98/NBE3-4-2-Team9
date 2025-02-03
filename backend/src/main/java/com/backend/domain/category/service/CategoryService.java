@@ -1,5 +1,8 @@
 package com.backend.domain.category.service;
 
+import static com.backend.domain.category.converter.CategoryConverter.mappingCategory;
+import static com.backend.domain.category.converter.CategoryConverter.mappingCategoryList;
+
 import com.backend.domain.category.converter.CategoryConverter;
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
@@ -25,7 +28,7 @@ public class CategoryService {
     // 카테고리 전체 조회
     public List<CategoryResponse> categoryList() {
         List<Category> categoryList = categoryRepository.findAll();
-        return categoryConverter.mappingCategoryList(categoryList);
+        return mappingCategoryList(categoryList);
     }
 
     // 카테고리 추가 (관리자만 등록 가능)
@@ -47,7 +50,7 @@ public class CategoryService {
 
             // 관리자일 경우 카테고리 등록 로직 실행
             Category saveCategory = categoryRepository.save(category);
-            return categoryConverter.mappingCategory(saveCategory);
+            return mappingCategory(saveCategory);
 
         } catch (DataAccessException e) {
             // 데이터베이스 예외 처리

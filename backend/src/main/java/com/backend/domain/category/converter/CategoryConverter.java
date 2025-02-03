@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class CategoryConverter {
 
     // 카테고리 리스트 매핑
-    public List<CategoryResponse> mappingCategoryList(List<Category> categoryList) {
+    public static List<CategoryResponse> mappingCategoryList(List<Category> categoryList) {
         return categoryList.stream()
                 .map(category -> CategoryResponse.builder()
                         .id(category.getId())
@@ -22,7 +22,7 @@ public class CategoryConverter {
     }
 
     // 카테고리 매핑 (단일 객체)
-    public CategoryResponse mappingCategory(Category category) {
+    public static CategoryResponse mappingCategory(Category category) {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())

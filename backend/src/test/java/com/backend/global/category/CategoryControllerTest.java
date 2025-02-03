@@ -32,11 +32,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CategoryController.class)
+@ActiveProfiles("test")
 @Import({CategoryControllerTest.TestSecurityConfig.class, CategoryControllerTest.PropertyConfig.class})
 class CategoryControllerTest {
 
