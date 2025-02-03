@@ -64,8 +64,8 @@ public class CategoryService {
                 .map(category -> CategoryResponse.builder()
                         .id(category.getId())
                         .name(category.getName())
-                        .createdAt(category.getCreatedAt().toLocalDateTime())
-                        .modifiedAt(category.getModifiedAt().toLocalDateTime())
+                        .createdAt(category.getCreatedAt())
+                        .modifiedAt(category.getModifiedAt())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -75,8 +75,8 @@ public class CategoryService {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
-                .createdAt(category.getCreatedAt().toLocalDateTime())
-                .modifiedAt(category.getModifiedAt().toLocalDateTime())
+                .createdAt(category.getCreatedAt())
+                .modifiedAt(category.getModifiedAt())
                 .build();
     }
 }
