@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JobPostingService
@@ -27,6 +28,7 @@ public class JobPostingService {
 	 * @param jobPostingSearchCondition 조회 조건 객체 {@link JobPostingSearchCondition}
 	 * @return {@link Page<JobPostingPageResponse>}
 	 */
+	@Transactional(readOnly = true)
 	public Page<JobPostingPageResponse> findAll(JobPostingSearchCondition jobPostingSearchCondition) {
 		int pageNum = jobPostingSearchCondition.pageNum() == null ?
 			0 : jobPostingSearchCondition.pageNum();
