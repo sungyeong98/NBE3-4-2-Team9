@@ -59,6 +59,9 @@ public class CategoryService {
         // 유효성 검사 및 중복 검사
         categoryNameCheck(category, categoryRepository);
 
+        // 카테고리 더티 체킹
+        findCategory.updateName(category.getName());
+
         // 응답 객체로 변환 후 반환
         return mappingCategory(findCategory);
     }
