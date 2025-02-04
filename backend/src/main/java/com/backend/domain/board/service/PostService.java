@@ -3,6 +3,7 @@ package com.backend.domain.board.service;
 import com.backend.domain.board.dto.PostCreateRequestDto;
 import com.backend.domain.board.dto.PostResponseDto;
 import com.backend.domain.board.entity.Post;
+import com.backend.domain.board.entity.PostType;
 import com.backend.domain.board.repository.PostRepository;
 
 import com.backend.domain.category.entity.Category;
@@ -30,13 +31,18 @@ public class PostService {
 //     게시글 생성 (DTO 적용)
 //     TODO: category, jobposting 미구현, 구현 이후 다시 작업
 //    @Transactional
-//    public PostResponseDto creatPost(PostCreateRequestDto requestDto){
+//    public PostResponseDto createPost(PostCreateRequestDto requestDto){
 //        // 필수값인 categoryId, jobId 기반 엔티티 조회
-//        Category category = categoryRepository.findById(requestDto.getCategoryId())
+//        Category category = categoryRepository.findById(requestDto .getCategoryId())
 //                .orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
 //
 //        // DTO -> Entity 변환
-//        Post post = requestDto.toEntity(category, jobPosting);
+//        Post post = Post.builder()
+//                .subject(requestDto.getSubject())
+//                .content(requestDto.getContent())
+//                .postType(requestDto.getPostType())
+//                .categoryId(category)
+//                .build();
 //
 //        // DB 저장
 //        Post savedPost = postRepository.save(post);
@@ -46,7 +52,7 @@ public class PostService {
 
 //     게시글 전체 조회 (DTO 적용)
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort, int page,
+    public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, PostType postType, String sort, int page,
             int size) {
         Pageable pageable;
 
@@ -62,14 +68,14 @@ public class PostService {
 //      Repository에서 검색
         Page<Post> posts;
         if ((keyword == null || keyword.trim().isEmpty()) && categoryId == null) {
-            // 검색어와 카테고리가 없으면 전체 조회
-            posts = postRepository.findAllPosts(pageable);
+            // postType만 필터링
+            posts = postRepository.findAllByPostType(postType, pageable);
         } else if (categoryId != null) {
-            // 특정 카테고리 내에서 조회
-            posts = postRepository.findByCategoryAndKeyword(categoryId, keyword, pageable);
+            // 카테고리 & postType & 검색어 필터링
+            posts = postRepository.findByCategoryAndKeywordAndPostType(categoryId, keyword, postType, pageable);
         } else {
-            // 키워드 기반 검색
-            posts = postRepository.findByKeyword(keyword, pageable);
+            // 키워드 & postType 필터링
+            posts = postRepository.findByKeywordAndPostType(keyword, postType, pageable);
         }
 
         // Entity -> DTO 변환 후 반환
@@ -84,21 +90,21 @@ public class PostService {
     }
 
     // 게시글 수정 (DTO 적용)
-    @Transactional
-    public PostResponseDto updatePost(Long id, PostCreateRequestDto requestDto) {
-        Post post = postRepository.findById(id).orElseThrow(() ->
-                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-
-        post.updatePost(requestDto.getSubject(), requestDto.getContent());
-
-        return PostResponseDto.fromEntity(post); // 게시글 저장
-    }
+//    @Transactional
+//    public PostResponseDto updatePost(Long id, PostCreateRequestDto requestDto) {
+//        Post post = postRepository.findById(id).orElseThrow(() ->
+//                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+//
+//        post.updatePost(requestDto.getSubject(), requestDto.getContent());
+//
+//        return PostResponseDto.fromEntity(post); // 게시글 저장
+//    }
 
     // 게시글 삭제
-    @Transactional
-    public void deletePost(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() ->
-                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-        postRepository.delete(post);
-    }
+//    @Transactional
+//    public void deletePost(Long id) {
+//        Post post = postRepository.findById(id).orElseThrow(() ->
+//                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+//        postRepository.delete(post);
+//    }
 }

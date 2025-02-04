@@ -2,6 +2,7 @@ package com.backend.domain.board.controller;
 
 import com.backend.domain.board.dto.PostCreateRequestDto;
 import com.backend.domain.board.dto.PostResponseDto;
+import com.backend.domain.board.entity.PostType;
 import com.backend.domain.board.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class ApiV1PostController {
 //     TODO: category, jobposting 미구현, 구현 이후 다시 작업
 //    @PostMapping("/posts")
 //    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostCreateRequestDto responseDto){
-//        PostResponseDto createdPost = postService.creatPost(responseDto);
+//        PostResponseDto createdPost = postService.createPost(responseDto);
 //        return ResponseEntity.ok(createdPost);
 //    }
 
@@ -37,11 +38,12 @@ public class ApiV1PostController {
     public ResponseEntity<Page<PostResponseDto>> getAllPosts(
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) PostType postType,
             @RequestParam(defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
 
-        Page<PostResponseDto> posts = postService.getAllPosts(categoryId, keyword, sort, page, size);
+        Page<PostResponseDto> posts = postService.getAllPosts(categoryId, keyword, postType, sort, page, size);
         return ResponseEntity.ok(posts);
     }
 
@@ -53,16 +55,16 @@ public class ApiV1PostController {
     }
 
     // 게사글 수정 (DTO 적용)
-    @PutMapping("/posts/{id}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestBody PostCreateRequestDto requestDto){
-        PostResponseDto updatedPost = postService.updatePost(id, requestDto);
-        return ResponseEntity.ok(updatedPost);
-    }
+//    @PutMapping("/posts/{id}")
+//    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestBody PostCreateRequestDto requestDto){
+//        PostResponseDto updatedPost = postService.updatePost(id, requestDto);
+//        return ResponseEntity.ok(updatedPost);
+//    }
 
     // 게시글 삭제
-    @DeleteMapping("/posts/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id){
-        postService.deletePost(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/posts/{id}")
+//    public ResponseEntity<Void> deletePost(@PathVariable Long id){
+//        postService.deletePost(id);
+//        return ResponseEntity.noContent().build();
+//    }
 }
