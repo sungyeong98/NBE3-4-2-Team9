@@ -1,6 +1,7 @@
 package com.backend.domain.jobposting;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -153,7 +154,25 @@ public class ApiV1JobPostingControllerTest {
 			.andExpect(jsonPath("$.success").value(true))
 			.andExpect(jsonPath("$.code").value(200))
 			.andExpect(jsonPath("$.data.content.length()").value(10))
-			.andExpect(jsonPath("$.data.content").exists());
+			.andExpect(jsonPath("$.data.content").exists())
+			.andExpect(jsonPath("$.data.totalPages").value(3));
+	}
 
+	@DisplayName("페이징 경력 조건 조회 성공 테스트")
+	@Test
+	void findAll_experience_level_success() throws Exception {
+		//when
+		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
+				.queryParam("experienceLevel", "1")
+			.contentType(MediaType.APPLICATION_JSON));
+
+		//then
+		resultActions.andExpect(status().isOk())
+			.andExpect(jsonPath("$.success").value(true))
+			.andExpect(jsonPath("$.code").value(200))
+			.andExpect(jsonPath("$.data.content.length()").value(10))
+			.andExpect(jsonPath("$.data.content").exists())
+			.andExpect(jsonPath("$.data.content[2].experienceLevel.code").value(1))
+			.andExpect(jsonPath("$.data.totalPages").value(2))
 	}
 }
