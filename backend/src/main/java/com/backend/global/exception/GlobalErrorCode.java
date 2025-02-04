@@ -27,7 +27,7 @@ public enum GlobalErrorCode {
 	DATABASE_ACCESS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 3001, "데이터베이스 접근 중 오류가 발생했습니다."),
 	DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3003, "카테고리 이름이 이미 존재합니다."),
 	INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3004, "카테고리 이름이 유효하지 않습니다."),
-	CATEGORY_NOT_EMPTY(HttpStatus.BAD_REQUEST, 3005, "카테고리에 게시글이 존재합니다. 삭제 후 시도해주세요."),
+	INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, 3005, "카테고리 ID가 유효하지 않습니다."),
 
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다."),
