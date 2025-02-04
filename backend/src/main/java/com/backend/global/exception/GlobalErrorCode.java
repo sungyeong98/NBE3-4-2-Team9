@@ -31,6 +31,7 @@ public enum GlobalErrorCode {
 	DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3001, "카테고리 이름이 이미 존재합니다."),
 	INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3002, "카테고리 이름이 유효하지 않습니다."),
 	INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, 3003, "카테고리 ID가 유효하지 않습니다."),
+	ID_MISMATCH(HttpStatus.BAD_REQUEST, 3004, "카테고리 ID가 일치하지 않습니다."),
 
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다."),
