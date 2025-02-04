@@ -1,5 +1,8 @@
 package com.backend.domain.user.entity;
 
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
+
 public enum UserRole {
 
     ROLE_USER("일반 사용자"),
@@ -19,4 +22,13 @@ public enum UserRole {
         return ROLE_USER;
     }
 
+    // String을 Enum으로 변환
+    public static UserRole fromString(String role) {
+        for (UserRole userRole : UserRole.values()) {
+            if (userRole.name().equalsIgnoreCase(role)) {
+                return userRole;
+            }
+        }
+        throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
+    }
 }
