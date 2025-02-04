@@ -29,11 +29,14 @@ public enum GlobalErrorCode {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "카테고리가 존재하지 않습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, 1002, "게시글이 존재하지 않습니다."),
 
+    // 게시글 도메인 에러 코드
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "카테고리가 존재하지 않습니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, 1002, "게시글이 존재하지 않습니다."),
+
 	// 카테고리 도메인 에러 코드
-	DATABASE_ACCESS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 3001, "데이터베이스 접근 중 오류가 발생했습니다."),
-	DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3003, "카테고리 이름이 이미 존재합니다."),
-	INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3004, "카테고리 이름이 유효하지 않습니다."),
-	INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, 3005, "카테고리 ID가 유효하지 않습니다."),
+	DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3001, "카테고리 이름이 이미 존재합니다."),
+	INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3002, "카테고리 이름이 유효하지 않습니다."),
+	INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, 3003, "카테고리 ID가 유효하지 않습니다."),
 
     // 채용 공고 도메인 에러 코드
     JOB_POSTING_NOT_FOUND(HttpStatus.NOT_FOUND, 2001, "채용 정보가 존재하지 않습니다."),

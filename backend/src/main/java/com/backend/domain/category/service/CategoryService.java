@@ -53,8 +53,7 @@ public class CategoryService {
 
         // 관리자일 경우 기존 카테고리 조회
         Category findCategory = categoryRepository.findById(category.getId())
-                // TODO : 카테고리 NOT_FOUND 예외 설정
-                .orElseThrow(() -> new GlobalException(GlobalErrorCode.INTERNAL_SERVER_ERROR));
+                .orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
 
         // 유효성 검사 및 중복 검사
         categoryNameCheck(category, categoryRepository);
