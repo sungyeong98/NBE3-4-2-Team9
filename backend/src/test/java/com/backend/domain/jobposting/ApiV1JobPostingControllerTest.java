@@ -1,6 +1,7 @@
 package com.backend.domain.jobposting;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -11,6 +12,7 @@ import com.backend.domain.jobposting.entity.JobPostingStatus;
 import com.backend.domain.jobposting.entity.RequireEducate;
 import com.backend.domain.jobposting.entity.Salary;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
+import com.backend.global.exception.GlobalErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.ZonedDateTime;
 import java.util.stream.IntStream;
@@ -210,4 +212,22 @@ public class ApiV1JobPostingControllerTest {
 			.andExpect(jsonPath("$.data.content[2].salary.code").value(99))
 			.andExpect(jsonPath("$.data.totalPages").value(2));
 	}
+
+	@DisplayName("페이징 조회 페이지 사이즈 음수 실패 테스트")
+	@Test
+	void findAll_page_size_negative_fail() throws Exception {
+		//when
+		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
+				.queryParam("pageSize", "-1")
+			.contentType(MediaType.APPLICATION_JSON));
+
+		//then
+		resultActions.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.success").value(false))
+			.andExpect(jsonPath("$.code").value(GlobalErrorCode.NOT_VALID.getCode()))
+			.andExpect(jsonPath("$.data[0].field").value("pageSize"))
+			.andExpect(jsonPath("$.message").value(GlobalErrorCode.NOT_VALID.getMessage()))
+			.andDo(print());
+	}
+
 }
