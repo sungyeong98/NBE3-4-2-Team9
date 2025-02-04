@@ -159,7 +159,7 @@ public class ApiV1JobPostingControllerTest {
 
 	@DisplayName("페이징 경력 조건 신입 조회 성공 테스트")
 	@Test
-	void findAll_experience_level_success() throws Exception {
+	void findAll_experience_level_1_success() throws Exception {
 		//when
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
 				.queryParam("experienceLevel", "1")
@@ -177,7 +177,7 @@ public class ApiV1JobPostingControllerTest {
 
 	@DisplayName("페이징 경력 조건 조회 성공 테스트")
 	@Test
-	void findAll_experience_level2_success() throws Exception {
+	void findAll_experience_level_2_success() throws Exception {
 		//when
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
 				.queryParam("experienceLevel", "2")
@@ -190,6 +190,24 @@ public class ApiV1JobPostingControllerTest {
 			.andExpect(jsonPath("$.data.content.length()").value(10))
 			.andExpect(jsonPath("$.data.content").exists())
 			.andExpect(jsonPath("$.data.content[2].experienceLevel.code").value(2))
+			.andExpect(jsonPath("$.data.totalPages").value(2));
+	}
+
+	@DisplayName("페이징 연봉 조건 조회 성공 테스트")
+	@Test
+	void findAll_salary_code_99_success() throws Exception {
+		//when
+		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
+				.queryParam("salaryCode", "99")
+			.contentType(MediaType.APPLICATION_JSON));
+
+		//then
+		resultActions.andExpect(status().isOk())
+			.andExpect(jsonPath("$.success").value(true))
+			.andExpect(jsonPath("$.code").value(200))
+			.andExpect(jsonPath("$.data.content.length()").value(10))
+			.andExpect(jsonPath("$.data.content").exists())
+			.andExpect(jsonPath("$.data.content[2].salary.code").value(99))
 			.andExpect(jsonPath("$.data.totalPages").value(2));
 	}
 }
