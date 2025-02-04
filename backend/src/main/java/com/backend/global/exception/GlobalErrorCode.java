@@ -23,8 +23,13 @@ public enum GlobalErrorCode {
 	BAD_REQUEST(HttpStatus.BAD_REQUEST, 4004, "잘못된 접근입니다."),
 	KAKAO_LOGIN_FAIL(HttpStatus.BAD_REQUEST, 4005, "카카오 로그인에 실패하였습니다."),
 
+	// open api 조회 저장 에러코드
+//	OPEN_API_DATA_NOT_FOUND(HttpStatus.NOT_FOUND, 4041, "조회한 공공데이터가 없습니다."),
+
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다.");
+
+
 
 	private final HttpStatus httpStatus;
 	private final int code;

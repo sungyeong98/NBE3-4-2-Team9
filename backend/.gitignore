@@ -43,4 +43,3 @@ out/
 application.yml
 application-build.yml
 application-oauth.yml
-.env

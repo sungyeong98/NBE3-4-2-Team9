@@ -31,4 +31,6 @@ public interface JobPostingRepository {
 	 * @implSpec JobPosting 전체 조회 메서드 입니다.
 	 */
 	List<JobPosting> findAll();
+
+	void saveAll(List<JobPosting> publicDataList);
 }

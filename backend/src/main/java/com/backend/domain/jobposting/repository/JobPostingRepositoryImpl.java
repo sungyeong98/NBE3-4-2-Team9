@@ -26,4 +26,7 @@ public class JobPostingRepositoryImpl implements JobPostingRepository {
 	public List<JobPosting> findAll() {
 		return jobPostingJpaRepository.findAll();
 	}
+
+	@Override
+	public void saveAll(List<JobPosting> publicDataList) {}
 }
