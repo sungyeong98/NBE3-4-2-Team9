@@ -230,4 +230,21 @@ public class ApiV1JobPostingControllerTest {
 			.andDo(print());
 	}
 
+	@DisplayName("페이징 조회 페이지 번호 음수 실패 테스트")
+	@Test
+	void findAll_page_num_negative_fail() throws Exception {
+		//when
+		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
+				.queryParam("pageNum", "-1")
+			.contentType(MediaType.APPLICATION_JSON));
+
+		//then
+		resultActions.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.success").value(false))
+			.andExpect(jsonPath("$.code").value(GlobalErrorCode.NOT_VALID.getCode()))
+			.andExpect(jsonPath("$.data[0].field").value("pageNum"))
+			.andExpect(jsonPath("$.message").value(GlobalErrorCode.NOT_VALID.getMessage()))
+			.andDo(print());
+	}
+
 }
