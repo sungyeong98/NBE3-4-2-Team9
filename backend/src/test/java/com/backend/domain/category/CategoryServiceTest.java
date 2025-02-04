@@ -204,7 +204,6 @@ class CategoryServiceTest {
 
         GlobalException exception = assertThrows(GlobalException.class,
                 () -> categoryService.updateCategory(invalidCategory));
-        // TODO : NOT_FOUND 예외 설정
         assertThat(exception.getMessage()).contains("카테고리가 존재하지 않습니다.");
     }
 
