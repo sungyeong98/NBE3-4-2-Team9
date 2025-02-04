@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 /**
  * GlobalErrorCode
  * <p>예외 발생시 사용할 ErrorCode 입니다. <br>
- * 응답시 상태 코드, 커스텀 코드, 메세지를 정의합니다. <br> 커스텀 코드는 각 도메인 별로 100 단위로 코드를 정의해주시면 됩니다. <br> ex) Board - 100
- * -> 커스텀 코드 1001, 1002 순으로 정의하시면 됩니다.</p>
- *
+ * 응답시 상태 코드, 커스텀 코드, 메세지를 정의합니다. <br>
+ * 커스텀 코드는 각 도메인 별로 100 단위로 코드를 정의해주시면 됩니다. <br>
+ * ex) Board - 100 -> 커스텀 코드 1001, 1002 순으로 정의하시면 됩니다.</p>
  * @author Kim Dong O
  */
 @Getter
@@ -29,10 +29,6 @@ public enum GlobalErrorCode {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "카테고리가 존재하지 않습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, 1002, "게시글이 존재하지 않습니다."),
 
-    // 게시글 도메인 에러 코드
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "카테고리가 존재하지 않습니다."),
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, 1002, "게시글이 존재하지 않습니다."),
-
 	// 카테고리 도메인 에러 코드
 	DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3001, "카테고리 이름이 이미 존재합니다."),
 	INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3002, "카테고리 이름이 유효하지 않습니다."),
@@ -47,7 +43,7 @@ public enum GlobalErrorCode {
     NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "서버 내부 오류가 발생하였습니다.");
 
-    private final HttpStatus httpStatus;
-    private final int code;
-    private final String message;
+	private final HttpStatus httpStatus;
+	private final int code;
+	private final String message;
 }

@@ -1,4 +1,4 @@
-package com.backend.global.category;
+package com.backend.domain.category;
 
 import com.backend.standard.util.JwtUtil;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.web.SecurityFilterChain;
 
 @TestConfiguration
-public  class TestSecurityConfig {
+public class TestSecurityConfig {
     @Bean
     public JwtUtil jwtUtil() {
         return new JwtUtil("testsecretkeytestsecretkeytestsecretkeytestsecretkey");
