@@ -1,7 +1,7 @@
-package com.backend.domain.board.controller;
+package com.backend.domain.post.controller;
 
-import com.backend.domain.board.dto.PostResponseDto;
-import com.backend.domain.board.service.PostService;
+import com.backend.domain.post.dto.PostResponseDto;
+import com.backend.domain.post.service.PostService;
 import com.backend.global.response.GenericResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

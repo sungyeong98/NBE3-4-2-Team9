@@ -1,6 +1,6 @@
-package com.backend.domain.board.repository;
+package com.backend.domain.post.repository;
 
-import com.backend.domain.board.entity.Post;
+import com.backend.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

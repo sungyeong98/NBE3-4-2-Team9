@@ -1,7 +1,7 @@
 package com.backend;
 
-import com.backend.domain.board.entity.Post;
-import com.backend.domain.board.repository.PostRepository;
+import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.repository.PostRepository;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;

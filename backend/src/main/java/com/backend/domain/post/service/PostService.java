@@ -1,8 +1,8 @@
-package com.backend.domain.board.service;
+package com.backend.domain.post.service;
 
-import com.backend.domain.board.dto.PostResponseDto;
-import com.backend.domain.board.entity.Post;
-import com.backend.domain.board.repository.PostRepository;
+import com.backend.domain.post.dto.PostResponseDto;
+import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.repository.PostRepository;
 
 import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.global.exception.GlobalErrorCode;

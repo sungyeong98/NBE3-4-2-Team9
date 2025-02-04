@@ -1,4 +1,4 @@
-package com.backend.domain.board.dto;
+package com.backend.domain.post.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

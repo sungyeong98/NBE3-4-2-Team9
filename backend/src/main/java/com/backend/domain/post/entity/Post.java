@@ -1,4 +1,4 @@
-package com.backend.domain.board.entity;
+package com.backend.domain.post.entity;
 
 import com.backend.domain.category.entity.Category;
 import com.backend.global.baseentity.BaseEntity;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "Post")
+@Table(name = "post")
 @AllArgsConstructor
 @Builder
 public class Post extends BaseEntity {

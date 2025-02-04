@@ -1,6 +1,6 @@
-package com.backend.domain.board.dto;
+package com.backend.domain.post.dto;
 
-import com.backend.domain.board.entity.Post;
+import com.backend.domain.post.entity.Post;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
