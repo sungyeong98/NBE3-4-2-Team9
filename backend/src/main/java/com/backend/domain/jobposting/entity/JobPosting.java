@@ -67,4 +67,7 @@ public class JobPosting {
 
 	@OneToMany
 	private List<JobSkill> jobSkillList;
+
+	@Column(name = "apply_cnt")
+	private Long applyCnt; //지원자 수
 }
