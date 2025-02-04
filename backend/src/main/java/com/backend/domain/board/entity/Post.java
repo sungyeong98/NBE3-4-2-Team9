@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="Post")
+@Table(name = "Post")
 @AllArgsConstructor
 @Builder
 public class Post extends BaseEntity {
@@ -54,10 +54,6 @@ public class Post extends BaseEntity {
     @Column(nullable = true) // 모집 게시판 아니면 Null 가능
     private RecruitmentStatus recruitmentStatus; // 모집 상태
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PostType postType; // 게시글 종류
-
     // 채용 ID -> JopPosting table에 채용ID랑 이어짐
     // TODO: jobposting 미구현, 구현 이후 다시 작업
 //    @ManyToOne
@@ -77,18 +73,21 @@ public class Post extends BaseEntity {
     }
 
     // 테스트용 생성자 추가
-    public Post(String subject, String content, PostType postType, Category category) {
+    public Post(String subject, String content, Category categoryId) {
         this.subject = subject;
         this.content = content;
-        this.postType = postType;
-        this.categoryId = category;
+        this.categoryId = categoryId;
 
-        // 모집 게시판이 아닐 경우 기본값 설정
-        if (postType == PostType.RECRUITMENT) {
-            this.recruitmentStatus = RecruitmentStatus.OPEN; // 기본값 OPEN 설정
+        // 모집 게시판일 경우 recruitmentStatus 설정
+        if (isRecruitmentCategory()) {
+            this.recruitmentStatus = RecruitmentStatus.OPEN;
         } else {
-            this.recruitmentStatus = null; // 자유 게시판이면 NULL 가능
+            this.recruitmentStatus = null;
         }
     }
 
+    // 모집 게시판인지 확인하는 메서드 추가
+    private boolean isRecruitmentCategory() {
+        return "모집 게시판".equals(categoryId.getName());
+    }
 }

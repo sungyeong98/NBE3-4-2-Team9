@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponseDto {
+
     private Long id;
     private String subject;
     private String content;
@@ -19,12 +20,12 @@ public class PostResponseDto {
     private ZonedDateTime createdAt;
 
     // Entity -> DTO 변환(Builder 활용)
-    public static PostResponseDto fromEntity(Post post){
+    public static PostResponseDto fromEntity(Post post) {
         return PostResponseDto.builder()
                 .id(post.getBoardId())
                 .subject(post.getSubject())
                 .content(post.getContent())
-            // TODO: category, jobposting 미구현, 구현 이후 다시 작업
+                // TODO: category, jobposting 미구현, 구현 이후 다시 작업
                 .categoryId(post.getCategoryId().getId())
 //                .jobId(post.getJobId().getId())
                 .createdAt(post.getCreatedAt())

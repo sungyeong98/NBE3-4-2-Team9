@@ -1,12 +1,9 @@
 package com.backend.domain.board.service;
 
-import com.backend.domain.board.dto.PostCreateRequestDto;
 import com.backend.domain.board.dto.PostResponseDto;
 import com.backend.domain.board.entity.Post;
-import com.backend.domain.board.entity.PostType;
 import com.backend.domain.board.repository.PostRepository;
 
-import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
@@ -50,46 +47,45 @@ public class PostService {
 //        return PostResponseDto.fromEntity(savedPost);
 //    }
 
-//     게시글 전체 조회 (DTO 적용)
+    //         게시글 전체 조회 (postType → categoryId 변경)
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, PostType postType, String sort, int page,
-            int size) {
+    public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort,
+            int page, int size) {
         Pageable pageable;
 
-//      TODO: categoryId가 Null일 때 동작하는지
-//      sort 조건이 많아질 수 있다면 enum으로 관리
-//      정렬 방식 설정
+        // 정렬 방식 설정 (viewCount 또는 createdAt)
         if ("popular".equals(sort)) {
             pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "viewCount"));
         } else {
             pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         }
 
-//      Repository에서 검색
+        // Repository에서 검색
         Page<Post> posts;
         if ((keyword == null || keyword.trim().isEmpty()) && categoryId == null) {
-            // postType만 필터링
-            posts = postRepository.findAllByPostType(postType, pageable);
+            // 전체 게시글 조회
+            posts = postRepository.findAll(pageable);
         } else if (categoryId != null) {
-            // 카테고리 & postType & 검색어 필터링
-            posts = postRepository.findByCategoryAndKeywordAndPostType(categoryId, keyword, postType, pageable);
+            // 카테고리 & 검색어 필터링
+            posts = postRepository.findByCategoryAndKeyword(categoryId, keyword, pageable);
         } else {
-            // 키워드 & postType 필터링
-            posts = postRepository.findByKeywordAndPostType(keyword, postType, pageable);
+            // 키워드 필터링
+            posts = postRepository.findByKeyword(keyword, pageable);
         }
 
         // Entity -> DTO 변환 후 반환
         return posts.map(PostResponseDto::fromEntity);
     }
 
-    // 게시글 상세 조회 (DTO 적용)
+    //  게시글 상세 조회 (유지)
     public PostResponseDto getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
         return PostResponseDto.fromEntity(post);
     }
+}
 
-    // 게시글 수정 (DTO 적용)
+// 게시글 수정 (DTO 적용)
 //    @Transactional
 //    public PostResponseDto updatePost(Long id, PostCreateRequestDto requestDto) {
 //        Post post = postRepository.findById(id).orElseThrow(() ->
@@ -100,11 +96,10 @@ public class PostService {
 //        return PostResponseDto.fromEntity(post); // 게시글 저장
 //    }
 
-    // 게시글 삭제
+// 게시글 삭제
 //    @Transactional
 //    public void deletePost(Long id) {
 //        Post post = postRepository.findById(id).orElseThrow(() ->
 //                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 //        postRepository.delete(post);
 //    }
-}
