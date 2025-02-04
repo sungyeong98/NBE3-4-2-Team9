@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.backend.domain.jobposting.controller.ApiV1JobPostingController;
 import com.backend.domain.jobposting.entity.ExperienceLevel;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.entity.JobPostingStatus;
@@ -38,9 +37,6 @@ public class ApiV1JobPostingControllerTest {
 
 	@Autowired
 	ObjectMapper objectMapper;
-
-	@Autowired
-	ApiV1JobPostingController apiV1JobPostingController;
 
 	@Autowired
 	JobPostingRepository jobPostingRepository;
