@@ -9,6 +9,7 @@ import com.backend.global.response.GenericResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,7 @@ public class CategoryController {
 
     // 카테고리 추가 (관리자만 가능)
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public GenericResponse<CategoryResponse> createCategory(@RequestBody Category category) {
         CategoryResponse categoryResponse = categoryService.createCategory(category);
@@ -42,12 +44,13 @@ public class CategoryController {
 
     // 카테고리 수정 (관리자만 가능)
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public GenericResponse<CategoryResponse> updateCategory(
             @RequestBody Category category, @PathVariable Long id) {
 
         // 요청된 아이디가 일치하지 않으면 예외 발생
         if (!category.getId().equals(id)) {
-            throw new GlobalException(GlobalErrorCode.INVALID_CATEGORY_ID);
+            throw new GlobalException(GlobalErrorCode.ID_MISMATCH);
         }
 
         // 카테고리 수정 로직 실행
