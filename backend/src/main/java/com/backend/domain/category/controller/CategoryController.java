@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -36,5 +37,10 @@ public class CategoryController {
         return GenericResponse.of(true, HttpStatus.CREATED.value(), categoryResponse);
     }
 
-    // TODO : 카테고리 수정 추가
+    // 카테고리 수정 (관리자만 가능)
+    @PutMapping("/{id}")
+    public GenericResponse<CategoryResponse> updateCategory(@RequestBody Category category) {
+        CategoryResponse categoryResponse = categoryService.updateCategory(category);
+        return GenericResponse.of(true, HttpStatus.OK.value(), categoryResponse);
+    }
 }
