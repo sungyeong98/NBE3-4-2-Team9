@@ -1,6 +1,7 @@
 package com.backend.global.security.custom;
 
 import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,10 @@ public class CustomUserDetails implements UserDetails {
 
     public SiteUser getSiteUser() {
         return siteUser;
+    }
+
+    public String getRole() {
+        return siteUser.getUserRole();
     }
 
     @Override

@@ -41,5 +41,5 @@ out/
 
 ### CUSTOM ###
 application.yml
-application-build.yml
+application-dev.yml
 application-oauth.yml

@@ -14,6 +14,7 @@ import com.backend.standard.util.AuthResponseUtil;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +32,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -82,6 +81,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/login/oauth2/code/kakao", "/oauth2/authorization/kakao").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
 //                        .requestMatchers(HttpMethod.GET, "/login/oauth2/code/kakao", "/oauth2/authorization/kakao").permitAll()
 //                        .requestMatchers("/").permitAll()
                         .anyRequest().authenticated())
@@ -91,7 +91,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) ->
                                 {
                                     AuthResponseUtil.failLogin(
-                                        response, GenericResponse.of(false, 400), HttpServletResponse.SC_BAD_REQUEST, objectMapper);
+                                        response, GenericResponse.of(false, 401), HttpServletResponse.SC_UNAUTHORIZED, objectMapper);
                                 }))
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler((request, response, authException) ->
@@ -122,7 +122,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 허용할 HTTP 메서드 설정
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         // CORS 설정
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         // 자격 증명 허용 설정

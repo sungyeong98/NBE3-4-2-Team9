@@ -9,56 +9,66 @@ import com.backend.global.exception.GlobalException;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ApiV1UserController {
-//
-//    private final UserService userService;
-//
-//    @GetMapping("/users/{user_id}")
-//    @Transactional(readOnly = true)
-//    public GenericResponse<UserGetProfileResponse> getProfile(
-//            @PathVariable Long user_id,
-//            @AuthenticationPrincipal CustomUserDetails customUserDetails
-//            ) {
-//        SiteUser siteUser = userService.getUserById(user_id);
-//
-//        if (customUserDetails == null) {
-//            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-//        }
-//
-//        if (!user_id.equals(customUserDetails.getSiteUser().getId())) {
-//            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
-//        }
-//
-//        return GenericResponse.of(
-//                true,
-//                200,
-//                new UserGetProfileResponse(siteUser)
-//        );
-//    }
-//
-//    @PatchMapping("/users/{user_id}")
-//    @Transactional
-//    public GenericResponse<Void> modifyProfile(
-//            @PathVariable Long user_id,
-//            @RequestBody UserModifyProfileRequest req
-//    ) {
-//        SiteUser siteUser = userService.getUserById(user_id);
-//
-//        // TODO (유저 인증 코드 추가 예정)
-//
-//        userService.modifyUser(siteUser, req);
-//
-//        return GenericResponse.of(
-//                true,
-//                200
-//        );
-//    }
+
+    private final UserService userService;
+
+    @GetMapping("/users/{user_id}")
+    public GenericResponse<UserGetProfileResponse> getProfile(
+            @PathVariable(name = "user_id") Long user_id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            ) {
+        SiteUser siteUser = userService.getUserById(user_id);
+
+        if (customUserDetails == null) {
+            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
+        }
+
+        if (!user_id.equals(customUserDetails.getSiteUser().getId())) {
+            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
+        }
+
+        return GenericResponse.of(
+                true,
+                HttpStatus.OK.value(),
+                new UserGetProfileResponse(siteUser)
+        );
+    }
+
+    @PatchMapping("/users/{user_id}")
+    public GenericResponse<Void> modifyProfile(
+            @PathVariable(name = "user_id") Long user_id,
+            @RequestBody UserModifyProfileRequest req,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        SiteUser siteUser = userService.getUserById(user_id);
+
+        if (customUserDetails == null) {
+            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
+        }
+
+        if (!user_id.equals(customUserDetails.getSiteUser().getId())) {
+            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
+        }
+
+        userService.modifyUser(siteUser, req);
+
+        return GenericResponse.of(
+                true,
+                HttpStatus.OK.value()
+        );
+    }
 
 }
