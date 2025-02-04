@@ -22,8 +22,13 @@ public enum UserRole {
         return ROLE_USER;
     }
 
-    // String을 Enum으로 변환
     public static UserRole fromString(String role) {
+        // "ROLE_" 접두어가 없는 경우 추가
+        if (!role.startsWith("ROLE_")) {
+            role = "ROLE_" + role;
+        }
+
+        // Enum 값과 비교
         for (UserRole userRole : UserRole.values()) {
             if (userRole.name().equalsIgnoreCase(role)) {
                 return userRole;
