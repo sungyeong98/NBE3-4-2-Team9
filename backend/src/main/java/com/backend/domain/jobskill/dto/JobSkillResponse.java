@@ -11,6 +11,6 @@ import lombok.Builder;
  * @author Kim Dong O
  */
 @Builder
-public record JobSkillResponse(String name, String code) {
+public record JobSkillResponse(String name, Integer code) {
 
 }
