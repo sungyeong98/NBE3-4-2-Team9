@@ -16,10 +16,10 @@ import com.backend.global.exception.GlobalErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.ZonedDateTime;
 import java.util.stream.IntStream;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@Slf4j
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ApiV1JobPostingControllerTest {
 
 	@Autowired
@@ -48,7 +48,7 @@ public class ApiV1JobPostingControllerTest {
 	@Autowired
 	MockMvc mockMvc;
 
-	@BeforeEach
+	@BeforeAll
 	@Transactional
 	void setUp() {
 		ExperienceLevel experienceLevel1 = ExperienceLevel.builder()
