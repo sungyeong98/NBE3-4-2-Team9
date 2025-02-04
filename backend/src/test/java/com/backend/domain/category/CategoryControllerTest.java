@@ -1,4 +1,4 @@
-package com.backend.global.category;
+package com.backend.domain.category;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
