@@ -1,6 +1,8 @@
 package com.backend.domain.post.entity;
 
 import com.backend.domain.category.entity.Category;
+import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,14 +57,17 @@ public class Post extends BaseEntity {
     private RecruitmentStatus recruitmentStatus; // 모집 상태
 
     // 채용 ID -> JopPosting table에 채용ID랑 이어짐
-    // TODO: jobposting 미구현, 구현 이후 다시 작업
-//    @ManyToOne
-//    @JoinColumn(name = "job_id", nullable = false)
-//    private JobPosting jobId;
+    @ManyToOne
+    @JoinColumn(name = "job_id", nullable = true)
+    private JobPosting jobId;
+
+    // UserId 한 개의 게시글은 오직 한 유저에게만 속함
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private SiteUser author;
 
     // createDate: 생성일자, BaseEntity 상속
     // modifyDate: 수정일자, BaseEntity 상속
-
 
     // 게시글 수정
     public void updatePost(String subject, String content) {

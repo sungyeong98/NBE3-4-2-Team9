@@ -17,6 +17,9 @@ public class PostResponseDto {
     private String subject;
     private String content;
     private Long categoryId;
+    private Long jobPostingId;
+    private Long authorId;
+    private String authorName;
     private ZonedDateTime createdAt;
 
     // Entity -> DTO 변환(Builder 활용)
@@ -25,9 +28,8 @@ public class PostResponseDto {
                 .id(post.getBoardId())
                 .subject(post.getSubject())
                 .content(post.getContent())
-                // TODO: category, jobposting 미구현, 구현 이후 다시 작업
                 .categoryId(post.getCategoryId().getId())
-//                .jobId(post.getJobId().getId())
+                .jobPostingId(post.getJobId() != null ? post.getJobId().getId(): null)
                 .createdAt(post.getCreatedAt())
                 .build();
 
