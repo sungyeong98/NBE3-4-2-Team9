@@ -10,6 +10,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,18 +27,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class SchedulerService {
 
-//    private final String API_URL = "https://oapi.saramin.co.kr/job-search?access-key=YpYSmykXUtWhZkDrVkHdPOnT0VusIHP5LNwOb1WN87NfKD0y8BC&job_mid_cd=2";
-//    private final RestTemplate restTemplate = new RestTemplate();
-
     private final JobPostingRepository jobPostingRepository;
     private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
 
-    private final String apiUrl = "https://oapi.saramin.co.kr/job-search";
+    private final String API_URL = "https://oapi.saramin.co.kr/job-search";
+    private static final int MAX_RESULTS = 1000;
+    private static final int PAGE_SIZE = 100;
 
     @Value("${API.KEY}")
     private String apiKey;
 
-    private static final int MAX_RESULTS = 1000;
 
     @Scheduled(cron = "0 0 3 * * ?", zone = "Asia/Seoul")
     @Transactional
@@ -51,58 +51,58 @@ public class SchedulerService {
 
         while (totalCount < MAX_RESULTS) {
 
-            URI uri = UriComponentsBuilder.fromHttpUrl(apiUrl)
-                .queryParam("access-key", apiKey)
-                .queryParam("published", getPublishedDate())
-                .queryParam("job_mid_cd", "2")
-                .queryParam("start", pageNumber)
-                .build()
-                .encode()
-                .toUri();
+            List<JobPosting> jobList = fetchJobPostings(pageNumber);
 
-            String jsonResponse;
-
-            try {
-                jsonResponse = new RestTemplate().getForObject(uri, String.class);
-                log.info("JSON 응답 : " + jsonResponse);
-            } catch (RestClientException e) {
-                log.error("API 요청 실패: {}", uri, e);
-                return;
+            if (jobList.isEmpty()) {
+                log.info("더 이상 가져올 데이터가 없습니다.");
+                break;
             }
 
-            try {
-                Jobs dataResponse = objectMapper.readValue(jsonResponse, Jobs.class);
-                List<JobPosting> jobList = dataResponse.getJobsDetail().getJobList().stream()
-                    .map(Job:: toEntity)
-                    .toList();
+            List<JobPosting> newJobs = filterNewJobs(jobList);
+            jobPostingRepository.saveAll(newJobs);
+            log.info("총 {}개의 공고를 저장했습니다.", newJobs.size());
 
-                // 데이터가 없으면 종료
-                if (jobList.isEmpty()) {
-                    break;
-                }
-
-                allJobPostings.addAll(jobList);
-                totalCount += jobList.size();
-
-
-                // 페이지 번호 증가
-                pageNumber++;
-
-            } catch (JsonProcessingException e) {
-                log.error("JSON 파싱 실패 : {}", jsonResponse, e);
-            }
-
-            if (!allJobPostings.isEmpty()) {
-                jobPostingRepository.saveAll(allJobPostings);
-                log.info("총 {}개의 공고를 저장했습니다.", allJobPostings.size());
-            } else {
-                log.info("저장할 공고가 없습니다.");
-            }
-
+            totalCount += newJobs.size();
+            pageNumber ++;
         }
 
 
 
+    }
+
+    private List<JobPosting> fetchJobPostings(int start) {
+        URI uri = UriComponentsBuilder.fromHttpUrl(API_URL)
+            .queryParam("access-key", apiKey)
+            .queryParam("published", getPublishedDate())
+            .queryParam("job_mid_cd", "2")
+            .queryParam("start", start)
+            .build()
+            .encode()
+            .toUri();
+
+        try {
+            String jsonResponse = restTemplate.getForObject(uri, String.class);
+            log.info("API 응답: {}", jsonResponse);
+
+            Jobs dataResponse = objectMapper.readValue(jsonResponse, Jobs.class);
+            return dataResponse.getJobsDetail().getJobList().stream()
+                .map(Job :: toEntity)
+                .toList();
+
+        } catch (RestClientException e) {
+            log.error("API 요청 실패: {}", uri, e);
+        } catch (JsonProcessingException e) {
+            log.error("JSON 파싱 실패", e);
+        }
+
+        return Collections.emptyList();
+    }
+
+
+    private List<JobPosting> filterNewJobs(List<JobPosting> jobList) {
+        return jobList.stream()
+            .filter(job -> !jobPostingRepository.existsById(job.getId()))
+            .toList();
     }
 
     private String getPublishedDate() {
@@ -111,22 +111,6 @@ public class SchedulerService {
         return today.format(formatter);
     }
 
-
-//    @Scheduled(cron = "0 0 3 * * ?", zone = "Asia/Seoul")
-//    public void savePublicData() {
-//
-//        Jobs response = restTemplate.getForObject(API_URL, Jobs.class);
-//
-//        if (response == null || response.getJobsDetail() == null || response.getJobsDetail().getJobList().isEmpty()) {
-//            throw new GlobalException(GlobalErrorCode.OPEN_API_DATA_NOT_FOUND);
-//        }
-//
-//        List<JobPosting> publicDataList = response.getJobsDetail().getJobList().stream()
-//            .map(Job::toEntity)
-//            .toList();
-//
-//        jobPostingRepository.saveAll(publicDataList);
-//    }
 
 
 }

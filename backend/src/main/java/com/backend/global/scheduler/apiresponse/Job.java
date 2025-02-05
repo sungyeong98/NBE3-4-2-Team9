@@ -17,6 +17,11 @@ public class Job {
     @JsonProperty("url")
     private String url; //url
 
+    @JsonProperty("active")
+    private Integer active;
+
+    private JobPostingStatus jobPostingStatus;
+
     @JsonProperty("company")
     private CompanyDto companyDto; //회사 이름, 링크
 
@@ -38,10 +43,9 @@ public class Job {
     @JsonDeserialize(using = UnixTimestampDeserializer.class)
     private ZonedDateTime closeDate; //마감 날짜
 
-    private JobPostingStatus jobPostingStatus;
 
     public void setJobPostingStatus() {
-        if (closeDate != null && closeDate.isBefore(ZonedDateTime.now())) {
+        if (active == 0) {
             this.setJobPostingStatus(JobPostingStatus.END);
         } else {
             this.setJobPostingStatus(JobPostingStatus.ACTIVE);

@@ -8,7 +8,7 @@ import lombok.Data;
 public class SalaryDto {
 
     @JsonProperty("code")
-    private Integer code;
+    private String code;
 
     @JsonProperty("name")
     private String name;

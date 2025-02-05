@@ -29,4 +29,9 @@ public class JobPostingRepositoryImpl implements JobPostingRepository {
 
 	@Override
 	public void saveAll(List<JobPosting> publicDataList) {}
+
+	@Override
+	public boolean existsById(Long id) {
+		return false;
+	}
 }
