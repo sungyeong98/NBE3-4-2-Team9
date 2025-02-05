@@ -12,6 +12,7 @@ import com.backend.domain.jobposting.entity.RequireEducate;
 import com.backend.domain.jobposting.entity.Salary;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
 import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.redis.repository.RedisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.ZonedDateTime;
 import java.util.stream.IntStream;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,9 @@ public class ApiV1JobPostingControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
+
+	@MockitoBean
+	private RedisRepository redisRepository;
 
 	@BeforeAll
 	@Transactional
