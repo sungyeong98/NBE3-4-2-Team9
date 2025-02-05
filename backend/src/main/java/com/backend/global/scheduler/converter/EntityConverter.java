@@ -3,9 +3,11 @@ package com.backend.global.scheduler.converter;
 import com.backend.domain.jobposting.entity.ExperienceLevel;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.entity.RequireEducate;
+import com.backend.domain.jobposting.entity.Salary;
 import com.backend.global.scheduler.apiresponse.Job;
 import com.backend.global.scheduler.apiresponse.position.ExperienceLevelDto;
 import com.backend.global.scheduler.apiresponse.position.RequireEducateDto;
+import com.backend.global.scheduler.apiresponse.salary.SalaryDto;
 
 public class EntityConverter {
 
@@ -31,7 +33,7 @@ public class EntityConverter {
 
     public static RequireEducate dtoToRequireEducate(RequireEducateDto dto) {
         return RequireEducate.builder()
-            .code(dto.getCode())
+            .code(Integer.parseInt(dto.getCode()))
             .name(dto.getName())
             .build();
     }
@@ -42,6 +44,14 @@ public class EntityConverter {
             .code(dto.getCode())
             .min(dto.getMin())
             .max(dto.getMax())
+            .name(dto.getName())
+            .build();
+    }
+
+    public static Salary dtoToSalary(SalaryDto dto) {
+
+        return Salary.builder()
+            .code(Integer.parseInt(dto.getCode()))
             .name(dto.getName())
             .build();
     }

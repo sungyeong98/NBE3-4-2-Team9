@@ -39,12 +39,12 @@ public class JobPostingRepositoryImpl implements JobPostingRepository {
 
 	@Override
 	public void saveAll(List<JobPosting> publicDataList) {
-
+		jobPostingJpaRepository.saveAll(publicDataList);
 	}
 
 	@Override
-	public List<Long> findAllIds() {
-		return List.of();
+	public List<Long> findIdsAll() {
+		return jobPostingJpaRepository.findIdsAll();
 	}
 
 

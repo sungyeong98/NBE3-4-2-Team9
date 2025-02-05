@@ -1,6 +1,7 @@
 package com.backend.global.scheduler.apiresponse.salary;
 
 import com.backend.domain.jobposting.entity.Salary;
+import com.backend.global.scheduler.converter.EntityConverter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -14,10 +15,7 @@ public class SalaryDto {
     private String name;
 
     public Salary toEntity() {
-        return Salary.builder()
-            .code(this.code)
-            .name(this.name)
-            .build();
+        return EntityConverter.dtoToSalary(this);
     }
 
 }

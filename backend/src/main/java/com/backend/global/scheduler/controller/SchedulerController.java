@@ -16,7 +16,7 @@ public class SchedulerController {
 
     @PostMapping("/run")
     public ResponseEntity<String> runScheduler() {
-        schedulerService.savePublicData();
+        schedulerService.triggerSavePublicDataManually();
         return ResponseEntity.ok("스케줄러 실행 완료.");
     }
 

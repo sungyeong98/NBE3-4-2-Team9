@@ -108,8 +108,13 @@ public class SchedulerService {
 
     }
 
+     // 기능구현 테스트용 메소드
+    public void triggerSavePublicDataManually() {
+        savePublicData();
+    }
+
     private List<JobPosting> filterNewJobs(List<JobPosting> jobList) {
-        Set<Long> existingJobIds = new HashSet<>(jobPostingRepository.findAllIds());
+        Set<Long> existingJobIds = new HashSet<>(jobPostingRepository.findIdsAll());
 
         return jobList.stream()
             .filter(job -> !existingJobIds.contains(job.getId()))

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 
 /**
  * JobPostingRepository
@@ -39,8 +38,7 @@ public interface JobPostingRepository {
 
 	void saveAll(List<JobPosting> publicDataList);
 
-	@Query("SELECT j.id FROM JobPosting j")
-	List<Long> findAllIds();
+	List<Long> findIdsAll();
 
 	/**
 	 * @return {@link Page<JobPostingPageResponse>}
