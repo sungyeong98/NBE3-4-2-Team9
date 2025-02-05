@@ -9,12 +9,14 @@ import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.entity.UserRole;
 import com.backend.domain.user.repository.UserRepository;
 import com.backend.global.annotation.CustomWithMock;
+import com.backend.global.redis.repository.RedisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +55,9 @@ class ApiV1UserControllerTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @MockitoBean
+    private RedisRepository redisRepository;
 
 
     private SiteUser testUser;
