@@ -25,7 +25,7 @@ public class PostResponseDto {
     // Entity -> DTO 변환(Builder 활용)
     public static PostResponseDto fromEntity(Post post) {
         return PostResponseDto.builder()
-                .id(post.getBoardId())
+                .id(post.getId())
                 .subject(post.getSubject())
                 .content(post.getContent())
                 .categoryId(post.getCategoryId().getId())
