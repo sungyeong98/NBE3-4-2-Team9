@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class RequireEducate {
 
 	@Column(name = "require_educate_code")
-	private String code; //code
+	private Integer code; //code
 
 	@Column(name = "require_educate_name")
 	private String name; //DisplayName

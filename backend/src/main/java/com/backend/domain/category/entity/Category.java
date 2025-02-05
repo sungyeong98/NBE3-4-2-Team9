@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Builder
@@ -45,5 +46,11 @@ public class Category extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    // 카테고리 더티 체킹
+    @Transactional
+    public void updateName(String name) {
+        this.name = name;
     }
 }

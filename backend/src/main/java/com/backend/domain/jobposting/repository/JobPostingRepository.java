@@ -1,8 +1,12 @@
 package com.backend.domain.jobposting.repository;
 
+import com.backend.domain.jobposting.dto.JobPostingPageResponse;
 import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.jobposting.util.JobPostingSearchCondition;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * JobPostingRepository
@@ -31,4 +35,11 @@ public interface JobPostingRepository {
 	 * @implSpec JobPosting 전체 조회 메서드 입니다.
 	 */
 	List<JobPosting> findAll();
+
+	/**
+	 * @return {@link Page<JobPostingPageResponse>}
+	 * @implSpec JobPosting 페이징 동적 조회 메서드 입니다.
+	 */
+	Page<JobPostingPageResponse> findAll(JobPostingSearchCondition jobPostingSearchCondition,
+		Pageable pageable);
 }
