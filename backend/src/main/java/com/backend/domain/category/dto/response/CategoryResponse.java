@@ -15,9 +15,4 @@ public class CategoryResponse {
     private String name;
     private ZonedDateTime createdAt;
     private ZonedDateTime modifiedAt;
-
-    public CategoryResponse(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 }
