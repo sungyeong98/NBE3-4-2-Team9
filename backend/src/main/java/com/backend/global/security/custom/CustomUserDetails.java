@@ -1,13 +1,11 @@
 package com.backend.global.security.custom;
 
 import com.backend.domain.user.entity.SiteUser;
-import com.backend.domain.user.entity.UserRole;
+import java.util.ArrayList;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
