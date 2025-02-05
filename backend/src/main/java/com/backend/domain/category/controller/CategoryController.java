@@ -46,7 +46,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public GenericResponse<CategoryResponse> updateCategory(
-            @RequestBody Category category, @PathVariable Long id) {
+            @RequestBody Category category, @PathVariable(name = "id") Long id) {
 
         // 요청된 아이디가 일치하지 않으면 예외 발생
         if (!category.getId().equals(id)) {

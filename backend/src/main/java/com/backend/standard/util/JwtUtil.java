@@ -1,9 +1,12 @@
 package com.backend.standard.util;
 
+import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.security.custom.CustomUserDetails;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -43,7 +46,8 @@ public class JwtUtil {
     public String createAccessToken(CustomUserDetails customUserDetails, long expiration) {
         long currentTime = System.currentTimeMillis();
 
-        return "Bearer " + Jwts.builder()
+//        return "Bearer " + Jwts.builder()
+        return Jwts.builder()
                 .claim("subject", "access")
                 .claim("id", customUserDetails.getSiteUser().getId())
                 .claim("username", customUserDetails.getUsername())
@@ -77,6 +81,26 @@ public class JwtUtil {
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    public Authentication getAuthentication(String token) {
+        String username = getUsername(token);
+        String role = getRole(token);
+        Long userId = getUserId(token);
+
+        CustomUserDetails userDetails = new CustomUserDetails(
+                SiteUser.builder()
+                        .id(userId)
+                        .email(username)
+                        .userRole(role)
+                        .build()
+        );
+
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
     }
 
 }

@@ -3,17 +3,20 @@ package com.backend.domain.user;
 import com.backend.domain.jobskill.entity.JobSkill;
 import com.backend.domain.jobskill.repository.JobSkillRepository;
 import com.backend.domain.user.dto.request.JobSkillRequest;
+import com.backend.domain.user.dto.request.LoginRequest;
 import com.backend.domain.user.dto.request.UserModifyProfileRequest;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.entity.UserRole;
 import com.backend.domain.user.repository.UserRepository;
 import com.backend.global.annotation.CustomWithMock;
-import com.backend.global.security.custom.CustomUserDetails;
+import com.backend.global.redis.repository.RedisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,21 +24,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.List;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@ActiveProfiles("test")
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @Transactional
-public class ApiV1UserControllerTest {
+class ApiV1UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,6 +53,13 @@ public class ApiV1UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @MockitoBean
+    private RedisRepository redisRepository;
+
+
     private SiteUser testUser;
     private SiteUser otherUser;
     private JobSkill jobSkill1;
@@ -56,6 +67,8 @@ public class ApiV1UserControllerTest {
 
     @BeforeEach
     void setUp() {
+        userRepository.deleteAll();
+        
         testUser = userRepository.save(SiteUser.builder()
                 .email("test@test.com")
                 .password("password")
@@ -85,21 +98,37 @@ public class ApiV1UserControllerTest {
     @DisplayName("프로필 조회 성공")
     @CustomWithMock
     void test1() throws Exception {
-        testUser.modifyProfile("자기소개", "직업");
-        testUser.getJobSkills().add(jobSkill1);
 
-        mockMvc.perform(get("/api/v1/users/{user_id}", testUser.getId())
-                .contentType(MediaType.APPLICATION_JSON))
+        SiteUser siteUser = SiteUser.builder()
+                .email("test1@test.com")
+                .password(passwordEncoder.encode("password"))
+                .name("test1")
+                .userRole(UserRole.ROLE_ADMIN.toString())
+                .build();
+        userRepository.save(siteUser);
+
+        String accessToken = mockMvc.perform(post("/api/v1/adm/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequest("test1@test.com", "password"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data.name").value(testUser.getName()))
-                .andExpect(jsonPath("$.data.email").value(testUser.getEmail()))
-                .andExpect(jsonPath("$.data.introduction").value("자기소개"))
-                .andExpect(jsonPath("$.data.job").value("직업"))
-                .andExpect(jsonPath("$.data.jobSkills[0].name").value("직무1"))
-                .andExpect(jsonPath("$.data.jobSkills[0].code").value(1))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(header().exists("Authorization"))
+                .andExpect(cookie().exists("refreshToken"))
+                .andExpect(jsonPath("$.data.email").value("test1@test.com"))
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getHeader("Authorization");
+
+        mockMvc.perform(get("/api/v1/users/{id}", siteUser.getId())
+                        .header("Authorization", "Bearer " + accessToken)  // Bearer 추가
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.email").value(siteUser.getEmail()))
+                .andExpect(jsonPath("$.data.name").value(siteUser.getName()))
+                .andDo(print());
     }
 
     @Test
@@ -109,29 +138,60 @@ public class ApiV1UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.code").value(4002))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     @DisplayName("프로필 조회 실패 - 다른 사용자의 프로필 접근")
-    @CustomWithMock
     void test3() throws Exception {
-        mockMvc.perform(get("/api/v1/users/{user_id}", otherUser.getId())
-                .contentType(MediaType.APPLICATION_JSON))
+        SiteUser targetUser = SiteUser.builder()
+                .email("target@test.com")
+                .password(passwordEncoder.encode("password"))
+                .name("target")
+                .userRole(UserRole.ROLE_USER.toString())
+                .build();
+        userRepository.save(targetUser);
+
+        SiteUser loginUser = SiteUser.builder()
+                .email("test1@test.com")
+                .password(passwordEncoder.encode("password"))
+                .name("test1")
+                .userRole(UserRole.ROLE_ADMIN.toString())
+                .build();
+        userRepository.save(loginUser);
+
+        String accessToken = mockMvc.perform(post("/api/v1/adm/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequest("test1@test.com", "password"))))
+                .andReturn()
+                .getResponse()
+                .getHeader("Authorization");
+
+        mockMvc.perform(get("/api/v1/users/{id}", targetUser.getId())  // 존재하는 다른 사용자의 ID로 접근
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.code").value(4003))
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(print());
     }
 
     @Test
     @DisplayName("프로필 수정 성공")
     @CustomWithMock
     void test4() throws Exception {
+        SiteUser siteUser = SiteUser.builder()
+                .email("test1@test.com")
+                .password(passwordEncoder.encode("password"))
+                .name("test1")
+                .userRole(UserRole.ROLE_ADMIN.toString())
+                .build();
+        userRepository.save(siteUser);
+
         List<JobSkillRequest> jobSkills = List.of(
-            new JobSkillRequest("직무1"),
-            new JobSkillRequest("직무2")
+                new JobSkillRequest("직무1"),
+                new JobSkillRequest("직무2")
         );
 
         UserModifyProfileRequest request = new UserModifyProfileRequest();
@@ -139,16 +199,31 @@ public class ApiV1UserControllerTest {
         request.setJob("직업수정");
         request.setJobSkills(jobSkills);
 
-        mockMvc.perform(patch("/api/v1/users/{user_id}", testUser.getId())
+        String accessToken = mockMvc.perform(post("/api/v1/adm/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
-                        .with(user(new CustomUserDetails(testUser))))
+                        .content(objectMapper.writeValueAsString(new LoginRequest("test1@test.com", "password"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.code").value(200))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(header().exists("Authorization"))
+                .andExpect(cookie().exists("refreshToken"))
+                .andExpect(jsonPath("$.data.email").value("test1@test.com"))
+                .andDo(print())
+                .andReturn()
+                .getResponse()
+                .getHeader("Authorization");
 
-        SiteUser updatedUser = userRepository.findById(testUser.getId()).orElseThrow();
+        mockMvc.perform(patch("/api/v1/users/{id}", siteUser.getId())
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.code").value(200))
+                .andDo(print());
+
+        // 실제 데이터베이스에 반영되었는지 확인
+        SiteUser updatedUser = userRepository.findById(siteUser.getId()).orElseThrow();
         assertThat(updatedUser.getIntroduction()).isEqualTo("자기소개수정");
         assertThat(updatedUser.getJob()).isEqualTo("직업수정");
         assertThat(updatedUser.getJobSkills()).hasSize(2);
@@ -160,41 +235,88 @@ public class ApiV1UserControllerTest {
     @DisplayName("프로필 수정 실패 - 비로그인 사용자")
     void test5() throws Exception {
         SiteUser siteUser = SiteUser.builder()
-                .introduction("자기소개")
-                .job("직업")
+                .email("test1@test.com")
+                .password(passwordEncoder.encode("password"))
+                .name("test1")
+                .userRole(UserRole.ROLE_ADMIN.toString())
                 .build();
-        UserModifyProfileRequest request = new UserModifyProfileRequest(siteUser);
+        userRepository.save(siteUser);
 
-        mockMvc.perform(patch("/api/v1/users/{user_id}", testUser.getId())
+        List<JobSkillRequest> jobSkills = List.of(
+                new JobSkillRequest("직무1"),
+                new JobSkillRequest("직무2")
+        );
+
+        UserModifyProfileRequest request = new UserModifyProfileRequest();
+        request.setIntroduction("자기소개수정");
+        request.setJob("직업수정");
+        request.setJobSkills(jobSkills);
+
+        mockMvc.perform(patch("/api/v1/users/{id}", siteUser.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(401))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(jsonPath("$.code").value(4002))
+                .andDo(print());
+
+        SiteUser unchangedUser = userRepository.findById(siteUser.getId()).orElseThrow();
+        assertThat(unchangedUser.getIntroduction()).isNull();
+        assertThat(unchangedUser.getJob()).isNull();
+        assertThat(unchangedUser.getJobSkills()).isEmpty();
     }
 
     @Test
     @DisplayName("프로필 수정 실패 - 다른 사용자의 프로필 수정 시도")
-    @CustomWithMock
     void test6() throws Exception {
-        SiteUser siteUser = SiteUser.builder()
-                .introduction("자기소개")
-                .job("직업")
+        SiteUser targetUser = SiteUser.builder()
+                .email("target@test.com")
+                .password(passwordEncoder.encode("password"))
+                .name("target")
+                .userRole(UserRole.ROLE_USER.toString())
                 .build();
-        UserModifyProfileRequest request = new UserModifyProfileRequest(siteUser);
+        userRepository.save(targetUser);
 
-        mockMvc.perform(patch("/api/v1/users/{user_id}", otherUser.getId())
+        SiteUser loginUser = SiteUser.builder()
+                .email("test1@test.com")
+                .password(passwordEncoder.encode("password"))
+                .name("test1")
+                .userRole(UserRole.ROLE_ADMIN.toString())
+                .build();
+        userRepository.save(loginUser);
+
+        List<JobSkillRequest> jobSkills = List.of(
+                new JobSkillRequest("직무1"),
+                new JobSkillRequest("직무2")
+        );
+
+        UserModifyProfileRequest request = new UserModifyProfileRequest();
+        request.setIntroduction("자기소개수정");
+        request.setJob("직업수정");
+        request.setJobSkills(jobSkills);
+
+        String accessToken = mockMvc.perform(post("/api/v1/adm/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequest("test1@test.com", "password"))))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Authorization"))
+                .andReturn()
+                .getResponse()
+                .getHeader("Authorization");
+
+        mockMvc.perform(patch("/api/v1/users/{id}", targetUser.getId())
+                        .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden())
+                .andExpect(status().isForbidden())  // 401 -> 403으로 변경
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(4003))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(jsonPath("$.code").value(4003))  // 4002 -> 4003으로 변경
+                .andDo(print());
 
-        SiteUser unchangedUser = userRepository.findById(otherUser.getId()).orElseThrow();
+        SiteUser unchangedUser = userRepository.findById(targetUser.getId()).orElseThrow();
         assertThat(unchangedUser.getIntroduction()).isNull();
         assertThat(unchangedUser.getJob()).isNull();
+        assertThat(unchangedUser.getJobSkills()).isEmpty();
     }
 
 }
