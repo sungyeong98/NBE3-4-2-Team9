@@ -23,6 +23,7 @@ public enum GlobalErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, 4004, "잘못된 접근입니다."),
     KAKAO_LOGIN_FAIL(HttpStatus.BAD_REQUEST, 4005, "카카오 로그인에 실패하였습니다."),
     INVALID_JOB_SKILL(HttpStatus.BAD_REQUEST, 4006, "유효하지 않은 직무 기술입니다."),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, 4007, "유효하지 않은 토큰입니다."),
 
     // 게시글 도메인 에러 코드
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "카테고리가 존재하지 않습니다."),

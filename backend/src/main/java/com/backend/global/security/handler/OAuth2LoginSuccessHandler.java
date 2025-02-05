@@ -3,6 +3,7 @@ package com.backend.global.security.handler;
 import com.backend.domain.user.dto.response.KakaoLoginResponse;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.entity.UserRole;
+import com.backend.global.config.AppConfig;
 import com.backend.global.redis.repository.RedisRepository;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -20,6 +22,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -58,21 +62,36 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         redisRepository.save(userDetails.getUsername(), refreshToken, REFRESH_EXPIRATION, TimeUnit.MILLISECONDS);
 
         resp.setHeader("Authorization", "Bearer " + accessToken);
+        resp.setContentType("application/json;charset=UTF-8");
+        resp.setCharacterEncoding("UTF-8");
 
         KakaoLoginResponse kakaoLoginResponse = KakaoLoginResponse.builder()
+                .id(siteUser.getId())
                 .email(username + "@kakao.com")
                 .name(siteUser.getName())
                 .profileImg(siteUser.getProfileImg())
                 .build();
 
-        AuthResponseUtil.success(
-                resp,
+//        AuthResponseUtil.success(
+//                resp,
+//                accessToken,
+//                jwtUtil.setJwtCookie("refreshToken", refreshToken, REFRESH_EXPIRATION),
+//                HttpServletResponse.SC_OK,
+//                GenericResponse.of(true, 200, kakaoLoginResponse, "카카오 로그인에 성공하였습니다."),
+//                objectMapper
+//        );
+
+        GenericResponse<KakaoLoginResponse> response = GenericResponse.of(true, HttpStatus.OK.value(), kakaoLoginResponse, "카카오 로그인에 성공하였습니다.");
+        resp.getWriter().write(objectMapper.writeValueAsString(response));
+
+        String userInfo = URLEncoder.encode(objectMapper.writeValueAsString(kakaoLoginResponse), StandardCharsets.UTF_8);
+        String redirectUrl = String.format("%s/login?token=%s&user=%s",
+                AppConfig.getSiteFrontUrl(),
                 accessToken,
-                jwtUtil.setJwtCookie("refreshToken", refreshToken, REFRESH_EXPIRATION),
-                HttpServletResponse.SC_OK,
-                GenericResponse.of(true, 200, kakaoLoginResponse, "카카오 로그인에 성공하였습니다."),
-                objectMapper
+                userInfo
         );
+        resp.sendRedirect(redirectUrl);
+
     }
 
     private SiteUser extractUserFromOAuth2User(OAuth2User oAuth2User) {

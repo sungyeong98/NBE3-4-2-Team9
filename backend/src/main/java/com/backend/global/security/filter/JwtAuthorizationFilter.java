@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -94,47 +95,99 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private void accessFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain filterChain) throws ServletException, IOException {
         String authorization = req.getHeader("Authorization");
 
-        if (authorization == null) {
+//        if (authorization == null) {
+//            filterChain.doFilter(req, resp);
+//            return;
+//        }
+//
+//        String accessToken = authorization.substring(7);
+//
+//        try {
+//            jwtUtil.isExpired(accessToken);
+//        } catch (ExpiredJwtException e) {
+//            AuthResponseUtil.failLogin(
+//                    resp,
+//                    GenericResponse.of(false, GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
+//                    HttpServletResponse.SC_UNAUTHORIZED,
+//                    objectMapper);
+//            return;
+//        } catch (JwtException e) {
+//            AuthResponseUtil.failLogin(
+//                    resp,
+//                    GenericResponse.of(false, GlobalErrorCode.BAD_REQUEST.getCode()),
+//                    HttpServletResponse.SC_BAD_REQUEST,
+//                    objectMapper);
+//            return;
+//        }
+//
+//        String username = jwtUtil.getUsername(accessToken);
+//        String role = jwtUtil.getRole(accessToken);
+//
+//        CustomUserDetails userDetails = new CustomUserDetails(
+//                SiteUser.builder()
+//                        .email(username)
+//                        .id(jwtUtil.getUserId(accessToken))
+//                        .userRole(role)
+//                        .build()
+//        );
+//
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//
+//        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+//
+//        filterChain.doFilter(req, resp);
+
+        if (req.getRequestURI().startsWith("/api/")) {
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                AuthResponseUtil.failLogin(
+                        resp,
+                        GenericResponse.of(false, GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        objectMapper);
+                return;
+            }
+
+            String accessToken = authorization.substring(7);
+
+            try {
+                jwtUtil.isExpired(accessToken);
+                String username = jwtUtil.getUsername(accessToken);
+                String role = jwtUtil.getRole(accessToken);
+                Long userId = jwtUtil.getUserId(accessToken);
+
+                CustomUserDetails userDetails = new CustomUserDetails(
+                        SiteUser.builder()
+                                .id(userId)
+                                .email(username)
+                                .userRole(role)
+                                .build()
+                );
+
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(req, resp);
+            } catch (ExpiredJwtException e) {
+                AuthResponseUtil.failLogin(
+                        resp,
+                        GenericResponse.of(false, GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        objectMapper);
+            } catch (JwtException e) {
+                AuthResponseUtil.failLogin(
+                        resp,
+                        GenericResponse.of(false, GlobalErrorCode.INVALID_TOKEN.getCode()),
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        objectMapper);
+            }
+        } else {
             filterChain.doFilter(req, resp);
-            return;
         }
 
-        String accessToken = authorization.substring(7);
-
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-            AuthResponseUtil.failLogin(
-                    resp,
-                    GenericResponse.of(false, GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
-                    HttpServletResponse.SC_UNAUTHORIZED,
-                    objectMapper);
-            return;
-        } catch (JwtException e) {
-            AuthResponseUtil.failLogin(
-                    resp,
-                    GenericResponse.of(false, GlobalErrorCode.BAD_REQUEST.getCode()),
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    objectMapper);
-            return;
-        }
-
-        String username = jwtUtil.getUsername(accessToken);
-        String role = jwtUtil.getRole(accessToken);
-
-        CustomUserDetails userDetails = new CustomUserDetails(
-                SiteUser.builder()
-                        .email(username)
-                        .id(jwtUtil.getUserId(accessToken))
-                        .userRole(role)
-                        .build()
-        );
-
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-        filterChain.doFilter(req, resp);
     }
 
     private String getRefreshToken(HttpServletRequest request) {
