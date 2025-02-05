@@ -34,6 +34,12 @@ public enum GlobalErrorCode {
 	INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, 3003, "카테고리 ID가 유효하지 않습니다."),
 	ID_MISMATCH(HttpStatus.BAD_REQUEST, 3004, "카테고리 ID가 일치하지 않습니다."),
 
+	// 채용공고 서비스 에러 코드
+	NO_DATA_RECEIVED(HttpStatus.NO_CONTENT, 5003, "받아온 데이터가 없습니다."),
+	API_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, 5001, "외부 API 요청에 실패했습니다."),
+	JSON_PARSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "응답 데이터를 처리하는중 오류가 발생했습니다."),
+	DATABASE_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 5005, "데이터 저장중 오류가 발생했습니다."),
+
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "서버 내부 오류가 발생하였습니다.");

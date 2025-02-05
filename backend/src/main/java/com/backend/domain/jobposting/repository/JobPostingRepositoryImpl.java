@@ -38,10 +38,14 @@ public class JobPostingRepositoryImpl implements JobPostingRepository {
 	}
 
 	@Override
-	public void saveAll(List<JobPosting> publicDataList) {}
+	public void saveAll(List<JobPosting> publicDataList) {
+
+	}
 
 	@Override
-	public boolean existsById(Long id) {
-		return false;
+	public List<Long> findAllIds() {
+		return List.of();
 	}
+
+
 }

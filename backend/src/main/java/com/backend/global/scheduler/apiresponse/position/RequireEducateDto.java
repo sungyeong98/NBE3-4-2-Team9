@@ -9,7 +9,7 @@ import lombok.Data;
 public class RequireEducateDto {
 
     @JsonProperty("code")
-    private Integer code;
+    private String code;
 
     @JsonProperty("name")
     private String name;
