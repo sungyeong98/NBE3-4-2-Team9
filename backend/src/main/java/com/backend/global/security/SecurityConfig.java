@@ -15,8 +15,7 @@ import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,6 +64,16 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    private static final Map<HttpMethod, List<String>> PUBLIC_URLS = new HashMap<>();
+    static {
+        PUBLIC_URLS.put(HttpMethod.GET, Arrays.asList(
+                "/api/v1/job-posting/**",
+                "/h2-console/**",
+                "/login/oauth2/code/kakao",
+                "/oauth2/authorization/kakao"
+        ));
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration configuration) throws Exception {
 
@@ -82,14 +91,19 @@ public class SecurityConfig {
                 .frameOptions(option -> option.sameOrigin()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/h2-console/**", "/api/v1/job-posting").permitAll()
-                        .requestMatchers("/login/oauth2/code/kakao", "/oauth2/authorization/kakao").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/category/**").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.GET, "/login/oauth2/code/kakao", "/oauth2/authorization/kakao").permitAll()
-//                        .requestMatchers("/").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(authorizeRequests -> {
+                    // PUBLIC_URLS에서 설정된 URL들을 permitAll로 설정
+                    PUBLIC_URLS.forEach((method, patterns) ->
+                            patterns.forEach(pattern ->
+                                    authorizeRequests.requestMatchers(method, pattern).permitAll()
+                            )
+                    );
+
+                    // 나머지 특정 권한이 필요한 URL들
+                    authorizeRequests.requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT, "/api/v1/category/**").hasRole("ADMIN")
+                            .anyRequest().authenticated();
+                })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
@@ -142,6 +156,10 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
+    }
+
+    public static Map<HttpMethod, List<String>> getPublicUrls() {
+        return PUBLIC_URLS;
     }
 
 }
