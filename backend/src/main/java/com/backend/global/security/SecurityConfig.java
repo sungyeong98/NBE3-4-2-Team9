@@ -124,7 +124,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 허용할 HTTP 메서드 설정
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         // CORS 설정
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         // 자격 증명 허용 설정
