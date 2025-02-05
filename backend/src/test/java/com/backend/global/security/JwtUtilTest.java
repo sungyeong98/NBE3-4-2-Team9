@@ -38,7 +38,7 @@ public class JwtUtilTest {
                     .build()
         );
 
-        String accessToken = jwtUtil.createAccessToken(userDetails, ACCESS_EXPIRATION).substring(7);
+        String accessToken = jwtUtil.createAccessToken(userDetails, ACCESS_EXPIRATION);
         assertNotNull(accessToken);
 
         String email = jwtUtil.getUsername(accessToken);
@@ -85,7 +85,7 @@ public class JwtUtilTest {
                         .build()
         );
 
-        String expiredToken = jwtUtil.createAccessToken(userDetails, -1000).substring(7);
+        String expiredToken = jwtUtil.createAccessToken(userDetails, -1000);
 
         assertThrows(ExpiredJwtException.class, () -> jwtUtil.isExpired(expiredToken));
     }
