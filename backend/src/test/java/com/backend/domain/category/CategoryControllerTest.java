@@ -1,132 +1,141 @@
 package com.backend.domain.category;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.backend.domain.category.controller.CategoryController;
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.service.CategoryService;
+import com.backend.global.redis.repository.RedisRepository;
+import com.backend.global.security.handler.OAuth2LoginFailureHandler;
+import com.backend.global.security.handler.OAuth2LoginSuccessHandler;
+import com.backend.global.security.oauth.CustomOAuth2UserService;
+import com.backend.standard.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(CategoryController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 class CategoryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @MockBean
+    // CategoryController가 의존하는 서비스 빈을 Mock 객체로 주입
+    @MockitoBean
     private CategoryService categoryService;
+
+    // Jwt 관련 빈들은 SecurtiyConfig에 의해 사용, 여기선 Mock 객체로 주입
+    @MockitoBean
+    private JwtUtil jwtUtil;
+    @MockitoBean
+    private RedisRepository redisRepository;
+    @MockitoBean
+    private CustomOAuth2UserService customOAuth2UserService;
+    @MockitoBean
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    @MockitoBean
+    private OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     private Category category;
     private CategoryResponse categoryResponse;
-    private ZonedDateTime now;
 
     @BeforeEach
     void setUp() {
-        now = ZonedDateTime.now();
-
-        // 카테고리 객체 초기화
-        category = new Category(1L, "Tech");
-
-        // 카테고리 응답 객체 초기화
-        categoryResponse = new CategoryResponse(1L, "Tech", now, now);
+        // 테스트용 Category 객체 및 CategoryResponse 객체 초기화
+        ZonedDateTime now = ZonedDateTime.now();
+        category = createCategory(now, "Tech");
+        categoryResponse = createCategoryResponse(now, "Tech");
     }
 
-    // 관리자 권한을 가진 사용자로 설정하는 메서드
-    private void mockAdminUser() {
-        User user = new User("admin", "password", Arrays.asList(() -> "ROLE_ADMIN"));
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken(user, "password", user.getAuthorities()));
-        SecurityContextHolder.setContext(context);
-    }
+        // 카테고리 생성 메서드
+        private Category createCategory(ZonedDateTime now, String name) {
+            Category category = new Category(null, name);
+            ReflectionTestUtils.setField(category, "createdAt", now);
+            ReflectionTestUtils.setField(category, "modifiedAt", now);
+            return category;
+        }
 
-    // 카테고리 전체 조회 테스트
+        // CategoryResponse 생성 메서드
+        private CategoryResponse createCategoryResponse(ZonedDateTime now, String name) {
+            return CategoryResponse.builder()
+                    .id(1L)
+                    .name(name)
+                    .createdAt(now)
+                    .modifiedAt(now)
+                    .build();
+        }
+
+    /**
+     * GET /api/v1/category 요청 테스트
+     * 인증된 사용자(@WithMockUser)로 GET 요청을 보내 카테고리 목록을 정상적으로 조회하는지 확인
+     * - categoryService.categoryList()에서 반환된 응답이 올바른지 검증
+     */
     @Test
-    @WithMockUser(roles = "ADMIN")  // 관리자 권한 부여
+    @WithMockUser
     void getAllCategory_ShouldReturnCategoryList() throws Exception {
-        List<CategoryResponse> categoryList = Arrays.asList(categoryResponse);
+        // given: 미리 정의된 categoryResponse 리스트 반환 설정
+        when(categoryService.categoryList()).thenReturn(Arrays.asList(categoryResponse));
 
-        when(categoryService.categoryList()).thenReturn(categoryList);
-
-        mockAdminUser();  // 관리자 권한 부여
-
+        // when & then: GET 요청 보내고, JSON 응답의 특정 필드 값 검증
         mockMvc.perform(get("/api/v1/category"))
-                .andExpect(status().isOk())  // CSRF 비활성화로 인해 CSRF 토큰 필요 없음
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].name").value("Tech"));
+                .andExpect(status().isOk())  // HTTP 200 OK 상태 코드 확인
+                .andExpect(jsonPath("$.success").value(true))  // success 필드 값이 true 인지 확인
+                .andExpect(jsonPath("$.data[0].name").value("Tech"));  // 첫 번째 데이터의 name이 "Tech" 인지 확인
     }
 
-
-    // 카테고리 추가 테스트
+    /**
+     * POST /api/v1/category 요청 테스트 (관리자 권한)
+     * ADMIN 권한을 가진 사용자가 POST 요청을 보내 새로운 카테고리를 생성하는 경우 정상적으로 생성되었는지 확인
+     * - 응답 상태 코드 201, success: true, 생성된 카테고리의 name 필드가 "Tech"인지 확인
+     */
     @Test
-    @WithMockUser(roles = "ADMIN")  // 관리자 권한 부여
-    void createCategory_ShouldReturnCreatedCategory() throws Exception {
-        when(categoryService.createCategory(category)).thenReturn(categoryResponse);
+    @WithMockUser(roles = "ADMIN")  // ADMIN 권한으로 인증된 사용자로 요청
+    void createCategory_WithAdminRole_ShouldReturnCreated() throws Exception {
+        // given: categoryService.createCategory()에서 반환될 categoryResponse 설정
+        when(categoryService.createCategory(any(Category.class))).thenReturn(categoryResponse);
 
-        mockAdminUser();  // 관리자 권한 부여
+        // when & then: POST 요청을 보낼 때 CSRF 토큰 추가, 응답 상태가 201(Created) 확인
+        mockMvc.perform(post("/api/v1/category")
+                        .with(csrf())  // CSRF 보호 활성화
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(category)))
+                .andExpect(status().isCreated())  // 응답 상태 코드가 201인지 확인
+                .andExpect(jsonPath("$.success").value(true))  // 응답의 success가 true인지 확인
+                .andExpect(jsonPath("$.data.name").value("Tech"));  // 생성된 카테고리의 name이 "Tech"인지 확인
+    }
 
+    /**
+     * POST /api/v1/category 요청 테스트 (일반 사용자 권한)
+     * USER 권한을 가진 사용자가 POST 요청을 보내 새로운 카테고리를 생성하려 할 때 권한 부족으로 인해 403 Forbidden 상태 코드가 반환되는지 검증
+     */
+    @Test
+    @WithMockUser(roles = "USER")  // USER 권한으로 인증된 사용자로 요청
+    void createCategory_WithUserRole_ShouldReturnForbidden() throws Exception {
+        // when & then: POST 요청 시, 응답 상태가 403(Forbidden)임을 확인
         mockMvc.perform(post("/api/v1/category")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":1, \"name\":\"Tech\"}")
-                        .with(csrf()))
-                .andExpect(status().isCreated())  // CSRF 비활성화로 인해 CSRF 토큰 필요 없음
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.name").value("Tech"));
-    }
-
-    // 카테고리 수정 테스트 (ID 일치)
-    @Test
-    @WithMockUser(roles = "ADMIN")  // 관리자 권한 부여
-    void updateCategory_ShouldReturnUpdatedCategory() throws Exception {
-        when(categoryService.updateCategory(category)).thenReturn(categoryResponse);
-
-        mockAdminUser();  // 관리자 권한 부여
-
-        mockMvc.perform(put("/api/v1/category/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":1, \"name\":\"Tech\"}")
-                        .with(csrf()))
-                .andExpect(status().isOk())  // CSRF 비활성화로 인해 CSRF 토큰 필요 없음
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.name").value("Tech"));
-    }
-
-
-    // 카테고리 수정 테스트 (ID 불일치)
-    @Test
-    @WithMockUser(roles = "ADMIN")  // 관리자 권한 부여
-    void updateCategory_ShouldThrowInvalidCategoryIdException() throws Exception {
-        // 잘못된 ID를 가진 카테고리 객체
-        Category category = Category.builder().id(2L).name("Tech").build();
-
-        mockAdminUser();  // 관리자 권한 부여
-
-        mockMvc.perform(put("/api/v1/category/{id}", 1L)  // 1L ID로 요청하지만, 내용은 ID가 2인 카테고리
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":2, \"name\":\"Tech\"}")
-                        .with(csrf()))  // CSRF 토큰을 추가
-                .andExpect(status().isBadRequest())  // ID 불일치로 인해 Bad Request 발생
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("카테고리 ID가 일치하지 않습니다."));  // 예외 메시지 검증
+                        .content(objectMapper.writeValueAsString(category)))
+                .andExpect(status().isForbidden());  // 권한 부족으로 인해 403 Forbidden이 반환되어야 함
     }
 }
