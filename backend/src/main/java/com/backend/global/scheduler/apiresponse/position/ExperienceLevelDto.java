@@ -1,6 +1,7 @@
 package com.backend.global.scheduler.apiresponse.position;
 
 import com.backend.domain.jobposting.entity.ExperienceLevel;
+import com.backend.global.scheduler.converter.EntityConverter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -20,12 +21,7 @@ public class ExperienceLevelDto {
     private String name;
 
     public ExperienceLevel toEntity() {
-        return ExperienceLevel.builder()
-            .code(this.code)
-            .min(this.min)
-            .max(this.max)
-            .name(this.name)
-            .build();
+        return EntityConverter.dtoToExperienceLevel(this);
     }
 
 

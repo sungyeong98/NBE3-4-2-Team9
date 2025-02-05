@@ -5,6 +5,7 @@ import com.backend.domain.jobposting.entity.JobPostingStatus;
 import com.backend.global.scheduler.apiresponse.company.CompanyDto;
 import com.backend.global.scheduler.apiresponse.position.PositionDto;
 import com.backend.global.scheduler.apiresponse.salary.SalaryDto;
+import com.backend.global.scheduler.converter.EntityConverter;
 import com.backend.global.timeconverter.UnixTimestampDeserializer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -53,22 +54,7 @@ public class Job {
     }
 
     public JobPosting toEntity() {
-
-        setJobPostingStatus();
-
-        return JobPosting.builder()
-            .subject(this.getPositionDto().getTitle())
-            .url(this.url)
-            .postDate(this.postDate)
-            .openDate(this.openDate)
-            .closeDate(this.closeDate)
-            .companyName(this.companyDto.getCompanyDetailDto().getName())
-            .companyLink(this.getCompanyDto().getCompanyDetailDto().getHref())
-            .experienceLevel(this.getPositionDto().getExperienceLevel().toEntity())
-            .requireEducate(this.getPositionDto().getRequireEducate().toEntity())
-            .jobPostingStatus(this.jobPostingStatus)
-            .salary(this.salaryDto.toEntity())
-            .build();
+        return EntityConverter.jobToJobPosting(this);
     }
 
 

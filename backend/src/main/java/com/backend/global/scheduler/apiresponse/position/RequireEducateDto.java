@@ -1,6 +1,7 @@
 package com.backend.global.scheduler.apiresponse.position;
 
 import com.backend.domain.jobposting.entity.RequireEducate;
+import com.backend.global.scheduler.converter.EntityConverter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -8,16 +9,13 @@ import lombok.Data;
 public class RequireEducateDto {
 
     @JsonProperty("code")
-    private String code;
+    private Integer code;
 
     @JsonProperty("name")
     private String name;
 
     public RequireEducate toEntity() {
-        return RequireEducate.builder()
-            .code(this.code)
-            .name(this.name)
-            .build();
+        return EntityConverter.dtoToRequireEducate(this);
     }
 
 }

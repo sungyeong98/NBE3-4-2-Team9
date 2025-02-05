@@ -33,7 +33,6 @@ public class SchedulerService {
 
     private final String API_URL = "https://oapi.saramin.co.kr/job-search";
     private static final int MAX_RESULTS = 1000;
-    private static final int PAGE_SIZE = 100;
 
     @Value("${API.KEY}")
     private String apiKey;
@@ -65,8 +64,6 @@ public class SchedulerService {
             totalCount += newJobs.size();
             pageNumber ++;
         }
-
-
 
     }
 
