@@ -30,10 +30,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Post extends BaseEntity {
 
-    // board_id: 게시글의 고유 식별자(PK, Auto Increment)
+    // postId: 게시글의 고유 식별자(PK, Auto Increment)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long boardId;
+    private Long postId;
 
     // subject: 게시글 제목
     @Column(nullable = false)
@@ -43,7 +43,7 @@ public class Post extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    // 카테고리 ID -> 카테고리 테이블과의 관계 설정 | 다대일 관계, board의 여러 게시글이 하나의 카테고리 참조
+    // 카테고리 ID -> 카테고리 테이블과의 관계 설정
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category categoryId;

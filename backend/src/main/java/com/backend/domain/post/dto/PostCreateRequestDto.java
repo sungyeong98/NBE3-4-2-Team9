@@ -22,15 +22,5 @@ public class PostCreateRequestDto {
     @Builder.Default // 기본값
     private Long jobPostingId = null; // 모집 게시판 아닐 경우 null
 
-    // DTO -> Entity 변환
-    public Post toEntity(Category category, JobPosting jobPosting){
-        return Post.builder()
-                .subject(this.subject)
-                .content(this.content)
-                .categoryId(category)
-                .jobId(jobPosting)
-                .recruitmentStatus(jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 상태
-                .build();
-    }
 }
 

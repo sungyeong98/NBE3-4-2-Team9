@@ -88,13 +88,13 @@ public class PostControllerTest {
 
         // 게시글 ID 가져오기(ex. 가장 최근 게시글 조회)
         Post post = postRepository.findAll().get(0); // 또는 ID가 작은 순으로 정렬해서 가져올 수도 있음
-        Long boardId = post.getBoardId(); // 실제 DB에 존재하는 ID 사용
+        Long postId = post.getPostId(); // 실제 DB에 존재하는 ID 사용
 
-        mockMvc.perform(get("/api/v1/posts/{id}", boardId)
+        mockMvc.perform(get("/api/v1/posts/{id}", postId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken)) // Authorization 헤더 포함
                 .andExpect(status().isOk()) // 200 응답 확인
-                .andExpect(jsonPath("$.data.id").value(boardId))
+                .andExpect(jsonPath("$.data.id").value(postId))
                 .andExpect(jsonPath("$.data.subject").isNotEmpty())
                 .andExpect(jsonPath("$.data.content").isNotEmpty())
                 .andDo(print());
