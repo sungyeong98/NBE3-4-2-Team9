@@ -103,7 +103,7 @@ public class SecurityConfig {
 
                     // 나머지 특정 권한이 필요한 URL들
                     authorizeRequests.requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
-                            .requestMatchers(HttpMethod.PUT, "/api/v1/category/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PATCH, "/api/v1/category/**").hasRole("ADMIN")
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

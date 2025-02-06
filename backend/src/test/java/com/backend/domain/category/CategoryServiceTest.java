@@ -1,4 +1,3 @@
-/*
 package com.backend.domain.category;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -220,4 +219,3 @@ class CategoryServiceTest {
         assertThat(exception.getMessage()).contains("카테고리 이름이 유효하지 않습니다.");
     }
 }
-*/

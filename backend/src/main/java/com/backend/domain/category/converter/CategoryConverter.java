@@ -1,5 +1,6 @@
 package com.backend.domain.category.converter;
 
+import com.backend.domain.category.dto.request.CategoryRequest;
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class CategoryConverter {
 
     // 현재 인증된 사용자의 역할(UserRole)을 반환하는 메서드
-    public static UserRole userRoleFormString() {
+    public static void AdminCheck() {
 
         // 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -42,8 +43,6 @@ public class CategoryConverter {
         if (!userRole.isAdmin()) {
             throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
         }
-
-        return userRole;
     }
 
     // 유효성 검사 및 중복 검사
@@ -80,6 +79,14 @@ public class CategoryConverter {
                 .name(category.getName())
                 .createdAt(category.getCreatedAt())
                 .modifiedAt(category.getModifiedAt())
+                .build();
+    }
+
+    // 카테고리 엔티티로 바꾸는 메서드
+    public static Category changeEntity(CategoryRequest categoryRequest) {
+        return Category.builder()
+                .id(categoryRequest.getId())
+                .name(categoryRequest.getName())
                 .build();
     }
 }

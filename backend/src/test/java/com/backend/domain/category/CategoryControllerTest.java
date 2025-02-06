@@ -1,9 +1,11 @@
 package com.backend.domain.category;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,15 +32,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Sql(scripts = {"/sql/init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = {"/sql/delete.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 class CategoryControllerTest {
 
     @Autowired
@@ -184,6 +188,46 @@ class CategoryControllerTest {
     void createCategory_WithUserRole_ShouldReturnForbidden() throws Exception {
         // when & then: POST 요청 시, 응답 상태가 403(Forbidden)임을 확인
         mockMvc.perform(post("/api/v1/category")
+                        .header("Authorization", "Bearer " + userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(category)))
+                .andExpect(status().isForbidden());  // 권한 부족으로 인해 403 Forbidden이 반환되어야 함
+    }
+
+    /**
+     * PATCH /api/v1/category/{id} 요청 테스트 (관리자 권한)
+     * - 관리자가 카테고리 이름을 수정하는 경우 정상적으로 수정되었는지 확인
+     */
+    @Test
+    void updateCategory_WithAdminRole_ShouldReturnUpdated() throws Exception {
+        // given: categoryService.updateCategory()에서 반환될 categoryResponse 설정
+        Category updatedCategory = new Category(1L, "Updated Tech");
+        CategoryResponse updatedCategoryResponse = createCategoryResponse(ZonedDateTime.now(), "Updated Tech");
+
+        when(categoryService.updateCategory(any(Category.class))).thenReturn(updatedCategoryResponse);
+
+        // when & then: PUT 요청을 보낼 때 CSRF 토큰 추가, 응답 상태가 200(OK) 확인
+        mockMvc.perform(patch("/api/v1/category/{id}", 1L)
+                        .with(csrf())  // CSRF 보호 활성화
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedCategory)))
+                .andExpect(status().isOk())  // 응답 상태 코드가 200인지 확인
+                .andExpect(jsonPath("$.success").value(true))  // 응답의 success가 true인지 확인
+                .andExpect(jsonPath("$.data.name").value("Updated Tech"));  // 수정된 카테고리의 name이 "Updated Tech"인지 확인
+    }
+
+    /**
+     * PATCH /api/v1/category/{id} 요청 테스트 (일반 사용자 권한)
+     * - 일반 사용자가 카테고리 수정 요청을 할 때 권한 부족으로 403 Forbidden이 반환되는지 검증
+     */
+    @Test
+    void updateCategory_WithUserRole_ShouldReturnForbidden() throws Exception {
+        // 디버깅: userToken이 null이 아닌지 확인
+        assertNotNull(userToken, "User token should not be null");
+
+        // when & then: PATCH 요청 시, 응답 상태가 403(Forbidden)임을 확인
+        mockMvc.perform(patch("/api/v1/category/{id}", 1L)
                         .header("Authorization", "Bearer " + userToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
