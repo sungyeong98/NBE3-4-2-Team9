@@ -32,11 +32,8 @@ public class PostService {
     //  게시글 생성
     @Transactional
     public PostResponseDto createPost(PostCreateRequestDto requestDto, SiteUser user) {
-        // 1. 로그인 여부 확인(로그인 하지 않은 경우에 글 작성 x, 예외 발생)
-        if (user == null) {
-            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-        }
-        // 2. 글 작성 전 카테고리 먼저 조회
+
+        // 1. 글 작성 전 카테고리 먼저 조회
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
 
@@ -68,7 +65,7 @@ public class PostService {
         return PostResponseDto.fromEntity(savedPost);
     }
 
-    //         게시글 전체 조회 (postType → categoryId 변경)
+    // 게시글 전체 조회 (postType → categoryId 변경)
     @Transactional(readOnly = true)
     public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort,
             int page, int size) {
