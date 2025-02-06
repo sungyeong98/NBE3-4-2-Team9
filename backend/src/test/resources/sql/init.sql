@@ -57,6 +57,16 @@ values (CURRENT_DATE, CURRENT_DATE, 'testEmail1@naver.com', 'test', 'test', 'tes
        (CURRENT_DATE, CURRENT_DATE, 'testEmail3@naver.com', 'test', 'test', 'testId3', 'testName3',
         'testPassword', 'testImg', 'ROLE_USER');
 
+-- Chat 데이터 생성
+INSERT INTO chat (created_at, modified_at, post_id, user_id, content, type)
+VALUES
+    (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1, 'content0', 'CHAT'),
+    (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1, 'content1', 'CHAT'),
+
+    (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 2, 'content0', 'CHAT'),
+    (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 2, 'content1', 'CHAT');
+
+
 INSERT into user_job_skill (user_id, job_skill_id)
 VALUES (1, 1),(1, 2), (1, 3),
        (2, 1),(2, 2), (2, 3),
