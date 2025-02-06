@@ -70,7 +70,9 @@ public class SecurityConfig {
                 "/api/v1/job-posting/**",
                 "/h2-console/**",
                 "/login/oauth2/code/kakao",
-                "/oauth2/authorization/kakao"
+                "/oauth2/authorization/kakao",
+                "/api/v1/chat/**",
+                "/ws/**"
         ));
     }
 
