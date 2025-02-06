@@ -27,17 +27,20 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        const token = data.token || response.headers.get('Authorization');
+        localStorage.setItem('accessToken', token);
+        
         dispatch(setCredentials({
           user: data.data,
-          token: data.token || response.headers.get('Authorization')
+          token: token
         }));
-        router.push('/');
+        router.push('/admin/profile');
       } else {
         alert(data.message || '로그인에 실패했습니다.');
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('로그인 중 오류가 발생했습니다.');
+      alert('로그인에 실패했습니다.');
     }
   };
 
