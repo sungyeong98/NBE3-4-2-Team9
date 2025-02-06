@@ -36,7 +36,7 @@ public class CategoryService {
     public CategoryResponse createCategory(@Valid CategoryRequest categoryRequest) {
 
         // 권한 검사
-        AdminCheck();
+//        AdminCheck();
 
         // 중복 검사
         categoryNameCheck(null, categoryRequest.getName(), categoryRepository);
