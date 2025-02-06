@@ -15,9 +15,9 @@ import com.backend.domain.user.repository.UserRepository;
 import com.backend.global.security.custom.CustomUserDetails;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.ZonedDateTime;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -30,7 +30,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-
+// 컨트롤러, 서비스, 리포 등 모든 빈을 가져옴
+// 서비스 단만 테스트를 할땐 단위 테스트
+// 단위 테스트는 하나의 클래스만 검증 서비스 안의 리포지토리 동작은 다 Mock처리로 진행
+// 단위 테스트, 통합 테스트 차이는 속도
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -74,13 +77,14 @@ class CategoryControllerTest {
     }
 
     // CategoryRequest 생성 메서드 (CategoryRequest로 변경된 부분)
-    private CategoryRequest createCategoryRequest (ZonedDateTime now, String name){
-        return new CategoryRequest(name, now, now);  // 엔티티 생성 방식에서 request DTO 방식으로 변경
+    private CategoryRequest createCategoryRequest (String name){
+        return new CategoryRequest(name);  // 엔티티 생성 방식에서 request DTO 방식으로 변경
     }
 
 
     @Test
     @DisplayName("카테고리 조회")
+    @Order(1)
     void getAllCategory_ShouldReturnCategoryList() throws Exception {
         // given: 미리 정의된 categoryResponse 리스트 반환 설정
 
@@ -97,7 +101,7 @@ class CategoryControllerTest {
     void createCategory_WithAdminRole() throws Exception {
 
         // when & then: POST 요청을 보낼 때 CSRF 토큰 추가, 응답 상태가 201(Created) 확인
-        CategoryRequest categoryRequest = createCategoryRequest(ZonedDateTime.now(), "Tech");
+        CategoryRequest categoryRequest = createCategoryRequest("Tech");
 
         mockMvc.perform(post("/api/v1/category")
                         .header("Authorization", "Bearer " + adminToken)
@@ -113,7 +117,7 @@ class CategoryControllerTest {
     void createCategory_WithUserRole() throws Exception {
 
         // when & then: POST 요청을 보낼 때 CSRF 토큰 추가, 응답 상태가 403(Created) 확인
-        CategoryRequest categoryRequest = createCategoryRequest(ZonedDateTime.now(), "Tech");
+        CategoryRequest categoryRequest = createCategoryRequest("Tech");
 
         mockMvc.perform(post("/api/v1/category")
                         .header("Authorization", "Bearer " + userToken)
@@ -128,11 +132,7 @@ class CategoryControllerTest {
     @Test
     @DisplayName("카테고리 수정 - 관리자")
     void updateCategory_WithAdminRole() throws Exception {
-        // 테스트용 categoryRequest
-        CategoryRequest categoryRequest = createCategoryRequest(ZonedDateTime.now(), "Tech");
-
-        // 수정할 이름
-        categoryRequest.setName("new Tech");
+        CategoryRequest categoryRequest = createCategoryRequest("new Tech");
 
         mockMvc.perform(patch("/api/v1/category/{id}", 1L)
                         .header("Authorization", "Bearer " + adminToken)
@@ -148,10 +148,7 @@ class CategoryControllerTest {
     @DisplayName("카테고리 수정 - 유저")
     void updateCategory_WithUserRole() throws Exception {
         // 테스트용 categoryRequest
-        CategoryRequest categoryRequest = createCategoryRequest(ZonedDateTime.now(), "Tech");
-
-        // 수정할 이름
-        categoryRequest.setName("new Tech");
+        CategoryRequest categoryRequest = createCategoryRequest("new Tech");
 
         mockMvc.perform(patch("/api/v1/category/{id}", 1L)
                         .header("Authorization", "Bearer " + userToken)

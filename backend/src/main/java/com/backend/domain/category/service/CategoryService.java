@@ -10,7 +10,6 @@ import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,10 +28,10 @@ public class CategoryService {
     }
 
     // 카테고리 추가 (관리자만 등록 가능)
-    public CategoryResponse createCategory(@Valid CategoryRequest categoryRequest) {
+    public CategoryResponse createCategory(CategoryRequest categoryRequest) {
 
         // 중복 검사
-        categoryNameCheck(null, categoryRequest.getName(), categoryRepository);
+        categoryNameCheck(categoryRequest.getName());
 
         // DTO -> Entity로 변환
         Category category = changeEntity(categoryRequest);
@@ -46,10 +45,10 @@ public class CategoryService {
 
     @Transactional
     // 카테고리 수정 (관리자만 가능)
-    public CategoryResponse updateCategory(Long id, @Valid CategoryRequest categoryRequest) {
+    public CategoryResponse updateCategory(Long id, CategoryRequest categoryRequest) {
 
         // 중복 검사
-        categoryNameCheck(id, categoryRequest.getName(), categoryRepository);
+        categoryNameCheck(categoryRequest.getName());
 
         // 관리자일 경우 기존 카테고리 id로 조회, 없으면 NOT_FOUND 예외 처리
         Category findCategory = categoryRepository.findById(id)
@@ -62,15 +61,10 @@ public class CategoryService {
         return mappingCategory(findCategory);
     }
 
-    public void categoryNameCheck(Long id, String name, CategoryRepository categoryRepository) {
-        if (id != null) {
-            if (categoryRepository.existsByNameAndIdNot(name, id)) {
-                throw new GlobalException(GlobalErrorCode.DUPLICATED_CATEGORY_NAME);
-            }
-        } else {
-            if (categoryRepository.existsByName(name)) {
-                throw new GlobalException(GlobalErrorCode.DUPLICATED_CATEGORY_NAME);
-            }
+    // 중복 검사 메서드
+    public void categoryNameCheck(String name) {
+        if (categoryRepository.existsByName(name)) {
+            throw new GlobalException(GlobalErrorCode.DUPLICATED_CATEGORY_NAME);
         }
     }
 }

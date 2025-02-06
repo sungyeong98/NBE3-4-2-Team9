@@ -5,6 +5,7 @@ import com.backend.global.exception.GlobalException;
 import com.backend.global.response.ErrorDetail;
 import com.backend.global.response.GenericResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
