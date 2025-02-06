@@ -19,4 +19,8 @@ public class CategoryRequest {
 
     private ZonedDateTime createdAt;
     private ZonedDateTime modifiedAt;
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
