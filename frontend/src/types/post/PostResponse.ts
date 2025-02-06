@@ -1,13 +1,19 @@
 export interface PostResponse {
-  postId: number;
-  title: string;
+  id: number;
+  subject: string;
   content: string;
-  viewCount: number;
-  createdAt: string;
-  updatedAt: string;
   categoryId: number;
   categoryName: string;
   authorId: number;
   authorName: string;
-  authorProfileImage?: string;
+  viewCount: number;
+  createdAt: string;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
 } 
