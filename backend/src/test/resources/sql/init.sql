@@ -1,3 +1,19 @@
+-- SiteUser 데이터 생성
+INSERT INTO site_user (created_at, modified_at, email, introduction, job, kakao_id, name, password,
+                       profile_img, user_role)
+values (CURRENT_DATE, CURRENT_DATE, 'testEmail1@naver.com', 'test', 'test', 'testId1', 'testName1',
+        'testPassword', 'testImg', 'ROLE_USER'),
+       (CURRENT_DATE, CURRENT_DATE, 'testEmail2@naver.com', 'test', 'test', 'testId2', 'testName2',
+        'testPassword', 'testImg', 'ROLE_USER'),
+       (CURRENT_DATE, CURRENT_DATE, 'testEmail3@naver.com', 'test', 'test', 'testId3', 'testName3',
+        'testPassword', 'testImg', 'ROLE_USER');
+
+-- Category 데이터 생성
+-- ID 1 -> 자유 게시판, ID 2 -> 모집 게시판
+INSERT INTO category (created_at, modified_at, name)
+VALUES (CURRENT_DATE, CURRENT_DATE, '자유 게시판'),
+       (CURRENT_DATE, CURRENT_DATE, '모집 게시판');
+
 -- JobPosting 데이터 생성
 INSERT INTO job_posting (apply_cnt, close_date, company_link, company_name, experience_level_code,
                          experience_level_max, experience_level_min, experience_level_name,
@@ -29,17 +45,13 @@ values (1, CURRENT_DATE + 1, 'testLink', 'testCompany', 2, 3, 1, '경력 1~3년'
        (12, CURRENT_DATE + 1, 'testLink', 'testCompany', 1, 0, 0, '신입', 'ACTIVE', CURRENT_DATE,
         CURRENT_DATE, 0, '학력 무관', 99, '면접 후 결정', '테스트 제목12', 'testUrl');
 
--- Category 데이터 생성
--- ID 1 -> 자유 게시판, ID 2 -> 모집 게시판
-INSERT INTO category (created_at, modified_at, name)
-VALUES (CURRENT_DATE, CURRENT_DATE, '자유 게시판'),
-       (CURRENT_DATE, CURRENT_DATE, '모집 게시판');
-
 -- Post 데이터 생성
-INSERT INTO post (created_at, modified_at, content, num_of_applicants, recruiment_closing_date,
-                  recruitment_status, subject, category_id, job_id)
+INSERT INTO post (created_at, modified_at, content, num_of_applicants, recruitment_closing_date,
+                  recruitment_status, subject, category_id, job_id, user_id)
 VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', null, CURRENT_DATE + 1, null, 'testSubject', 1,
-        null);
+        null,1),
+    (CURRENT_DATE, CURRENT_DATE, '테스트 내용', null, CURRENT_DATE + 1, null, '테스트 제목', 2,
+        null,2);
 
 -- JobSkill 데이터 생성
 INSERT INTO job_skill (job_skill_code, job_skill_name)
