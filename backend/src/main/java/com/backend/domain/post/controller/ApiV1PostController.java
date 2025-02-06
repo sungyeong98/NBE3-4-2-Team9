@@ -5,6 +5,7 @@ import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.service.PostService;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.response.GenericResponse;
+import com.backend.global.security.custom.CustomUserDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +30,13 @@ public class ApiV1PostController {
     @PostMapping
     public GenericResponse<PostResponseDto> createPost
     (@RequestBody PostCreateRequestDto responseDto,
-            @AuthenticationPrincipal SiteUser user) {
-        PostResponseDto createdPost = postService.createPost(responseDto, user);
-        return GenericResponse.of(true, HttpStatus.OK.value(), createdPost);
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        PostResponseDto createdPost = postService.createPost(responseDto, user.getSiteUser());
+        return GenericResponse.of(true, HttpStatus.CREATED.value(), createdPost);
     }
 
-    //     전체 게시글 조회 (DTO 적용) + 조건 없이 전체 글 조회, 카테고리, 정렬, 검색, 페이징
+    //  전체 게시글 조회 (DTO 적용) + 조건 없이 전체 글 조회, 카테고리, 정렬, 검색, 페이징
     @GetMapping
     public GenericResponse<Page<PostResponseDto>> getAllPosts(
             @RequestParam(required = false) Long categoryId,
