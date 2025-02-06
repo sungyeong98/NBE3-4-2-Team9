@@ -2,10 +2,11 @@ package com.backend.global.baseentity;
 
 import com.backend.domain.jobskill.entity.JobSkill;
 import com.backend.domain.jobskill.repository.JobSkillJpaRepository;
-import com.backend.domain.jobskill.repository.JobSkillRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.entity.UserRole;
 import com.backend.domain.user.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
@@ -13,9 +14,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Profile({"build", "dev"})
@@ -30,23 +28,43 @@ public class BaseInitData {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     void init() throws InterruptedException {
-        SiteUser admin = createAdmin();
+        List<SiteUser> users = createAdminAndUser();
         List<JobSkill> jobSkills = createJobSkill();
     }
 
-    private SiteUser createAdmin() throws InterruptedException {
+    private List<SiteUser> createAdminAndUser() throws InterruptedException {
         if (userRepository.count() > 0) return null;
 
-        SiteUser siteUser = SiteUser.builder()
+        List<SiteUser> users = new ArrayList<>();
+
+        SiteUser admin = SiteUser.builder()
                 .email("admin@admin.com")
                 .name("admin")
                 .password(passwordEncoder.encode("admin"))
                 .userRole(UserRole.ROLE_ADMIN.toString())
                 .build();
+        userRepository.save(admin);
+        users.add(admin);
 
-        userRepository.save(siteUser);
+        SiteUser user1 = SiteUser.builder()
+                .email("user1@user.com")
+                .name("user1")
+                .password(passwordEncoder.encode("user"))
+                .userRole(UserRole.ROLE_USER.toString())
+                .build();
+        userRepository.save(user1);
+        users.add(user1);
 
-        return siteUser;
+        SiteUser user2 = SiteUser.builder()
+                .email("user2@user.com")
+                .name("user2")
+                .password(passwordEncoder.encode("user"))
+                .userRole(UserRole.ROLE_USER.toString())
+                .build();
+        userRepository.save(user2);
+        users.add(user2);
+
+        return users;
     }
 
     private List<JobSkill> createJobSkill() throws InterruptedException {

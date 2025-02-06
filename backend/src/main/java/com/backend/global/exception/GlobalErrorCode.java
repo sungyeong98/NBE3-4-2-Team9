@@ -37,11 +37,19 @@ public enum GlobalErrorCode {
 	INVALID_CATEGORY_ID(HttpStatus.BAD_REQUEST, 3003, "카테고리 ID가 유효하지 않습니다."),
 	ID_MISMATCH(HttpStatus.BAD_REQUEST, 3004, "카테고리 ID가 일치하지 않습니다."),
 
+    // 웹 소켓 에러 코드
+    EXCEPTION_IN_WEBSOCKET(HttpStatus.UNAUTHORIZED, 6001, "웹 소켓 연결 중에 예외가 발생하였습니다."),
+
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다."),
-	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "서버 내부 오류가 발생하였습니다.");
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "서버 내부 오류가 발생하였습니다."),
 
-	private final HttpStatus httpStatus;
+    // JWT 관련 에러 코드
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, 7001, "토큰이 만료되었습니다."),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, 7002, "토큰이 존재하지 않습니다.");
+
+
+    private final HttpStatus httpStatus;
 	private final int code;
 	private final String message;
 }
