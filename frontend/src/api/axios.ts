@@ -1,17 +1,21 @@
 import axios from 'axios';
 
-export const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+// 인증이 필요한 요청을 위한 인스턴스
+export const privateApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true
 });
 
-// 요청 인터셉터
-axiosInstance.interceptors.request.use(
+// 인증이 필요없는 요청을 위한 인스턴스
+export const publicApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true
+});
+
+// 인증이 필요한 요청에만 토큰 추가
+privateApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -22,16 +26,14 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터
-axiosInstance.interceptors.response.use(
+privateApi.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
-      // 인증 에러 처리
-      localStorage.removeItem('token');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
 
-export default axiosInstance; 
+export default publicApi; // 기본 export는 인증이 필요없는 인스턴스 
