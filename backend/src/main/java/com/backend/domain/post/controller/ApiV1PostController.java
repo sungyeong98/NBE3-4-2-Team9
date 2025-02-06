@@ -3,7 +3,6 @@ package com.backend.domain.post.controller;
 import com.backend.domain.post.dto.PostCreateRequestDto;
 import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.service.PostService;
-import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import jakarta.validation.Valid;

@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +39,7 @@ class PostRepositoryTest {
     private Category recruitmentBoardCategory;
 
     @Autowired
-    private UserRepository  userRepository;
+    private UserRepository userRepository;
     private SiteUser testUser;
 
     @BeforeEach
@@ -50,13 +49,13 @@ class PostRepositoryTest {
 
         // 카테고리 가져오기
         List<Category> freeCategories = categoryRepository.findByName("자유 게시판");
-        if (freeCategories.isEmpty()){
+        if (freeCategories.isEmpty()) {
             throw new RuntimeException("자유 게시판 카테고리를 찾을 수 없습니다.");
         }
         freeBoardCategory = freeCategories.get(0);
 
         List<Category> recruitmentCategories = categoryRepository.findByName("모집 게시판");
-        if (recruitmentCategories.isEmpty()){
+        if (recruitmentCategories.isEmpty()) {
             throw new RuntimeException("모집 게시판을 찾을 수 없습니다.");
         }
         recruitmentBoardCategory = recruitmentCategories.get(0);
@@ -94,22 +93,26 @@ class PostRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // 자유게시판에서 "test" 포함된 게시글 검색
-        Page<Post> posts_free1 = postRepository.findByCategoryAndKeyword(freeBoardCategory.getId(), "test",
+        Page<Post> posts_free1 = postRepository.findByCategoryAndKeyword(freeBoardCategory.getId(),
+                "test",
                 pageable);
         assertThat(posts_free1.getContent()).hasSize(1);
 
         // 자유게시판에서 "테스트" 포함된 게시글 검색 -> 없음
-        Page<Post> posts_free2 = postRepository.findByCategoryAndKeyword(freeBoardCategory.getId(), "테스트",
+        Page<Post> posts_free2 = postRepository.findByCategoryAndKeyword(freeBoardCategory.getId(),
+                "테스트",
                 pageable);
         assertThat(posts_free2.getContent()).hasSize(0);
 
         // 모집게시판에서 "테스트" 포함된 게시글 검색
-        Page<Post> posts_recruitment1 = postRepository.findByCategoryAndKeyword(recruitmentBoardCategory.getId(), "테스트",
+        Page<Post> posts_recruitment1 = postRepository.findByCategoryAndKeyword(
+                recruitmentBoardCategory.getId(), "테스트",
                 pageable);
         assertThat(posts_recruitment1.getContent()).hasSize(1);
 
         // 모집게시판에서 "test" 포함된 게시글 검색 -> 없음
-        Page<Post> posts_recruitment2 = postRepository.findByCategoryAndKeyword(recruitmentBoardCategory.getId(), "test",
+        Page<Post> posts_recruitment2 = postRepository.findByCategoryAndKeyword(
+                recruitmentBoardCategory.getId(), "test",
                 pageable);
         assertThat(posts_recruitment2.getContent()).hasSize(0);
 

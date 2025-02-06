@@ -29,7 +29,7 @@ public class PostResponseDto {
                 .subject(post.getSubject())
                 .content(post.getContent())
                 .categoryId(post.getCategoryId().getId())
-                .jobPostingId(post.getJobId() != null ? post.getJobId().getId(): null)
+                .jobPostingId(post.getJobId() != null ? post.getJobId().getId() : null)
                 .createdAt(post.getCreatedAt())
                 .build();
 

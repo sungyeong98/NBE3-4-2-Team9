@@ -17,7 +17,7 @@ public class PostCreateRequestDto {
     @NotBlank(message = "제목을 입력해 주세요.")
     private String subject;
     @NotBlank(message = "내용을 입력해 주세요.")
-    private String content;g
+    private String content;
     @NotNull(message = "카테고리를 선택해 주세요.")
     private Long categoryId;
     @Builder.Default // 기본값

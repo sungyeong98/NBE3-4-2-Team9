@@ -86,14 +86,15 @@ public class Post extends BaseEntity {
     }
 
     public static Post createPost(PostCreateRequestDto dto, Category category,
-            SiteUser author, JobPosting jobPosting){
+            SiteUser author, JobPosting jobPosting) {
         return Post.builder()
                 .subject(dto.getSubject())
                 .content(dto.getContent())
                 .categoryId(category)
                 .author(author)
                 .jobId(jobPosting)
-                .recruitmentStatus(jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+                .recruitmentStatus(
+                        jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
                 .build();
     }
 

@@ -60,11 +60,8 @@ public class PostControllerTest {
         //액세스 토큰 발급
         String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
 
-        PostCreateRequestDto requestDto = PostCreateRequestDto.builder()
-                .subject("새로운 제목")
-                .content("새로운 내용")
-                .categoryId(1L)
-                .build();
+        PostCreateRequestDto requestDto = PostCreateRequestDto.builder().subject("새로운 제목")
+                .content("새로운 내용").categoryId(1L).build();
 
         mockMvc.perform(post("/api/v1/posts") // 게시글 생성 API 요청
                         .contentType(MediaType.APPLICATION_JSON)
@@ -72,8 +69,7 @@ public class PostControllerTest {
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.subject").value("새로운 제목"))
-                .andExpect(jsonPath("$.data.content").value("새로운 내용"))
-                .andDo(print());
+                .andExpect(jsonPath("$.data.content").value("새로운 내용")).andDo(print());
     }
 
     @Test
@@ -90,14 +86,12 @@ public class PostControllerTest {
         Post post = postRepository.findAll().get(0); // 또는 ID가 작은 순으로 정렬해서 가져올 수도 있음
         Long postId = post.getPostId(); // 실제 DB에 존재하는 ID 사용
 
-        mockMvc.perform(get("/api/v1/posts/{id}", postId)
-                        .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(get("/api/v1/posts/{id}", postId).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken)) // Authorization 헤더 포함
                 .andExpect(status().isOk()) // 200 응답 확인
                 .andExpect(jsonPath("$.data.id").value(postId))
                 .andExpect(jsonPath("$.data.subject").isNotEmpty())
-                .andExpect(jsonPath("$.data.content").isNotEmpty())
-                .andDo(print());
+                .andExpect(jsonPath("$.data.content").isNotEmpty()).andDo(print());
 
     }
 
