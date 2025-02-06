@@ -1,9 +1,5 @@
 package com.backend.domain.post.dto;
 
-import com.backend.domain.category.entity.Category;
-import com.backend.domain.jobposting.entity.JobPosting;
-import com.backend.domain.post.entity.Post;
-import com.backend.domain.post.entity.RecruitmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

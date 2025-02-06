@@ -2,6 +2,7 @@ package com.backend.domain.post.entity;
 
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.post.dto.PostCreateRequestDto;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.Column;
@@ -24,10 +25,10 @@ import lombok.NoArgsConstructor;
 // 게시판 엔티티
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "post")
 @AllArgsConstructor
-@Builder
 public class Post extends BaseEntity {
 
     // postId: 게시글의 고유 식별자(PK, Auto Increment)
@@ -69,30 +70,38 @@ public class Post extends BaseEntity {
     // createDate: 생성일자, BaseEntity 상속
     // modifyDate: 수정일자, BaseEntity 상속
 
+    // 객체 생성 통일
+    public static Post createPost(String subject, String content, Category category,
+            SiteUser author, JobPosting jobposting) {
+        boolean isRecruitment = "모집 게시판".equals(category.getName());
+
+        return Post.builder()
+                .subject(subject)
+                .content(content)
+                .categoryId(category)
+                .jobId(jobposting)
+                .author(author)
+                .recruitmentStatus(isRecruitment ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+                .build();
+    }
+
+    public static Post createPost(PostCreateRequestDto dto, Category category,
+            SiteUser author, JobPosting jobPosting){
+        return Post.builder()
+                .subject(dto.getSubject())
+                .content(dto.getContent())
+                .categoryId(category)
+                .author(author)
+                .jobId(jobPosting)
+                .recruitmentStatus(jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+                .build();
+    }
+
     // 게시글 수정
     public void updatePost(String subject, String content) {
         // 기존 제목과 다를 때
         this.subject = subject;
         // 기존 게시글 내용과 다를 때
         this.content = content;
-    }
-
-    // 테스트용 생성자 추가
-    public Post(String subject, String content, Category categoryId) {
-        this.subject = subject;
-        this.content = content;
-        this.categoryId = categoryId;
-
-        // 모집 게시판일 경우 recruitmentStatus 설정
-        if (isRecruitmentCategory()) {
-            this.recruitmentStatus = RecruitmentStatus.OPEN;
-        } else {
-            this.recruitmentStatus = null;
-        }
-    }
-
-    // 모집 게시판인지 확인하는 메서드 추가
-    private boolean isRecruitmentCategory() {
-        return "모집 게시판".equals(categoryId.getName());
     }
 }
