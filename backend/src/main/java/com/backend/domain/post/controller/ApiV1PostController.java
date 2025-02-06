@@ -6,6 +6,7 @@ import com.backend.domain.post.service.PostService;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class ApiV1PostController {
     // 게시글 생성
     @PostMapping
     public GenericResponse<PostResponseDto> createPost
-    (@RequestBody PostCreateRequestDto responseDto,
+    (@Valid @RequestBody PostCreateRequestDto responseDto,
             @AuthenticationPrincipal CustomUserDetails user) {
 
         PostResponseDto createdPost = postService.createPost(responseDto, user.getSiteUser());
