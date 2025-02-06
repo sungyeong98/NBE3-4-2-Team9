@@ -49,7 +49,7 @@ public class Post extends BaseEntity {
     private Category categoryId;
 
     // 모집 게시판에만 필요한 부분
-    private ZonedDateTime recruimentClosingDate; // 모집 기간
+    private ZonedDateTime recruitmentClosingDate; // 모집 기간
     private Long numOfApplicants; // 모집 인원
 
     @Enumerated(EnumType.STRING)
