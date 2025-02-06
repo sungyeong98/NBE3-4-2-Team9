@@ -8,6 +8,7 @@ import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.repository.PostRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.repository.UserRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,9 +48,17 @@ class PostRepositoryTest {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         // 카테고리 가져오기
-        freeBoardCategory = categoryRepository.findByName("자유 게시판").get(0);
-        recruitmentBoardCategory = categoryRepository.findByName("모집 게시판").get(0);
+        List<Category> freeCategories = categoryRepository.findByName("자유 게시판");
+        if (freeCategories.isEmpty()){
+            throw new RuntimeException("자유 게시판 카테고리를 찾을 수 없습니다.");
+        }
+        freeBoardCategory = freeCategories.get(0);
 
+        List<Category> recruitmentCategories = categoryRepository.findByName("모집 게시판");
+        if (recruitmentCategories.isEmpty()){
+            throw new RuntimeException("모집 게시판을 찾을 수 없습니다.");
+        }
+        recruitmentBoardCategory = recruitmentCategories.get(0);
     }
 
     @Test
