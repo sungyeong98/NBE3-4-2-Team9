@@ -59,15 +59,10 @@ VALUES (1, 'JAVA'),
        (2, 'C'),
        (3, 'PYTHON');
 
--- SiteUser 데이터 생성
-INSERT INTO site_user (created_at, modified_at, email, introduction, job, kakao_id, name, password,
-                       profile_img, user_role)
-values (CURRENT_DATE, CURRENT_DATE, 'testEmail1@naver.com', 'test', 'test', 'testId1', 'testName1',
-        'testPassword', 'testImg', 'ROLE_USER'),
-       (CURRENT_DATE, CURRENT_DATE, 'testEmail2@naver.com', 'test', 'test', 'testId2', 'testName2',
-        'testPassword', 'testImg', 'ROLE_USER'),
-       (CURRENT_DATE, CURRENT_DATE, 'testEmail3@naver.com', 'test', 'test', 'testId3', 'testName3',
-        'testPassword', 'testImg', 'ROLE_USER');
+INSERT into user_job_skill (user_id, job_skill_id)
+VALUES (1, 1),(1, 2), (1, 3),
+       (2, 1),(2, 2), (2, 3),
+       (3, 1),(3, 2), (3, 3);
 
 -- Chat 데이터 생성
 INSERT INTO chat (created_at, modified_at, post_id, user_id, content, type)
@@ -79,7 +74,3 @@ VALUES
     (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 2, 'content1', 'CHAT');
 
 
-INSERT into user_job_skill (user_id, job_skill_id)
-VALUES (1, 1),(1, 2), (1, 3),
-       (2, 1),(2, 2), (2, 3),
-       (3, 1),(3, 2), (3, 3);
