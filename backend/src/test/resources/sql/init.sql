@@ -84,8 +84,8 @@ VALUES (1, 1),
        (3, 2),
        (3, 3);
 
-INSERT INTO voter (job_posting_id, site_user_id)
+/*INSERT INTO voter (job_posting_id, site_user_id)
 VALUES (1, 1),
        (2, 1),
        (3, 1),
-       (1, 2);
+       (1, 2);*/
