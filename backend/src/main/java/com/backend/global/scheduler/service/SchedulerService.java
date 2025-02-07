@@ -1,7 +1,9 @@
 package com.backend.global.scheduler.service;
 
 import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.jobposting.entity.JobPostingJobSkill;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
+import com.backend.domain.jobskill.entity.JobSkill;
 import com.backend.domain.jobskill.repository.JobSkillRepository;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
@@ -13,6 +15,9 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,9 +59,9 @@ public class SchedulerService {
      * 데이터베이스에 저장하는 핵심 로직을 실행합니다.
      */
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    @Transactional
     public void savePublicData() {
         retryTemplate.execute(context -> {
-
             int pageNumber = 0;
             int totalCount = 0;
             int totalJobs = Integer.MAX_VALUE;
@@ -66,7 +71,6 @@ public class SchedulerService {
             return null;
 
         });
-
     }
 
     /**
@@ -87,43 +91,44 @@ public class SchedulerService {
             .toList();
 
         // 전체 저장
-        // 엔티티
-        List<JobPosting> savedJobPostingList = saveNewJobs(jobPostingList); //jobId
+        List<JobPosting> savedJobPostingList = saveNewJobs(jobPostingList);
 
-//        //JSON 응답 파싱
-//        List<Job> jobList = jobs.getJobsDetail().getJobList(); //id
-//        Map<String, Job> jobMap = jobList.stream()
-//            .collect(Collectors.toMap(Job::getId, job -> job));
-//
-//        for (JobPosting jobPosting : savedJobPostingList) {
-//
-//            //채용 공고랑 jobPosting이랑 일치하는 애 찾는 if문
-//            Job findJob = jobMap.get(jobPosting.getJobId());
-//            String jobCode = findJob.getPositionDto().getJobCode().getCode();
-//
-//            //여러개면 , 기준으로 짜르기
-//            String[] jobCodeArray = jobCode.split(",");
-//
-//            for (String s : jobCodeArray) {
-//                //jobSkill 조회
-//                Optional<JobSkill> jobSkillOptional = jobSkillRepository.findByCode(
-//                    Integer.parseInt(s));
-//                if (jobSkillOptional.isEmpty()) {
-//                    continue;
-//                } else {
-//                    JobSkill jobSkill = jobSkillOptional.get();
-//                    //JobPosting에 jobskill 설정
-//                    jobPosting.getJobPostingJobSkillList().add(
-//                        JobPostingJobSkill.builder()
-//                            .jobPosting(testJobPosting)
-//                            .jobSkill(jobSkill));
-//                }
-//            }
-//        }
+        //JSON 응답 파싱
+        List<Job> jobList = jobs.getJobsDetail().getJobList();
+        Map<Long, Job> jobMap = jobList.stream()
+            .collect(Collectors.toMap(job -> Long.parseLong(job.getId()), job -> job));
 
-        //더티 체킹으로 인해 업데이트 쿼리 자동 발생
+        for (JobPosting jobPosting : savedJobPostingList) {
 
-        // JobPostingJobSkill (JobPosting이 저장이 안 된 상태로 저장이 될지 모르겠음)
+            //채용 공고랑 jobPosting이랑 일치하는 애 찾는 if문
+            // 한 페이지에 해당하는 110개의 데이터를 방금 저장한 공고들인 jobPosting과 비교하여, 손수 job-code의 code를 꺼내기 위한 작업.
+            Job findJob = jobMap.get(jobPosting.getJobId());
+            String jobCode = findJob.getPositionDto().getJobCode().getCode();
+
+            //여러개면 , 기준으로 짜르기
+            String[] jobCodeArray = jobCode.split(",");
+
+            for (String s : jobCodeArray) {
+                // db에 저장된 jobSkill, code로 조회
+                Optional<JobSkill> jobSkillOptional = jobSkillRepository.findByCode(
+                    Integer.parseInt(s.trim()));
+
+                //jobSkill DB에 없다면
+                if (jobSkillOptional.isEmpty()) {
+                    continue;
+                } else {
+                    JobSkill jobSkill = jobSkillOptional.get();
+
+                    //JobPosting에 jobskill 설정
+                    //더티 체킹으로 인해 업데이트 쿼리 자동 발생
+                    jobPosting.getJobPostingJobSkillList().add(
+                        JobPostingJobSkill.builder()
+                            .jobPosting(jobPosting)
+                            .jobSkill(jobSkill)
+                            .build());
+                }
+            }
+        }
 
         //총 가져와야되는 개수 초기화
         if (totalJobs == Integer.MAX_VALUE) {
@@ -153,7 +158,8 @@ public class SchedulerService {
             .queryParam("published", getPublishedDate())
             .queryParam("job_mid_cd", "2")
             .queryParam("start", pageNumber) // 현재 페이지숫자
-            .queryParam("count", count) //한 번 호출시 가지고 오는 데이터 양
+            .queryParam("count", count)
+            .queryParam("fields", "count")//한 번 호출시 가지고 오는 데이터 양
             .build()
             .encode()
             .toUri();
@@ -200,7 +206,6 @@ public class SchedulerService {
      *
      * @param newJobs 가공된 JobPosting 데이터 리스트
      */
-    @Transactional
     private List<JobPosting> saveNewJobs(List<JobPosting> newJobs) {
         try {
             List<JobPosting> savedJobPostingList = jobPostingRepository.saveAll(newJobs);

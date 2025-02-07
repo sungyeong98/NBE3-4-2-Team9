@@ -36,6 +36,9 @@ public class Job {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("apply-cnt")
+    private String applyCnt;
+
     /**
      * JSON 데이터를 Java 객체로 변환할 때 사용되는 설정입니다.
      *

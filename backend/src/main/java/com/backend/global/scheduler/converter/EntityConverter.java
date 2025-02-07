@@ -10,7 +10,9 @@ import com.backend.global.scheduler.apiresponse.position.ExperienceLevelDto;
 import com.backend.global.scheduler.apiresponse.position.JobCodeDto;
 import com.backend.global.scheduler.apiresponse.position.RequireEducateDto;
 import com.backend.global.scheduler.apiresponse.salary.SalaryDto;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class EntityConverter {
 
 
@@ -30,6 +32,8 @@ public class EntityConverter {
             .requireEducate(job.getPositionDto().getRequireEducate().toEntity())
             .jobPostingStatus(job.getJobPostingStatus())
             .salary(job.getSalaryDto().toEntity())
+            .jobId(Long.parseLong(job.getId()))
+            .applyCnt(Long.parseLong(job.getApplyCnt()))
             .build();
 
     }
