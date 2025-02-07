@@ -1,5 +1,7 @@
 package com.backend.domain.post;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -104,5 +106,58 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.data.content").isArray()) // content가 배열인지 확인
                 .andDo(print());
 
+    }
+    @Test
+    @DisplayName("게시글 삭제 - 작성자가 삭제 -> 성공")
+    void testDeletePost_Success() throws Exception {
+        SiteUser siteUser = userRepository.findByEmail("testEmail1@naver.com")
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        CustomUserDetails customUserDetails = new CustomUserDetails(siteUser);
+        String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
+
+        Post post = postRepository.findAll().get(0);
+
+        mockMvc.perform(delete("/api/v1/posts/{id}", post.getPostId())
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isNoContent());
+
+        // 🔹 삭제 후 존재 여부 확인
+        boolean exists = postRepository.existsById(post.getPostId());
+        assertThat(exists).isFalse();
+    }
+    @Test
+    @DisplayName("게시글 삭제 - 작성자가 아닌 유저가 삭제 -> 실패")
+    void deletePost_Forbidden() throws Exception{
+    Post testPost = postRepository.findBySubject("새로운 제목")
+            .orElseThrow(() -> new RuntimeException("테스트 게시글을 찾을 수 없습니다."));
+
+    SiteUser otherUser = userRepository.findByEmail("testEmail2@naver.com")
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+    CustomUserDetails otherUserDetails = new CustomUserDetails(otherUser);
+    String accessToken = jwtUtil.createAccessToken(otherUserDetails, ACCESS_EXPIRATION);
+
+    mockMvc.perform(delete("/api/v1/posts/{id}", testPost.getPostId())
+                    .header("Authorization", "Bearer " + accessToken)) // 다른 유저의 토큰 사용
+            .andExpect(status().isForbidden()) // 403 응답이 나와야 함
+            .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 존재하지 않는 게시글 삭제 -> 실패")
+    void deletePost_NotFound() throws Exception{
+        Long nonExistentPostId = 9999L;
+
+        SiteUser siteUser = userRepository.findByEmail("testEmail1@naver.com")
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        CustomUserDetails customUserDetails = new CustomUserDetails(siteUser);
+        String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
+
+        mockMvc.perform(delete("/api/v1/posts/{id}", nonExistentPostId)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isNotFound())
+                .andDo(print());
     }
 }

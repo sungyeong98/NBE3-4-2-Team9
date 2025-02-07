@@ -29,6 +29,7 @@ public enum GlobalErrorCode {
     // 게시글 도메인 에러 코드
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "카테고리가 존재하지 않습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, 1002, "게시글이 존재하지 않습니다."),
+    POST_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, 1003, "게시글 삭제 권한이 없습니다."),
 
 	// 카테고리 도메인 에러 코드
 	DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3001, "카테고리 이름이 이미 존재합니다."),
