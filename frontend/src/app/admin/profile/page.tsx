@@ -3,19 +3,22 @@
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { RootState } from '@/store/store';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { privateApi } from '@/api/axios';
 import { UserCircleIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 export default function AdminProfile() {
   const router = useRouter();
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   const [newCategory, setNewCategory] = useState('');
 
-  if (!isAuthenticated || !user?.email?.includes('admin')) {
-    router.push('/login');
-    return null;
-  }
+  useEffect(() => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!user?.email?.includes('admin') || !adminToken) {
+      router.push('/admin/login');
+      return;
+    }
+  }, [user, router]);
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -15,7 +15,7 @@ export const publicApi = axios.create({
 // 인증이 필요한 요청에만 토큰 추가
 privateApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('adminToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,7 +30,12 @@ privateApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      window.location.href = '/login';
+      localStorage.removeItem('adminToken');
+      document.cookie = 'adminToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      const isAdminPage = window.location.pathname.startsWith('/admin');
+      if (isAdminPage) {
+        window.location.href = '/admin/login';
+      }
     }
     return Promise.reject(error);
   }
