@@ -12,14 +12,15 @@ export default function Login() {
   const searchParams = useSearchParams();
   
   useEffect(() => {
-    // URL에서 토큰과 사용자 정보를 확인
-    const token = searchParams.get('token');
-    const userInfo = searchParams.get('user');
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get('token');
+    const userInfo = params.get('user');
 
-    if (token && userInfo) {
+    if (accessToken && userInfo) {
       try {
         const user = JSON.parse(decodeURIComponent(userInfo));
-        dispatch(setCredentials({ user, token }));
+        dispatch(setCredentials({ user, token: accessToken }));
+        localStorage.setItem('accessToken', accessToken);
         router.push('/');
       } catch (error) {
         console.error('Failed to parse user info:', error);
