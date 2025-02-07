@@ -1,33 +1,79 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { privateApi } from '@/api/axios';
+
+interface Category {
+  id: number;
+  name: string;
+}
 
 export default function WritePost() {
   const router = useRouter();
-  const [title, setTitle] = useState('');
+  const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState('1'); // 기본값: 자유게시판
+  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const categories = [
-    { id: '1', name: '자유게시판' },
-    { id: '2', name: '취업/이직' },
-    { id: '3', name: '개발 질문' },
-    { id: '4', name: '프로젝트' },
-  ];
+  // 카테고리 목록 가져오기
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setIsLoading(true);
+        const response = await privateApi.get('/api/v1/category');
+        console.log('카테고리 응답:', response.data);
+
+        if (response.data.success) {
+          const categoryData = response.data.data;
+          setCategories(categoryData);
+          if (categoryData.length > 0) {
+            setCategory(categoryData[0].id.toString());
+          }
+        }
+      } catch (error) {
+        console.error('카테고리 조회 실패:', error);
+        alert('카테고리 목록을 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // TODO: API 연동
-    console.log({
-      title,
-      content,
-      categoryId: parseInt(category)
-    });
+    if (!subject.trim() || !content.trim() || !category) {
+      alert('모든 필드를 입력해주세요.');
+      return;
+    }
 
-    // 임시로 목록으로 이동
-    router.push('/post');
+    try {
+      const postData = {
+        subject: subject.trim(),
+        content: content.trim(),
+        categoryId: parseInt(category)
+      };
+
+      console.log('전송할 데이터:', postData);
+
+      const response = await privateApi.post('/api/v1/posts', postData);
+
+      console.log('게시글 작성 응답:', response.data);
+
+      if (response.data.success) {
+        alert('게시글이 작성되었습니다.');
+        router.push('/post');
+      } else {
+        throw new Error(response.data.message || '게시글 작성에 실패했습니다.');
+      }
+    } catch (error: any) {
+      console.error('게시글 작성 실패:', error);
+      alert(error.response?.data?.message || '게시글 작성에 실패했습니다.');
+    }
   };
 
   return (
@@ -39,17 +85,25 @@ export default function WritePost() {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             카테고리
           </label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+          {isLoading ? (
+            <div className="w-full px-3 py-2 border border-gray-300 rounded-md">
+              로딩중...
+            </div>
+          ) : (
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">카테고리를 선택하세요</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div>
@@ -58,8 +112,8 @@ export default function WritePost() {
           </label>
           <input
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="제목을 입력하세요"
             required
@@ -91,6 +145,7 @@ export default function WritePost() {
           <button
             type="submit"
             className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            disabled={isLoading}
           >
             작성하기
           </button>
