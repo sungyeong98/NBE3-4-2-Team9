@@ -113,7 +113,7 @@ class CategoryControllerTest {
                 .andExpect(jsonPath("$.data.name").value("Tech"));  // 생성된 카테고리의 name이 "Tech"인지 확인
 
 
-        // 수정 후 카테고리 목록 조회하여 수정 되어있는지 확인
+        // 수정 후 카테고리 목록 조회하여 추가 되어있는지 확인
         mockMvc.perform(get("/api/v1/category")
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk()) // 응답 상태 코드가 200인지
