@@ -9,4 +9,5 @@ public class Jobs {
     @JsonProperty("jobs")
     private JobsDetail jobsDetail;
 
+
 }

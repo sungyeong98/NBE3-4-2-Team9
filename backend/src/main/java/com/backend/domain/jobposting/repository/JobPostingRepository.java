@@ -36,7 +36,7 @@ public interface JobPostingRepository {
 	 */
 	List<JobPosting> findAll();
 
-	void saveAll(List<JobPosting> publicDataList);
+	List<JobPosting> saveAll(List<JobPosting> publicDataList);
 
 	List<Long> findIdsAll();
 

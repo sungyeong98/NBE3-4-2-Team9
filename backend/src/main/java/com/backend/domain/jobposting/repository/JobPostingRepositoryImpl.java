@@ -38,8 +38,8 @@ public class JobPostingRepositoryImpl implements JobPostingRepository {
 	}
 
 	@Override
-	public void saveAll(List<JobPosting> publicDataList) {
-		jobPostingJpaRepository.saveAll(publicDataList);
+	public List<JobPosting> saveAll(List<JobPosting> publicDataList) {
+		return jobPostingJpaRepository.saveAll(publicDataList);
 	}
 
 	@Override

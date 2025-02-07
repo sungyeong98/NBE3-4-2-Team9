@@ -9,6 +9,9 @@ public class PositionDto {
     @JsonProperty("title")
     private String title;
 
+    @JsonProperty("job-code")
+    private JobCodeDto jobCode;
+
     @JsonProperty("experience-level")
     private ExperienceLevelDto experienceLevel;
 

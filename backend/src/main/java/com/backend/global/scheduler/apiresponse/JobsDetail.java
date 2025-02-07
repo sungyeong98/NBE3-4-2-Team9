@@ -10,4 +10,6 @@ public class JobsDetail {
     @JsonProperty("job")
     private List<Job> jobList;
 
+    @JsonProperty("total")
+    private String total;
 }

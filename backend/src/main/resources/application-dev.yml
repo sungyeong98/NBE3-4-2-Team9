@@ -24,3 +24,9 @@ jwt:
   token:
     access-expiration: 3600000    # 1시간
     refresh-expiration: 1209600000 # 2주
+
+
+api:
+  key: YpYSmykXUtWhZkDrVkHdPOnT0VusIHP5LNwOb1WN87NfKD0y8BC
+  count: 110 #한 번 호출시 가지고 올 데이터 양
+
