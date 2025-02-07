@@ -64,12 +64,6 @@ VALUES (1, 'JAVA'),
 INSERT INTO job_posting_job_skill(job_posting_id, job_skill_id)
 VALUES (1, 1), (1, 2);
 
-INSERT INTO voter (job_posting_id, site_user_id)
-VALUES (1, 1),
-       (2, 1),
-       (3, 1),
-       (1, 2);
-
 -- Chat 데이터 생성
 INSERT INTO chat (created_at, modified_at, post_id, user_id, content, type)
 VALUES (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1, 'content0', 'CHAT'),
@@ -89,3 +83,9 @@ VALUES (1, 1),
        (3, 1),
        (3, 2),
        (3, 3);
+
+INSERT INTO voter (job_posting_id, site_user_id)
+VALUES (1, 1),
+       (2, 1),
+       (3, 1),
+       (1, 2);
