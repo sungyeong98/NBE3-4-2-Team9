@@ -27,14 +27,24 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        const token = data.token || response.headers.get('Authorization');
-        localStorage.setItem('accessToken', token);
+        const token = response.headers.get('Authorization') || data.token;
+        if (!token) {
+          throw new Error('토큰이 없습니다.');
+        }
+
+        const cleanToken = token.replace('Bearer ', '');
+        
+        // 쿠키에 토큰 저장
+        document.cookie = `adminToken=${cleanToken}; path=/`;
+        localStorage.setItem('adminToken', cleanToken);
         
         dispatch(setCredentials({
           user: data.data,
-          token: token
+          token: cleanToken,
+          isAdmin: true
         }));
-        router.push('/admin/profile');
+
+        router.replace('/admin');
       } else {
         alert(data.message || '로그인에 실패했습니다.');
       }
