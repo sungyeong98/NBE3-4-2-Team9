@@ -40,8 +40,6 @@ public class QJobPosting extends EntityPathBase<JobPosting> {
 
     public final EnumPath<JobPostingStatus> jobPostingStatus = createEnum("jobPostingStatus", JobPostingStatus.class);
 
-    public final ListPath<com.backend.domain.like.entity.Like, com.backend.domain.like.entity.QLike> likeList = this.<com.backend.domain.like.entity.Like, com.backend.domain.like.entity.QLike>createList("likeList", com.backend.domain.like.entity.Like.class, com.backend.domain.like.entity.QLike.class, PathInits.DIRECT2);
-
     public final DateTimePath<java.time.ZonedDateTime> openDate = createDateTime("openDate", java.time.ZonedDateTime.class);
 
     public final DateTimePath<java.time.ZonedDateTime> postDate = createDateTime("postDate", java.time.ZonedDateTime.class);
@@ -53,6 +51,8 @@ public class QJobPosting extends EntityPathBase<JobPosting> {
     public final StringPath subject = createString("subject");
 
     public final StringPath url = createString("url");
+
+    public final ListPath<com.backend.domain.voter.entity.Voter, com.backend.domain.voter.entity.QVoter> voterList = this.<com.backend.domain.voter.entity.Voter, com.backend.domain.voter.entity.QVoter>createList("voterList", com.backend.domain.voter.entity.Voter.class, com.backend.domain.voter.entity.QVoter.class, PathInits.DIRECT2);
 
     public QJobPosting(String variable) {
         this(JobPosting.class, forVariable(variable), INITS);

@@ -98,7 +98,7 @@ public class BaseInitData {
 					.code(1).name("신입").build())
 				.companyLink("testCompanyLink")
 				.applyCnt((long) i)
-				.likeList(null)
+				.voterList(null)
 				.subject("testSubject" + i)
 				.jobId((long) i)
 				.build();
