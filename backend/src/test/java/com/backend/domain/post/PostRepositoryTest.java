@@ -1,7 +1,7 @@
 package com.backend.domain.post;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.domain.post.entity.Post;
@@ -41,6 +41,7 @@ class PostRepositoryTest {
     @Autowired
     private UserRepository userRepository;
     private SiteUser testUser;
+    private Post testPost;
 
     @BeforeEach
     void setUp() {
@@ -59,10 +60,14 @@ class PostRepositoryTest {
             throw new RuntimeException("모집 게시판을 찾을 수 없습니다.");
         }
         recruitmentBoardCategory = recruitmentCategories.get(0);
+
+        // 테스트 데이터 가져오기
+        testPost = postRepository.findBySubject("testSubject")
+                .orElseThrow(() -> new RuntimeException("테스트 게시글을 찾을 수 없습니다."));
     }
 
     @Test
-    @DisplayName("카테고리 기준으로 게시글 조회")
+    @DisplayName("게시글 조회 - 카테고리 기준으로 게시글 조회")
     void testFindByCategoryId() {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -78,7 +83,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("제목 or 내용으로 검색")
+    @DisplayName("게시글 조회 - 제목 or 내용으로 검색")
     void testFindByKeyword() {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -88,7 +93,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    @DisplayName("카테고리와 검색어를 기반으로 게시글 조회")
+    @DisplayName("게시글 조회 - 카테고리와 검색어를 기반으로 게시글 조회")
     void testFindByCategoryAndKeyword() {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -116,5 +121,47 @@ class PostRepositoryTest {
                 pageable);
         assertThat(posts_recruitment2.getContent()).hasSize(0);
 
+    }
+
+    @Test
+    @DisplayName("게시글 저장 및 조회 테스트")
+    void testSaveAndFindPost() {
+        // given
+        Post post = Post.builder()
+                .subject("테스트 제목")
+                .content("테스트 내용")
+                .author(testUser)
+                .categoryId(freeBoardCategory)
+                .build();
+
+        // when
+        Post savedPost = postRepository.save(post);
+
+        // then
+        assertThat(savedPost.getPostId()).isNotNull();
+        assertThat(savedPost.getSubject()).isEqualTo("테스트 제목");
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 게시글 삭제 후 조회 시 존재하지 않음")
+    void testDeletePost_Success() {
+        // 게시글 삭제
+        postRepository.deleteById(testPost.getPostId());
+
+        // 삭제한 게시글 조회 -> 존재하지 않아야 함
+        boolean exists = postRepository.existsById(testPost.getPostId());
+        assertThat(exists).isFalse();
+
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 존재하지 않는 게시글 삭제 시 예외 발생")
+    void testDeletePost_NotFound() {
+        Long nonExistentId = 9999L;
+        assertThrows(RuntimeException.class, () -> {
+            Post post = postRepository.findById(nonExistentId)
+                    .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+            postRepository.delete(post);
+        });
     }
 }
