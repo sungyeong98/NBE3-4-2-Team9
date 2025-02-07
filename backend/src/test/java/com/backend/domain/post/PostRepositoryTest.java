@@ -6,12 +6,15 @@ import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.repository.UserRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +22,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
+@DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@Sql(scripts = {"/sql/init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = {"/sql/delete.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 @Transactional
 @Sql(scripts = "/sql/delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 class PostRepositoryTest {
@@ -31,21 +36,30 @@ class PostRepositoryTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
-
     private Category freeBoardCategory;
     private Category recruitmentBoardCategory;
 
+    @Autowired
+    private UserRepository userRepository;
+    private SiteUser testUser;
+
     @BeforeEach
     void setUp() {
-        freeBoardCategory = categoryRepository.save(Category.builder().name("자유게시판").build());
-        recruitmentBoardCategory = categoryRepository.save(Category.builder().name("모집게시판").build());
+        testUser = userRepository.findByEmail("testEmail1@naver.com")
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        // 자유게시판 게시글 저장
-        postRepository.save(new Post("자유게시판 글1", "내용1", freeBoardCategory));
-        postRepository.save(new Post("자유게시판 글2", "내용2", freeBoardCategory));
+        // 카테고리 가져오기
+        List<Category> freeCategories = categoryRepository.findByName("자유 게시판");
+        if (freeCategories.isEmpty()) {
+            throw new RuntimeException("자유 게시판 카테고리를 찾을 수 없습니다.");
+        }
+        freeBoardCategory = freeCategories.get(0);
 
-        // 모집게시판 게시글 저장
-        postRepository.save(new Post("모집글1", "백엔드 개발자 모집", recruitmentBoardCategory));
+        List<Category> recruitmentCategories = categoryRepository.findByName("모집 게시판");
+        if (recruitmentCategories.isEmpty()) {
+            throw new RuntimeException("모집 게시판을 찾을 수 없습니다.");
+        }
+        recruitmentBoardCategory = recruitmentCategories.get(0);
     }
 
     @Test
@@ -53,12 +67,12 @@ class PostRepositoryTest {
     void testFindByCategoryId() {
         Pageable pageable = PageRequest.of(0, 10);
 
-        // 자유게시판 조회
+        // 자유 게시판 조회
         Page<Post> freePosts = postRepository.findAllByCategoryId(freeBoardCategory.getId(),
                 pageable);
-        assertThat(freePosts.getContent()).hasSize(2);
+        assertThat(freePosts.getContent()).hasSize(1);
 
-        // 모집게시판 조회
+        // 모집 게시판 조회
         Page<Post> recruitmentPosts = postRepository.findAllByCategoryId(
                 recruitmentBoardCategory.getId(), pageable);
         assertThat(recruitmentPosts.getContent()).hasSize(1);
@@ -69,8 +83,8 @@ class PostRepositoryTest {
     void testFindByKeyword() {
         Pageable pageable = PageRequest.of(0, 10);
 
-        // "모집" 키워드 검색 (모집 게시판 글만 검색)
-        Page<Post> posts = postRepository.findByKeyword("모집", pageable);
+        // "test" 키워드가 포함된 모든 게시글 검색 (자유게시판, 모집게시판 모두 포함)
+        Page<Post> posts = postRepository.findByKeyword("test", pageable);
         assertThat(posts.getContent()).hasSize(1);
     }
 
@@ -79,9 +93,29 @@ class PostRepositoryTest {
     void testFindByCategoryAndKeyword() {
         Pageable pageable = PageRequest.of(0, 10);
 
-        // 자유게시판에서 "글" 포함된 게시글 검색
-        Page<Post> posts = postRepository.findByCategoryAndKeyword(freeBoardCategory.getId(), "글",
+        // 자유게시판에서 "test" 포함된 게시글 검색
+        Page<Post> posts_free1 = postRepository.findByCategoryAndKeyword(freeBoardCategory.getId(),
+                "test",
                 pageable);
-        assertThat(posts.getContent()).hasSize(2);
+        assertThat(posts_free1.getContent()).hasSize(1);
+
+        // 자유게시판에서 "테스트" 포함된 게시글 검색 -> 없음
+        Page<Post> posts_free2 = postRepository.findByCategoryAndKeyword(freeBoardCategory.getId(),
+                "테스트",
+                pageable);
+        assertThat(posts_free2.getContent()).hasSize(0);
+
+        // 모집게시판에서 "테스트" 포함된 게시글 검색
+        Page<Post> posts_recruitment1 = postRepository.findByCategoryAndKeyword(
+                recruitmentBoardCategory.getId(), "테스트",
+                pageable);
+        assertThat(posts_recruitment1.getContent()).hasSize(1);
+
+        // 모집게시판에서 "test" 포함된 게시글 검색 -> 없음
+        Page<Post> posts_recruitment2 = postRepository.findByCategoryAndKeyword(
+                recruitmentBoardCategory.getId(), "test",
+                pageable);
+        assertThat(posts_recruitment2.getContent()).hasSize(0);
+
     }
 }
