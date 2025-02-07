@@ -29,6 +29,7 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final JobPostingRepository jobPostingRepository;
 
+
     //  게시글 생성
     @Transactional
     public PostResponseDto createPost(PostCreateRequestDto requestDto, SiteUser user) {
@@ -101,7 +102,18 @@ public class PostService {
                 new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
         return PostResponseDto.fromEntity(post);
     }
-}
+
+    // 게시글 삭제
+    @Transactional
+    public void deletePost(Long id, long userId) {
+        Post post = postRepository.findById(id).orElseThrow(() ->
+                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+
+        if (!post.getAuthor().getId().equals(userId)) {
+            throw new GlobalException(GlobalErrorCode.POST_DELETE_FORBIDDEN);
+        }
+        postRepository.delete(post);
+    }
 
 // 게시글 수정 (DTO 적용)
 //    @Transactional
@@ -114,10 +126,4 @@ public class PostService {
 //        return PostResponseDto.fromEntity(post); // 게시글 저장
 //    }
 
-// 게시글 삭제
-//    @Transactional
-//    public void deletePost(Long id) {
-//        Post post = postRepository.findById(id).orElseThrow(() ->
-//                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-//        postRepository.delete(post);
-//    }
+}

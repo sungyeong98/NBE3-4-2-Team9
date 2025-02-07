@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 /**
  * GenericResponse
@@ -92,6 +93,10 @@ public class GenericResponse<T> {
 			.isSuccess(isSuccess)
 			.code(code)
 			.build();
+	}
+
+	public static GenericResponse<Void> noContent() {
+		return new GenericResponse<>(true, HttpStatus.NO_CONTENT.value(), null, null);
 	}
 
 //	public Integer getCodeAsInt() {

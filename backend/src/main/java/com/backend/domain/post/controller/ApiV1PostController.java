@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,10 +69,11 @@ public class ApiV1PostController {
 //        return GenericResponse.of();
 //    }
 
-    // 게시글 삭제
-//    @DeleteMapping("/{id}")
-//    public GenericResponse<Void> deletePost(@PathVariable Long id){
-//        postService.deletePost(id);
-//        return GenericResponse.noContent().build();
-//    }
+//     게시글 삭제
+    @DeleteMapping("/{id}")
+    public GenericResponse<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal
+            CustomUserDetails user){
+        postService.deletePost(id, user.getSiteUser().getId());
+        return GenericResponse.noContent();
+    }
 }
