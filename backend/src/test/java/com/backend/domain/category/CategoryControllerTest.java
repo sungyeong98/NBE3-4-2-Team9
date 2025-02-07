@@ -184,7 +184,7 @@ class CategoryControllerTest {
     void deleteCategory_WithAdminRole() throws Exception {
         mockMvc.perform(delete("/api/v1/category/{id}", 1L)
                         .header("Authorization", "Bearer " + adminToken))
-                .andExpect(status().isNoContent()) // 응답 상태 코드가 204인지
+                .andExpect(status().isOk()) // 응답 상태 코드가 200인지
                 .andDo(print());
 
         // 삭제 후 카테고리 목록 조회하여 비어있는지 확인
@@ -192,7 +192,7 @@ class CategoryControllerTest {
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk()) // 응답 상태 코드가 200인지
                 .andExpect(jsonPath("$.data").isArray()) // 데이터가 배열인지 확인
-                .andExpect(jsonPath("$.data.length()").value(2)) // 데이터 개수가 1인지 확인
+                .andExpect(jsonPath("$.data.length()").value(2)) // 데이터 개수가 2인지 확인
                 .andDo(print());
     }
 

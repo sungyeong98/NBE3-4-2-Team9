@@ -52,6 +52,6 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public GenericResponse<Void> deleteCategory(@PathVariable("id") Long id) {
         categoryService.deleteCategory(id);
-        return GenericResponse.of(true, HttpStatus.NO_CONTENT.value());
+        return GenericResponse.of(true, HttpStatus.OK.value());
     }
 }
