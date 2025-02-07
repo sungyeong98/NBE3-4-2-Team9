@@ -1,14 +1,13 @@
 package com.backend.domain.category.service;
 
-import static com.backend.domain.category.converter.CategoryConverter.categoryNameCheck;
+import static com.backend.domain.category.converter.CategoryConverter.changeEntity;
 import static com.backend.domain.category.converter.CategoryConverter.mappingCategory;
 import static com.backend.domain.category.converter.CategoryConverter.mappingCategoryList;
-import static com.backend.domain.category.converter.CategoryConverter.userRoleFormString;
 
+import com.backend.domain.category.dto.request.CategoryRequest;
 import com.backend.domain.category.dto.response.CategoryResponse;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
-import com.backend.domain.user.entity.UserRole;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import java.util.List;
@@ -29,15 +28,15 @@ public class CategoryService {
     }
 
     // 카테고리 추가 (관리자만 등록 가능)
-    public CategoryResponse createCategory(Category category) {
+    public CategoryResponse createCategory(CategoryRequest categoryRequest) {
 
-        // 인증된 사용자의 역할을 확인 후, 관리자 권한이 없으면 예외 발생
-        UserRole userRole = userRoleFormString();
+        // 중복 검사
+        categoryNameCheck(categoryRequest.getName());
 
-        // 유효성 검사 및 중복 검사
-        categoryNameCheck(category, categoryRepository);
+        // DTO -> Entity로 변환
+        Category category = changeEntity(categoryRequest);
 
-        // 관리자일 경우 카테고리 등록 로직 실행
+        // DB에 저장
         Category saveCategory = categoryRepository.save(category);
 
         // 응답 객체로 변환 후 반환
@@ -46,25 +45,26 @@ public class CategoryService {
 
     @Transactional
     // 카테고리 수정 (관리자만 가능)
-    public CategoryResponse updateCategory(Category category) {
+    public CategoryResponse updateCategory(Long id, CategoryRequest categoryRequest) {
 
-        // 인증된 사용자의 역할을 확인 후, 관리자 권한이 없으면 예외 발생
-        UserRole userRole = userRoleFormString();
+        // 중복 검사
+        categoryNameCheck(categoryRequest.getName());
 
-        // 관리자일 경우 기존 카테고리 조회
-        Category findCategory = categoryRepository.findById(category.getId())
+        // 관리자일 경우 기존 카테고리 id로 조회, 없으면 NOT_FOUND 예외 처리
+        Category findCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
 
-        // 유효성 검사 및 중복 검사
-        categoryNameCheck(category, categoryRepository);
-
-        // 더티 체킹
-        findCategory.updateName(category.getName());
-
-        // 카테고리 수정된 상태로 저장
-        categoryRepository.save(findCategory);
+        // 더티 체킹으로 값 변경
+        findCategory.updateName(categoryRequest.getName());
 
         // 응답 객체로 변환 후 반환
         return mappingCategory(findCategory);
+    }
+
+    // 중복 검사 메서드
+    public void categoryNameCheck(String name) {
+        if (categoryRepository.existsByName(name)) {
+            throw new GlobalException(GlobalErrorCode.DUPLICATED_CATEGORY_NAME);
+        }
     }
 }
