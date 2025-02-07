@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +38,8 @@ public class ApiV1PostController {
         return GenericResponse.of(true, HttpStatus.CREATED.value(), createdPost);
     }
 
-    //  전체 게시글 조회 (DTO 적용) + 조건 없이 전체 글 조회, 카테고리, 정렬, 검색, 페이징
+    //  전체 게시글 조회
+    //  1. 조건 없이 전체 글 조회 2. 카테고리 3. 정렬 4.검색 5.페이징
     @GetMapping
     public GenericResponse<Page<PostResponseDto>> getAllPosts(
             @RequestParam(name = "categoryId", required = false) Long categoryId,
@@ -61,13 +63,15 @@ public class ApiV1PostController {
         return GenericResponse.of(true, HttpStatus.OK.value(), post);
     }
 
-    // 게사글 수정 (DTO 적용)
-//    @PutMapping("/{id}")
-//    public GenericResponse<PostResponseDto> updatePost(@PathVariable Long id,
-//    @RequestBody PostCreateRequestDto requestDto){
-//        PostResponseDto updatedPost = postService.updatePost(id, requestDto);
-//        return GenericResponse.of();
-//    }
+    // 게사글 수정
+    @PutMapping("/{id}")
+    public GenericResponse<PostResponseDto> updatePost(@PathVariable Long id,
+            @Valid @RequestBody PostCreateRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        PostResponseDto updatedPost = postService.updatePost
+                (id, requestDto, user.getSiteUser().getId());
+        return GenericResponse.of(true, HttpStatus.OK.value(), updatedPost);
+    }
 
     // 게시글 삭제
     @DeleteMapping("/{id}")

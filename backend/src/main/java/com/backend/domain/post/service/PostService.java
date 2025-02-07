@@ -121,15 +121,21 @@ public class PostService {
         log.info("게시글 삭제 완료! (postId={})", id);
     }
 
-// 게시글 수정 (DTO 적용)
-//    @Transactional
-//    public PostResponseDto updatePost(Long id, PostCreateRequestDto requestDto) {
-//        Post post = postRepository.findById(id).orElseThrow(() ->
-//                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-//
-//        post.updatePost(requestDto.getSubject(), requestDto.getContent());
-//
-//        return PostResponseDto.fromEntity(post); // 게시글 저장
-//    }
+    // 게시글 수정
+    @Transactional
+    public PostResponseDto updatePost(Long id, PostCreateRequestDto requestDto, long userId) {
+
+        // 게시글 조회
+        Post post = postRepository.findById(id).orElseThrow(() ->
+                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+        // 작성자 검증
+        if (!post.getAuthor().getId().equals(userId)) {
+            throw new GlobalException(GlobalErrorCode.POST_UPDATE_FORBIDDEN);
+        }
+        // 게시글
+        post.updatePost(requestDto.getSubject(), requestDto.getContent());
+
+        return PostResponseDto.fromEntity(post); // 게시글 저장
+    }
 
 }
