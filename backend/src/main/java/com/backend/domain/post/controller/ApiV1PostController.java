@@ -6,9 +6,9 @@ import com.backend.domain.post.service.PostService;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,11 +39,11 @@ public class ApiV1PostController {
     //  전체 게시글 조회 (DTO 적용) + 조건 없이 전체 글 조회, 카테고리, 정렬, 검색, 페이징
     @GetMapping
     public GenericResponse<Page<PostResponseDto>> getAllPosts(
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "latest") String sort,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "sort", defaultValue = "latest") String sort,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
 
         Page<PostResponseDto> posts = postService.getAllPosts(categoryId, keyword, sort,
                 page, size);
@@ -53,7 +53,7 @@ public class ApiV1PostController {
 
     // 특정 게시글 조회 (DTO 적용)
     @GetMapping("/{id}")
-    public GenericResponse<PostResponseDto> getPostById(@PathVariable Long id) {
+    public GenericResponse<PostResponseDto> getPostById(@PathVariable("id") Long id) {
 
         PostResponseDto post = postService.getPostById(id);
 
