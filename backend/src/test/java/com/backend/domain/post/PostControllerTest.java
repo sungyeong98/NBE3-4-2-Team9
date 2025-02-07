@@ -120,7 +120,7 @@ public class PostControllerTest {
 
         mockMvc.perform(delete("/api/v1/posts/{id}", post.getPostId())
                         .header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
         // 🔹 삭제 후 존재 여부 확인
         boolean exists = postRepository.existsById(post.getPostId());
