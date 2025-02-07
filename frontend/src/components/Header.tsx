@@ -37,7 +37,7 @@ export default function Header() {
     if (!user) return;
     
     if (user.email?.includes('admin')) {
-      router.push('/admin/profile');
+      router.push('/admin');
     } else {
       router.push(`/users/${user.id}`);
     }
@@ -93,7 +93,7 @@ export default function Header() {
                   <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100">
                     {user?.email?.includes('admin') ? (
                       <Link
-                        href="/admin/profile"
+                        href="/admin"
                         className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                       >
                         <UserIcon className="w-4 h-4 mr-3 text-gray-500" />
