@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import privateApi from '@/api/axios';
+// @ts-ignore
 import { Category } from '@/types/category';
 
 export default function WritePost() {

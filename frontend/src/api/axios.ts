@@ -21,7 +21,7 @@ export const publicApi = axios.create({
 privateApi.interceptors.request.use(
   (config) => {
     // 카테고리 관리 엔드포인트는 adminToken 사용
-    if (config.url?.includes('/api/v1/category') && 
+    if (config.url?.includes('/api/v1/category') &&
         (config.method === 'post' || config.method === 'delete' || config.method === 'patch')) {
       const adminToken = localStorage.getItem('adminToken');
       if (adminToken) {
@@ -58,4 +58,4 @@ privateApi.interceptors.response.use(
   }
 );
 
-export default privateApi; 
+export default privateApi;
