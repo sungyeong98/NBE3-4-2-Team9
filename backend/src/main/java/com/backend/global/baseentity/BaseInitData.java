@@ -1,10 +1,18 @@
 package com.backend.global.baseentity;
 
+import com.backend.domain.jobposting.entity.ExperienceLevel;
+import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.jobposting.entity.JobPostingJobSkill;
+import com.backend.domain.jobposting.entity.JobPostingStatus;
+import com.backend.domain.jobposting.entity.RequireEducate;
+import com.backend.domain.jobposting.entity.Salary;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
+import com.backend.domain.jobskill.entity.JobSkill;
 import com.backend.domain.jobskill.repository.JobSkillJpaRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.entity.UserRole;
 import com.backend.domain.user.repository.UserRepository;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +76,7 @@ public class BaseInitData {
 		users.add(user2);
 	}
 
-	/*private void createJobPosting() {
+	private void createJobPosting() {
 
 		JobSkill jobSkill1 = jobSkillRepository.findById(1L).get();
 		JobSkill jobSkill2 = jobSkillRepository.findById(2L).get();
@@ -92,6 +100,7 @@ public class BaseInitData {
 				.applyCnt((long) i)
 				.likeList(null)
 				.subject("testSubject" + i)
+				.jobId((long) i)
 				.build();
 
 			JobPostingJobSkill jobPostingJobSkill1 = JobPostingJobSkill.builder()
@@ -109,6 +118,6 @@ public class BaseInitData {
 
             jobPostingRepository.save(jobPosting);
 		}
-	}*/
+	}
 
 }

@@ -76,4 +76,7 @@ public class JobPosting {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
 	private List<Like> likeList;
+
+	@Column(name = "job_id", nullable = false)
+	private Long jobId;
 }
