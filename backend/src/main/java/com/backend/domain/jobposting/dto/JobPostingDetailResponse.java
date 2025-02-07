@@ -52,7 +52,7 @@ public record JobPostingDetailResponse(
 
 	Long applyCnt, //지원자 수
 
-	boolean isLike //관심 여부
+	boolean isVoter //관심 여부
 ) {
 
 }

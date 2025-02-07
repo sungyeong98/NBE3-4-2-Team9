@@ -1,23 +1,23 @@
-package com.backend.domain.like.dto;
+package com.backend.domain.voter.dto;
 
-import com.backend.domain.like.domain.LikeType;
+import com.backend.domain.voter.domain.VoterType;
 import com.backend.global.validator.ValidEnum;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 /**
- * LikeCreateRequest
+ * VoterCreateRequest
  * <p>관심 등록시 사용할 요청 객체 입니다.</p>
  *
  * @param targetId 타겟 ID
- * @param likeType 관심 타입 {@link LikeType}
+ * @param voterType 관심 타입 {@link VoterType}
  * @author Kim Dong O
  */
 @Builder
-public record LikeCreateRequest(
+public record VoterCreateRequest(
 	@NotNull(message = "타겟 ID는 필수 입니다.")
 	Long targetId,
-	@ValidEnum(enumClass = LikeType.class)
-	LikeType likeType) {
+	@ValidEnum(enumClass = VoterType.class)
+	VoterType voterType) {
 
 }

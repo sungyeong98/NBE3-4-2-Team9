@@ -1,28 +1,28 @@
-package com.backend.domain.like.service;
+package com.backend.domain.voter.service;
 
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
-import com.backend.domain.like.domain.LikeType;
-import com.backend.domain.like.dto.LikeCreateResponse;
-import com.backend.domain.like.entity.Like;
-import com.backend.domain.like.repository.LikeRepository;
 import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.voter.domain.VoterType;
+import com.backend.domain.voter.dto.VoterCreateResponse;
+import com.backend.domain.voter.entity.Voter;
+import com.backend.domain.voter.repository.VoterRepository;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
- * LikeService
+ * VoterService
  * <p>관심 서비스 입니다.</p>
  *
  * @author Kim Dong O
  */
 @Service
 @RequiredArgsConstructor
-public class LikeService {
+public class VoterService {
 
-	private final LikeRepository likeRepository;
+	private final VoterRepository likeRepository;
 	private final JobPostingRepository jobPostingRepository;
 
 	/**
@@ -30,28 +30,27 @@ public class LikeService {
 	 *
 	 * @param siteUser 로그인 유저
 	 * @param targetId 관심 타겟 ID
-	 * @param likeType {@link LikeType} 관심 타입
-	 * @return {@link LikeCreateResponse}
+	 * @param voterType {@link VoterType} 관심 타입
+	 * @return {@link VoterCreateResponse}
 	 * @throws GlobalException 이미 관심 저장이 되어 있을 때 또는 지원하지 않는 LikeType 일 때 발생
 	 */
-	public LikeCreateResponse save(SiteUser siteUser, Long targetId, LikeType likeType) {
-		existsCheck(siteUser.getId(), targetId, likeType);
-		Long resultId = null;
+	public VoterCreateResponse save(SiteUser siteUser, Long targetId, VoterType voterType) {
+		existsCheck(siteUser.getId(), targetId, voterType);
 
-		switch (likeType) {
+		switch (voterType) {
 			case JOB_POSTING -> {
 
 				JobPosting jobPosting = JobPosting.builder()
 					.id(targetId)
 					.build();
 
-				Like saveLike = Like.builder()
+				Voter saveVoter = Voter.builder()
 					.siteUser(siteUser)
 					.jobPosting(jobPosting)
-					.likeType(likeType)
+					.voterType(voterType)
 					.build();
 
-				resultId = likeRepository.save(saveLike).getId();
+				likeRepository.save(saveVoter).getId();
 			}
 			case POST -> {
 				//TODO Post 추가시 로직 구현 예정
@@ -59,9 +58,9 @@ public class LikeService {
 			default -> throw new GlobalException(GlobalErrorCode.NOT_SUPPORT_TYPE);
 		}
 
-		return LikeCreateResponse.builder()
-			.targetId(resultId)
-			.likeType(likeType)
+		return VoterCreateResponse.builder()
+			.targetId(targetId)
+			.voterType(voterType)
 			.build();
 	}
 
@@ -74,20 +73,20 @@ public class LikeService {
 	 *
 	 * @param siteUserId siteUserId
 	 * @param targetId   targetId
-	 * @param likeType   검사할 타입
+	 * @param voterType   검사할 타입
 	 * @throws GlobalException 데이터가 존재하지 않을 경우 발생
 	 */
-	private void existsCheck(Long siteUserId, Long targetId, LikeType likeType) {
+	private void existsCheck(Long siteUserId, Long targetId, VoterType voterType) {
 		boolean result = false;
 
-		switch (likeType) {
+		switch (voterType) {
 			case JOB_POSTING ->
-				result = likeRepository.existsByJobPostingId(siteUserId, targetId, likeType);
+				result = likeRepository.existsByJobPostingId(siteUserId, targetId, voterType);
 			case POST -> result = false; //TODO 추후 변경 예정
 		}
 
 		if (result) {
-			throw new GlobalException(GlobalErrorCode.ALREADY_LIKE);
+			throw new GlobalException(GlobalErrorCode.ALREADY_VOTER);
 		}
 	}
 }

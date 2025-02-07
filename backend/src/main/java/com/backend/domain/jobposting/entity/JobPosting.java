@@ -1,6 +1,6 @@
 package com.backend.domain.jobposting.entity;
 
-import com.backend.domain.like.entity.Like;
+import com.backend.domain.voter.entity.Voter;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -75,7 +75,7 @@ public class JobPosting {
 	private List<JobPostingJobSkill> jobPostingJobSkillList = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "jobPosting")
-	private List<Like> likeList;
+	private List<Voter> voterList;
 
 	@Column(name = "job_id", nullable = false)
 	private Long jobId;

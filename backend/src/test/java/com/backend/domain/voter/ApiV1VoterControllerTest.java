@@ -1,4 +1,4 @@
-package com.backend.domain.like;
+package com.backend.domain.voter;
 
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -6,12 +6,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.backend.domain.jobposting.entity.JobPosting;
-import com.backend.domain.like.domain.LikeType;
-import com.backend.domain.like.dto.LikeCreateRequest;
-import com.backend.domain.like.entity.Like;
-import com.backend.domain.like.repository.LikeRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.repository.UserRepository;
+import com.backend.domain.voter.domain.VoterType;
+import com.backend.domain.voter.dto.VoterCreateRequest;
+import com.backend.domain.voter.entity.Voter;
+import com.backend.domain.voter.repository.VoterRepository;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.security.custom.CustomUserDetails;
 import com.backend.standard.util.JwtUtil;
@@ -41,7 +41,7 @@ import org.springframework.test.web.servlet.ResultActions;
 @Sql(scripts = {"/sql/delete.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_CLASS)
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
-public class ApiV1LikeControllerTest {
+public class ApiV1VoterControllerTest {
 
 	@Autowired
 	ObjectMapper objectMapper;
@@ -56,7 +56,7 @@ public class ApiV1LikeControllerTest {
 	UserRepository userRepostiory;
 
 	@Autowired
-	LikeRepository likeRepository;
+	VoterRepository likeRepository;
 
 	@Value("${jwt.token.access-expiration}")
 	long accessExpiration;
@@ -80,13 +80,13 @@ public class ApiV1LikeControllerTest {
 	@Test
 	void save_job_posting_like_success() throws Exception {
 		//given
-		LikeCreateRequest givenRequest = LikeCreateRequest.builder()
-			.likeType(LikeType.JOB_POSTING)
+		VoterCreateRequest givenRequest = VoterCreateRequest.builder()
+			.voterType(VoterType.JOB_POSTING)
 			.targetId(1L)
 			.build();
 
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/api/v1/like")
+		ResultActions resultActions = mockMvc.perform(post("/api/v1/voter")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + accessToken1)
 				.content(objectMapper.writeValueAsString(givenRequest)))
@@ -96,30 +96,30 @@ public class ApiV1LikeControllerTest {
 		resultActions
 			.andExpect(jsonPath("$.code").value(201))
 			.andExpect(jsonPath("$.data.targetId").value(1))
-			.andExpect(jsonPath("$.data.likeType").value(givenRequest.likeType().toString()));
+			.andExpect(jsonPath("$.data.voterType").value(givenRequest.voterType().toString()));
 	}
 
 	@DisplayName("채용 공고 관심이 이미 존재할 때 실패 테스트")
 	@Test
 	void save_job_posting_like_fail() throws Exception {
 		//given
-		LikeCreateRequest givenRequest = LikeCreateRequest.builder()
-			.likeType(LikeType.JOB_POSTING)
+		VoterCreateRequest givenRequest = VoterCreateRequest.builder()
+			.voterType(VoterType.JOB_POSTING)
 			.targetId(1L)
 			.build();
 
 		SiteUser givenSiteUser2 = userRepostiory.findByEmail("testEmail1@naver.com").get();
 
-		likeRepository.save(Like.builder()
+		likeRepository.save(Voter.builder()
 			.siteUser(givenSiteUser2)
-			.likeType(LikeType.JOB_POSTING)
+			.voterType(VoterType.JOB_POSTING)
 			.jobPosting(JobPosting.builder()
 				.id(1L)
 				.build())
 			.build());
 
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/api/v1/like")
+		ResultActions resultActions = mockMvc.perform(post("/api/v1/voter")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + accessToken2)
 				.content(objectMapper.writeValueAsString(givenRequest)))
@@ -127,20 +127,20 @@ public class ApiV1LikeControllerTest {
 
 		//then
 		resultActions
-			.andExpect(jsonPath("$.code").value(GlobalErrorCode.ALREADY_LIKE.getCode()))
-			.andExpect(jsonPath("$.message").value(GlobalErrorCode.ALREADY_LIKE.getMessage()));
+			.andExpect(jsonPath("$.code").value(GlobalErrorCode.ALREADY_VOTER.getCode()))
+			.andExpect(jsonPath("$.message").value(GlobalErrorCode.ALREADY_VOTER.getMessage()));
 	}
 
 	@DisplayName("관심 저장시 targetId가 null일 때 실패 테스트")
 	@Test
 	void save_like_target_id_null_fail() throws Exception {
 		//given
-		LikeCreateRequest givenRequest = LikeCreateRequest.builder()
-			.likeType(LikeType.JOB_POSTING)
+		VoterCreateRequest givenRequest = VoterCreateRequest.builder()
+			.voterType(VoterType.JOB_POSTING)
 			.build();
 
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/api/v1/like")
+		ResultActions resultActions = mockMvc.perform(post("/api/v1/voter")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + accessToken2)
 				.content(objectMapper.writeValueAsString(givenRequest)))
@@ -156,12 +156,12 @@ public class ApiV1LikeControllerTest {
 	@Test
 	void save_like_like_type_null_fail() throws Exception {
 		//given
-		LikeCreateRequest givenRequest = LikeCreateRequest.builder()
+		VoterCreateRequest givenRequest = VoterCreateRequest.builder()
 			.targetId(1L)
 			.build();
 
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/api/v1/like")
+		ResultActions resultActions = mockMvc.perform(post("/api/v1/voter")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + accessToken2)
 				.content(objectMapper.writeValueAsString(givenRequest)))
@@ -179,10 +179,10 @@ public class ApiV1LikeControllerTest {
 		//given
 		Map<String, Object> param = new HashMap<>();
 		param.put("targetId", 1L);
-		param.put("likeType", "testLike");
+		param.put("voterType", "testVoter");
 
 		//when
-		ResultActions resultActions = mockMvc.perform(post("/api/v1/like")
+		ResultActions resultActions = mockMvc.perform(post("/api/v1/voter")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + accessToken2)
 				.content(objectMapper.writeValueAsString(param)))
