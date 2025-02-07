@@ -69,10 +69,10 @@ public class ApiV1PostController {
 //        return GenericResponse.of();
 //    }
 
-//     게시글 삭제
+    // 게시글 삭제
     @DeleteMapping("/{id}")
     public GenericResponse<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal
-            CustomUserDetails user){
+    CustomUserDetails user) {
         postService.deletePost(id, user.getSiteUser().getId());
         return GenericResponse.noContent();
     }

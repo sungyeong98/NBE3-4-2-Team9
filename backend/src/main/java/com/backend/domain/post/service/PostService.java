@@ -109,6 +109,9 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
+        System.out.println("삭제 요청한 사용자 ID: " + userId);
+        System.out.println("게시글 작성자 ID: " + post.getAuthor().getId());
+
         if (!post.getAuthor().getId().equals(userId)) {
             throw new GlobalException(GlobalErrorCode.POST_DELETE_FORBIDDEN);
         }

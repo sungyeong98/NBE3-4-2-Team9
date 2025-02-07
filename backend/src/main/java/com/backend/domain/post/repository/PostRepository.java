@@ -33,3 +33,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findBySubject(String subject);
 
 }
+
