@@ -2,6 +2,8 @@ package com.backend.domain.post.entity;
 
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.post.dto.PostCreateRequestDto;
+import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,16 +25,16 @@ import lombok.NoArgsConstructor;
 // 게시판 엔티티
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "post")
 @AllArgsConstructor
-@Builder
 public class Post extends BaseEntity {
 
-    // board_id: 게시글의 고유 식별자(PK, Auto Increment)
+    // postId: 게시글의 고유 식별자(PK, Auto Increment)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long postId;
 
     // subject: 게시글 제목
     @Column(nullable = false)
@@ -42,13 +44,13 @@ public class Post extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    // 카테고리 ID -> 카테고리 테이블과의 관계 설정 | 다대일 관계, board의 여러 게시글이 하나의 카테고리 참조
+    // 카테고리 ID -> 카테고리 테이블과의 관계 설정
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category categoryId;
 
     // 모집 게시판에만 필요한 부분
-    private ZonedDateTime recruimentClosingDate; // 모집 기간
+    private ZonedDateTime recruitmentClosingDate; // 모집 기간
     private Long numOfApplicants; // 모집 인원
 
     @Enumerated(EnumType.STRING)
@@ -57,8 +59,44 @@ public class Post extends BaseEntity {
 
     // 채용 ID -> JopPosting table에 채용ID랑 이어짐
     @ManyToOne
-    @JoinColumn(name = "job_id")
+    @JoinColumn(name = "job_id", nullable = true)
     private JobPosting jobId;
+
+    // UserId 한 개의 게시글은 오직 한 유저에게만 속함
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private SiteUser author;
+
+    // createDate: 생성일자, BaseEntity 상속
+    // modifyDate: 수정일자, BaseEntity 상속
+
+    // 객체 생성 통일
+    public static Post createPost(String subject, String content, Category category,
+            SiteUser author, JobPosting jobposting) {
+        boolean isRecruitment = "모집 게시판".equals(category.getName());
+
+        return Post.builder()
+                .subject(subject)
+                .content(content)
+                .categoryId(category)
+                .jobId(jobposting)
+                .author(author)
+                .recruitmentStatus(isRecruitment ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+                .build();
+    }
+
+    public static Post createPost(PostCreateRequestDto dto, Category category,
+            SiteUser author, JobPosting jobPosting) {
+        return Post.builder()
+                .subject(dto.getSubject())
+                .content(dto.getContent())
+                .categoryId(category)
+                .author(author)
+                .jobId(jobPosting)
+                .recruitmentStatus(
+                        jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+                .build();
+    }
 
     // 게시글 수정
     public void updatePost(String subject, String content) {
@@ -66,24 +104,5 @@ public class Post extends BaseEntity {
         this.subject = subject;
         // 기존 게시글 내용과 다를 때
         this.content = content;
-    }
-
-    // 테스트용 생성자 추가
-    public Post(String subject, String content, Category categoryId) {
-        this.subject = subject;
-        this.content = content;
-        this.categoryId = categoryId;
-
-        // 모집 게시판일 경우 recruitmentStatus 설정
-        if (isRecruitmentCategory()) {
-            this.recruitmentStatus = RecruitmentStatus.OPEN;
-        } else {
-            this.recruitmentStatus = null;
-        }
-    }
-
-    // 모집 게시판인지 확인하는 메서드 추가
-    private boolean isRecruitmentCategory() {
-        return "모집 게시판".equals(categoryId.getName());
     }
 }

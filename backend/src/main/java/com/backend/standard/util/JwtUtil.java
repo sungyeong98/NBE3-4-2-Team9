@@ -1,18 +1,22 @@
 package com.backend.standard.util;
 
 import com.backend.domain.user.entity.SiteUser;
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
 import com.backend.global.security.custom.CustomUserDetails;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 @Component
 public class JwtUtil {
@@ -72,6 +76,7 @@ public class JwtUtil {
                 .compact();
     }
 
+
     public Cookie setJwtCookie(String key, String value, long expiration) {
 
         Cookie cookie = new Cookie(key, value);
@@ -101,6 +106,37 @@ public class JwtUtil {
                 null,
                 userDetails.getAuthorities()
         );
+    }
+
+    /**
+     * ✅ JWT 토큰에서 Claims(정보) 가져오기
+     */
+    public Claims getClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException e) {
+            throw new GlobalException(GlobalErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    /**
+     * ✅ JWT 토큰 검증 (유효성 체크)
+     */
+    public void validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token);
+        } catch (ExpiredJwtException e) {
+            throw new GlobalException(GlobalErrorCode.EXPIRED_TOKEN);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new GlobalException(GlobalErrorCode.INVALID_TOKEN);
+        }
     }
 
 }

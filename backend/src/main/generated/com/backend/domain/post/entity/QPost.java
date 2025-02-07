@@ -24,14 +24,14 @@ public class QPost extends EntityPathBase<Post> {
 
     public final com.backend.global.baseentity.QBaseEntity _super = new com.backend.global.baseentity.QBaseEntity(this);
 
+    public final com.backend.domain.user.entity.QSiteUser author;
+
     public final com.backend.domain.category.entity.QCategory categoryId;
 
     public final StringPath content = createString("content");
 
     //inherited
     public final DateTimePath<java.time.ZonedDateTime> createdAt = _super.createdAt;
-
-    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final com.backend.domain.jobposting.entity.QJobPosting jobId;
 
@@ -40,7 +40,9 @@ public class QPost extends EntityPathBase<Post> {
 
     public final NumberPath<Long> numOfApplicants = createNumber("numOfApplicants", Long.class);
 
-    public final DateTimePath<java.time.ZonedDateTime> recruimentClosingDate = createDateTime("recruimentClosingDate", java.time.ZonedDateTime.class);
+    public final NumberPath<Long> postId = createNumber("postId", Long.class);
+
+    public final DateTimePath<java.time.ZonedDateTime> recruitmentClosingDate = createDateTime("recruitmentClosingDate", java.time.ZonedDateTime.class);
 
     public final EnumPath<RecruitmentStatus> recruitmentStatus = createEnum("recruitmentStatus", RecruitmentStatus.class);
 
@@ -64,6 +66,7 @@ public class QPost extends EntityPathBase<Post> {
 
     public QPost(Class<? extends Post> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.author = inits.isInitialized("author") ? new com.backend.domain.user.entity.QSiteUser(forProperty("author")) : null;
         this.categoryId = inits.isInitialized("categoryId") ? new com.backend.domain.category.entity.QCategory(forProperty("categoryId")) : null;
         this.jobId = inits.isInitialized("jobId") ? new com.backend.domain.jobposting.entity.QJobPosting(forProperty("jobId"), inits.get("jobId")) : null;
     }

@@ -34,9 +34,13 @@ public class QJobPosting extends EntityPathBase<JobPosting> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final NumberPath<Long> jobId = createNumber("jobId", Long.class);
+
+    public final ListPath<JobPostingJobSkill, QJobPostingJobSkill> jobPostingJobSkillList = this.<JobPostingJobSkill, QJobPostingJobSkill>createList("jobPostingJobSkillList", JobPostingJobSkill.class, QJobPostingJobSkill.class, PathInits.DIRECT2);
+
     public final EnumPath<JobPostingStatus> jobPostingStatus = createEnum("jobPostingStatus", JobPostingStatus.class);
 
-    public final ListPath<com.backend.domain.jobskill.entity.JobSkill, com.backend.domain.jobskill.entity.QJobSkill> jobSkillList = this.<com.backend.domain.jobskill.entity.JobSkill, com.backend.domain.jobskill.entity.QJobSkill>createList("jobSkillList", com.backend.domain.jobskill.entity.JobSkill.class, com.backend.domain.jobskill.entity.QJobSkill.class, PathInits.DIRECT2);
+    public final ListPath<com.backend.domain.like.entity.Like, com.backend.domain.like.entity.QLike> likeList = this.<com.backend.domain.like.entity.Like, com.backend.domain.like.entity.QLike>createList("likeList", com.backend.domain.like.entity.Like.class, com.backend.domain.like.entity.QLike.class, PathInits.DIRECT2);
 
     public final DateTimePath<java.time.ZonedDateTime> openDate = createDateTime("openDate", java.time.ZonedDateTime.class);
 

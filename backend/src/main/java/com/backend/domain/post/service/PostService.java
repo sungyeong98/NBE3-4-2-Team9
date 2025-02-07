@@ -1,10 +1,16 @@
 package com.backend.domain.post.service;
 
+import com.backend.domain.category.entity.Category;
+import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.jobposting.repository.JobPostingRepository;
+import com.backend.domain.post.dto.PostCreateRequestDto;
 import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.PostRepository;
 
 import com.backend.domain.category.repository.CategoryRepository;
+import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
@@ -19,35 +25,47 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostService {
 
-    // PostRepository, CategoryRepository, JobPostingRepository 주입
     private final PostRepository postRepository;
-    // TODO: category, jobposting 미구현, 구현 이후 다시 작업
     private final CategoryRepository categoryRepository;
-//    private final JobPostingRepository jobPostingRepository;
+    private final JobPostingRepository jobPostingRepository;
 
-//     게시글 생성 (DTO 적용)
-//     TODO: category, jobposting 미구현, 구현 이후 다시 작업
-//    @Transactional
-//    public PostResponseDto createPost(PostCreateRequestDto requestDto){
-//        // 필수값인 categoryId, jobId 기반 엔티티 조회
-//        Category category = categoryRepository.findById(requestDto .getCategoryId())
-//                .orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
-//
-//        // DTO -> Entity 변환
-//        Post post = Post.builder()
-//                .subject(requestDto.getSubject())
-//                .content(requestDto.getContent())
-//                .postType(requestDto.getPostType())
-//                .categoryId(category)
-//                .build();
-//
-//        // DB 저장
-//        Post savedPost = postRepository.save(post);
-//
-//        return PostResponseDto.fromEntity(savedPost);
-//    }
+    //  게시글 생성
+    @Transactional
+    public PostResponseDto createPost(PostCreateRequestDto requestDto, SiteUser user) {
 
-    //         게시글 전체 조회 (postType → categoryId 변경)
+        // 1. 글 작성 전 카테고리 먼저 조회
+        Category category = categoryRepository.findById(requestDto.getCategoryId())
+                .orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
+
+        JobPosting jobPosting = null;
+
+        // 모집 게시판일 때 jobpostingId가 필수
+        if ("모집 게시판".equals(category.getName())) {
+            if (requestDto.getJobPostingId() == null) {
+                throw new GlobalException(GlobalErrorCode.JOB_POSTING_REQUIRED);
+            }
+            // JobPostingRepository를 이용하여 채용 공고 조회
+            jobPosting = jobPostingRepository.findById(requestDto.getJobPostingId())
+                    .orElseThrow(() -> new GlobalException(GlobalErrorCode.JOB_POSTING_REQUIRED));
+        }
+
+        // DTO -> Entity 변환
+        Post post = Post.builder()
+                .subject(requestDto.getSubject())
+                .content(requestDto.getContent())
+                .categoryId(category)
+                .jobId(jobPosting)
+                .recruitmentStatus(jobPosting != null ? RecruitmentStatus.OPEN : null)
+                .author(user)
+                .build();
+
+        // DB 저장
+        Post savedPost = postRepository.save(post);
+
+        return PostResponseDto.fromEntity(savedPost);
+    }
+
+    // 게시글 전체 조회 (postType → categoryId 변경)
     @Transactional(readOnly = true)
     public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort,
             int page, int size) {

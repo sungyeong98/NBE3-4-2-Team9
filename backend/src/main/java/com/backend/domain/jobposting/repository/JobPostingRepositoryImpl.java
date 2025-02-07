@@ -38,6 +38,11 @@ public class JobPostingRepositoryImpl implements JobPostingRepository {
 	}
 
 	@Override
+	public boolean existsById(Long jobPostingId) {
+		return jobPostingJpaRepository.existsById(jobPostingId);
+	}
+
+	@Override
 	public List<JobPosting> saveAll(List<JobPosting> publicDataList) {
 		return jobPostingJpaRepository.saveAll(publicDataList);
 	}
