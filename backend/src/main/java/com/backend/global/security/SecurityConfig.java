@@ -109,6 +109,8 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/api/v1/posts").hasRole("USER")
                             .requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
                             .requestMatchers(HttpMethod.PUT, "/api/v1/category/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PATCH, "/api/v1/category/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.POST, "/api/v1/like").hasRole("USER")
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
