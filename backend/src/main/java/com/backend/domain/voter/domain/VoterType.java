@@ -1,14 +1,14 @@
-package com.backend.domain.like.domain;
+package com.backend.domain.voter.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.stream.Stream;
 
-public enum LikeType {
+public enum VoterType {
 	JOB_POSTING, POST;
 
 	@JsonCreator
-	public static LikeType from(String param) {
-		return Stream.of(LikeType.values())
+	public static VoterType from(String param) {
+		return Stream.of(VoterType.values())
 			.filter(likeType -> likeType.toString().equalsIgnoreCase(param))
 			.findFirst()
 			.orElse(null);

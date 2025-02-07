@@ -1,8 +1,8 @@
-package com.backend.domain.like.entity;
+package com.backend.domain.voter.entity;
 
 import com.backend.domain.jobposting.entity.JobPosting;
-import com.backend.domain.like.domain.LikeType;
 import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.voter.domain.VoterType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,15 +21,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "job_posting_like")
+@Table(name = "voter")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class Like {
+public class Voter {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "voter_id")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -42,7 +43,7 @@ public class Like {
 
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	private LikeType likeType;
+	private VoterType voterType;
 
 	//TODO 추후 게시글 필드도 추가할 예정
 }
