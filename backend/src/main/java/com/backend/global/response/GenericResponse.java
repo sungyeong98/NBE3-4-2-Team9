@@ -95,10 +95,6 @@ public class GenericResponse<T> {
 			.build();
 	}
 
-	public static GenericResponse<Void> noContent() {
-		return new GenericResponse<>(true, HttpStatus.NO_CONTENT.value(), null, null);
-	}
-
 //	public Integer getCodeAsInt() {
 //		return Integer.parseInt(code);
 //	}
