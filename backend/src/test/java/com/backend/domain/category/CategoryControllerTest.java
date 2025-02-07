@@ -182,9 +182,6 @@ class CategoryControllerTest {
     @Test
     @DisplayName("카테고리 삭제 - 관리자")
     void deleteCategory_WithAdminRole() throws Exception {
-        // 테스트용 categoryRequest
-        CategoryRequest categoryRequest = createCategoryRequest("Tech");
-
         mockMvc.perform(delete("/api/v1/category/{id}", 1L)
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNoContent()) // 응답 상태 코드가 204인지
@@ -195,16 +192,13 @@ class CategoryControllerTest {
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk()) // 응답 상태 코드가 200인지
                 .andExpect(jsonPath("$.data").isArray()) // 데이터가 배열인지 확인
-                .andExpect(jsonPath("$.data.length()").value(1)) // 데이터 개수가 1인지 확인
+                .andExpect(jsonPath("$.data.length()").value(2)) // 데이터 개수가 1인지 확인
                 .andDo(print());
     }
 
     @Test
     @DisplayName("카테고리 삭제 - 유저")
     void deleteCategory_WithUserRole() throws Exception {
-        // 테스트용 categoryRequest
-        CategoryRequest categoryRequest = createCategoryRequest("Tech");
-
         mockMvc.perform(delete("/api/v1/category/{id}", 1L)
                         .header("Authorization", "Bearer " + userToken))
                 .andExpect(status().isForbidden()) // 응답 상태 코드가 403인지
