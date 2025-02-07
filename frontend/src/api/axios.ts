@@ -1,9 +1,14 @@
 import axios from 'axios';
 
+const BASE_URL = 'http://localhost:8080';
+
 // 인증이 필요한 요청을 위한 인스턴스
 export const privateApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true
+  baseURL: BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
 // 인증이 필요없는 요청을 위한 인스턴스
@@ -15,10 +20,21 @@ export const publicApi = axios.create({
 // 인증이 필요한 요청에만 토큰 추가
 privateApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // 카테고리 관리 엔드포인트는 adminToken 사용
+    if (config.url?.includes('/api/v1/category') && 
+        (config.method === 'post' || config.method === 'delete' || config.method === 'patch')) {
+      const adminToken = localStorage.getItem('adminToken');
+      if (adminToken) {
+        config.headers['Authorization'] = `Bearer ${adminToken}`;
+      }
+    } else {
+      // 일반 유저 토큰은 'accessToken' 또는 'token' 키로 저장된 값 사용
+      const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
     }
+    console.log('Request headers:', config.headers);
     return config;
   },
   (error) => {
@@ -26,14 +42,20 @@ privateApi.interceptors.request.use(
   }
 );
 
+// 에러 발생 시 상세 정보 로깅
 privateApi.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      window.location.href = '/login';
-    }
+    console.error('API Error:', {
+      endpoint: error.config?.url,
+      method: error.config?.method,
+      requestHeaders: error.config?.headers,
+      status: error.response?.status,
+      errorCode: error.response?.data?.code,
+      message: error.response?.data?.message
+    });
     return Promise.reject(error);
   }
 );
 
-export default publicApi; // 기본 export는 인증이 필요없는 인스턴스 
+export default privateApi; 

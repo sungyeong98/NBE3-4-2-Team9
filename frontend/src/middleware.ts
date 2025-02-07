@@ -4,10 +4,11 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const cookieToken = request.cookies.get('accessToken') || request.cookies.get('adminToken');
   const isAdminPage = request.nextUrl.pathname.startsWith('/admin');
+  const isAdminLoginPage = request.nextUrl.pathname === '/admin/login';
   const isAuthPage = request.nextUrl.pathname.startsWith('/profile') || 
                     request.nextUrl.pathname.startsWith('/settings');
 
-  if (isAdminPage && !request.cookies.get('adminToken')) {
+  if (isAdminPage && !isAdminLoginPage && !request.cookies.get('adminToken')) {
     return NextResponse.redirect(new URL('/admin/login', request.url));
   }
 
