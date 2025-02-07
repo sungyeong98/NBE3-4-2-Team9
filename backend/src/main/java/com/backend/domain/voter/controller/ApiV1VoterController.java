@@ -1,8 +1,8 @@
-package com.backend.domain.like.controller;
+package com.backend.domain.voter.controller;
 
-import com.backend.domain.like.dto.LikeCreateRequest;
-import com.backend.domain.like.dto.LikeCreateResponse;
-import com.backend.domain.like.service.LikeService;
+import com.backend.domain.voter.dto.VoterCreateRequest;
+import com.backend.domain.voter.dto.VoterCreateResponse;
+import com.backend.domain.voter.service.VoterService;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -22,20 +22,20 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/like")
-public class ApiV1LikeController {
+@RequestMapping("/api/v1/voter")
+public class ApiV1VoterController {
 
-	private final LikeService likeService;
+	private final VoterService voterService;
 
 	@PostMapping
-	public GenericResponse<LikeCreateResponse> create(
-		@RequestBody @Validated LikeCreateRequest likeCreateRequest, @AuthenticationPrincipal
+	public GenericResponse<VoterCreateResponse> create(
+		@RequestBody @Validated VoterCreateRequest voterCreateRequest, @AuthenticationPrincipal
 	CustomUserDetails customUserDetails) {
 
-		LikeCreateResponse likeCreateResponse = likeService.save(customUserDetails.getSiteUser(),
-			likeCreateRequest.targetId(),
-			likeCreateRequest.likeType());
+		VoterCreateResponse voterCreateResponse = voterService.save(customUserDetails.getSiteUser(),
+			voterCreateRequest.targetId(),
+			voterCreateRequest.voterType());
 
-		return GenericResponse.of(true, HttpStatus.CREATED.value(), likeCreateResponse);
+		return GenericResponse.of(true, HttpStatus.CREATED.value(), voterCreateResponse);
 	}
 }
