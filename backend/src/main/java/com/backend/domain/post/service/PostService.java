@@ -14,6 +14,7 @@ import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -28,6 +30,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
     private final JobPostingRepository jobPostingRepository;
+
 
     //  게시글 생성
     @Transactional
@@ -101,7 +104,22 @@ public class PostService {
                 new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
         return PostResponseDto.fromEntity(post);
     }
-}
+
+    // 게시글 삭제
+    @Transactional
+    public void deletePost(Long id, long userId) {
+        Post post = postRepository.findById(id).orElseThrow(() ->
+                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+
+        log.info("삭제 요청한 사용자 ID: " + userId);
+        log.info("게시글 작성자 ID: " + post.getAuthor().getId());
+
+        if (!post.getAuthor().getId().equals(userId)) {
+            throw new GlobalException(GlobalErrorCode.POST_DELETE_FORBIDDEN);
+        }
+        postRepository.delete(post);
+        log.info("게시글 삭제 완료! (postId={})", id);
+    }
 
 // 게시글 수정 (DTO 적용)
 //    @Transactional
@@ -114,10 +132,4 @@ public class PostService {
 //        return PostResponseDto.fromEntity(post); // 게시글 저장
 //    }
 
-// 게시글 삭제
-//    @Transactional
-//    public void deletePost(Long id) {
-//        Post post = postRepository.findById(id).orElseThrow(() ->
-//                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-//        postRepository.delete(post);
-//    }
+}

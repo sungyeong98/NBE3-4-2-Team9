@@ -34,6 +34,7 @@ public class Post extends BaseEntity {
     // postId: 게시글의 고유 식별자(PK, Auto Increment)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long postId;
 
     // subject: 게시글 제목
