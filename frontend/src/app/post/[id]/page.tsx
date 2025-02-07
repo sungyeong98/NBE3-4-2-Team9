@@ -9,6 +9,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { Category } from '@/types/post/Category';
 import { getCategories } from '@/api/category';
 import Link from 'next/link';
+import privateApi from '@/api/axios';
 
 export default function PostDetail() {
   const params = useParams();
@@ -17,6 +18,7 @@ export default function PostDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isAuthor, setIsAuthor] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -35,35 +37,55 @@ export default function PostDetail() {
   }, []);
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const fetchData = async () => {
       try {
-        if (!params.id) {
-          console.error('No post ID provided');
-          return;
-        }
+        const [postResponse, categoriesResponse] = await Promise.all([
+          privateApi.get(`/api/v1/posts/${params.id}`),
+          privateApi.get('/api/v1/category')
+        ]);
 
-        const postId = parseInt(params.id as string);
-        if (isNaN(postId)) {
-          console.error('Invalid post ID:', params.id);
-          return;
-        }
-
-        const response = await getPost(postId);
-        if (response.success) {
-          setPost(response.data);
-          console.log('Post Category ID:', response.data.categoryId);
+        if (postResponse.data.success) {
+          setPost(postResponse.data.data);
           const currentUserId = localStorage.getItem('userId');
-          setIsAuthor(currentUserId === String(response.data.authorId));
+          setIsAuthor(currentUserId === String(postResponse.data.data.authorId));
+        }
+        if (categoriesResponse.data.success) {
+          setCategories(categoriesResponse.data.data);
         }
       } catch (error) {
-        console.error('Failed to fetch post:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPost();
+    fetchData();
   }, [params.id]);
+
+  const handleDelete = async () => {
+    if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const response = await privateApi.delete(`/api/v1/posts/${params.id}`);
+      
+      if (response.data.success) {
+        alert('게시글이 삭제되었습니다.');
+        router.push('/post');
+        router.refresh();
+      }
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        alert('본인이 작성한 게시글만 삭제할 수 있습니다.');
+      } else {
+        alert('게시글 삭제 중 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -164,16 +186,15 @@ export default function PostDetail() {
                   <span>댓글</span>
                 </button>
               </div>
-              {isAuthor && (
-                <div className="flex items-center gap-2">
-                  <button className="px-4 py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                    수정
-                  </button>
-                  <button className="px-4 py-2 text-sm text-red-600 hover:text-red-700 transition-colors">
-                    삭제
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <button 
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? '삭제 중...' : '삭제'}
+                </button>
+              </div>
             </div>
           </div>
         </article>

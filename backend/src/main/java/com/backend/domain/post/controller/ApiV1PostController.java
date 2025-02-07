@@ -74,6 +74,6 @@ public class ApiV1PostController {
     public GenericResponse<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal
     CustomUserDetails user) {
         postService.deletePost(id, user.getSiteUser().getId());
-        return GenericResponse.of(true, HttpStatus.NO_CONTENT.value());
+        return GenericResponse.of(true, HttpStatus.OK.value());
     }
 }
