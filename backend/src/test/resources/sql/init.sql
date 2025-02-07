@@ -61,6 +61,9 @@ VALUES (1, 'JAVA'),
        (2, 'C'),
        (3, 'PYTHON');
 
+INSERT INTO job_posting_job_skill(job_posting_id, job_skill_id)
+VALUES (1, 1), (1, 2);
+
 -- Chat 데이터 생성
 INSERT INTO chat (created_at, modified_at, post_id, user_id, content, type)
 VALUES (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1, 'content0', 'CHAT'),
