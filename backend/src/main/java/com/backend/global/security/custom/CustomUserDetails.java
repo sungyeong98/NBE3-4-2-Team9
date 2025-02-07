@@ -1,13 +1,12 @@
 package com.backend.global.security.custom;
 
 import com.backend.domain.user.entity.SiteUser;
-import com.backend.domain.user.entity.UserRole;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
@@ -18,7 +17,8 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
 
-        authorities.add(siteUser::getUserRole);
+        // SiteUser에서 역할 뽑아 SimpleGranted 변환
+        authorities.add(new SimpleGrantedAuthority(siteUser.getUserRole()));
 
         return authorities;
     }
