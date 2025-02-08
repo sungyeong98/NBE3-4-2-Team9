@@ -5,6 +5,7 @@ import com.backend.domain.jobposting.entity.JobPostingStatus;
 import com.backend.domain.jobposting.entity.RequireEducate;
 import com.backend.domain.jobposting.entity.Salary;
 import com.backend.domain.jobskill.dto.JobSkillResponse;
+import com.querydsl.core.annotations.QueryProjection;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -55,4 +56,8 @@ public record JobPostingDetailResponse(
 	boolean isVoter //관심 여부
 ) {
 
+	@QueryProjection
+
+	public JobPostingDetailResponse {
+	}
 }

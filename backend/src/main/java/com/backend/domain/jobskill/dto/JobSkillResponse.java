@@ -1,5 +1,6 @@
 package com.backend.domain.jobskill.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 
 /**
@@ -13,4 +14,7 @@ import lombok.Builder;
 @Builder
 public record JobSkillResponse(String name, Integer code) {
 
+	@QueryProjection
+	public JobSkillResponse {
+	}
 }
