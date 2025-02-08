@@ -3,8 +3,8 @@ package com.backend.domain.RecruitmentUser.controller;
 import com.backend.domain.RecruitmentUser.entity.RecruitmentUserStatus;
 import com.backend.domain.RecruitmentUser.service.RecruitmentUserService;
 import com.backend.domain.post.dto.PostResponseDto;
-import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.response.GenericResponse;
+import com.backend.global.security.custom.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,47 +35,55 @@ public class ApiV1RecruitmentUserController {
     /**
      * 모집 신청 사용자가 특정 게시글에 모집을 신청합니다.
      *
-     * @param siteUser 현재 로그인한 사용자
-     * @param postId   모집할 게시글 ID (URL Path)
+     * @param userDetails 현재 로그인한 사용자
+     * @param postId      모집할 게시글 ID (URL Path)
      * @return 성공 응답 (201 Created)
      */
     @PostMapping("/{postId}")
     public GenericResponse<Void> applyRecruitment(
-            @AuthenticationPrincipal SiteUser siteUser,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long postId) {
 
-        recruitmentUserService.saveRecruitment(siteUser, postId);
+        recruitmentUserService.saveRecruitment(
+                userDetails.getSiteUser(),
+                postId
+        );
+
         return GenericResponse.of(true, HttpStatus.CREATED.value());
     }
 
     /**
      * 모집 신청 취소 사용자가 본인의 모집 신청을 취소합니다.
      *
-     * @param siteUser 현재 로그인된 사용자
-     * @param postId   모집 취소할 게시글 ID (URL Path)
+     * @param userDetails 현재 로그인된 사용자
+     * @param postId      모집 취소할 게시글 ID (URL Path)
      * @return 성공 응답 (200 OK)
      */
     @DeleteMapping("/{postId}")
     public GenericResponse<Void> cancelRecruitment(
-            @AuthenticationPrincipal SiteUser siteUser,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long postId) {
 
-        recruitmentUserService.cancelRecruitment(siteUser, postId);
+        recruitmentUserService.cancelRecruitment(
+                userDetails.getSiteUser(),
+                postId
+        );
+
         return GenericResponse.of(true, HttpStatus.OK.value());
     }
 
     /**
      * 모집 승인된 게시글 조회 사용자가 특정 모집 상태(기본값: ACCEPTED)인 게시글 목록을 페이징하여 조회합니다.
      *
-     * @param siteUser 현재 로그인된 사용자
-     * @param status   모집 상태 (기본값: "ACCEPTED")
-     * @param pageNum  페이지 번호 (기본값: 0)
-     * @param pageSize 페이지 크기 (기본값: 10)
+     * @param userDetails 현재 로그인된 사용자
+     * @param status      모집 상태 (기본값: "ACCEPTED")
+     * @param pageNum     페이지 번호 (기본값: 0)
+     * @param pageSize    페이지 크기 (기본값: 10)
      * @return 모집 승인된 게시글 목록 (Page<PostResponseDto>)
      */
     @GetMapping("/accept-posts")
     public GenericResponse<Page<PostResponseDto>> getAcceptedPosts(
-            @AuthenticationPrincipal SiteUser siteUser,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "ACCEPTED") RecruitmentUserStatus status,
             @RequestParam(defaultValue = "0") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize) {
@@ -84,7 +92,7 @@ public class ApiV1RecruitmentUserController {
                 Sort.by(Sort.Direction.ASC, "createdAt"));
 
         Page<PostResponseDto> acceptedPosts = recruitmentUserService.getAcceptedPosts(
-                siteUser,
+                userDetails.getSiteUser(),
                 status,
                 pageable
         );
