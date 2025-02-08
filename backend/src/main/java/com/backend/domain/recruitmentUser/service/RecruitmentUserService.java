@@ -1,8 +1,8 @@
-package com.backend.domain.RecruitmentUser.service;
+package com.backend.domain.recruitmentUser.service;
 
-import com.backend.domain.RecruitmentUser.entity.RecruitmentUser;
-import com.backend.domain.RecruitmentUser.entity.RecruitmentUserStatus;
-import com.backend.domain.RecruitmentUser.repository.RecruitmentUserRepository;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
+import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
 import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;

@@ -1,13 +1,12 @@
-package com.backend.domain.RecruitmentUser.controller;
+package com.backend.domain.recruitmentUser.controller;
 
-import com.backend.domain.RecruitmentUser.dto.request.AuthorRequest;
-import com.backend.domain.RecruitmentUser.dto.response.RecruitmentUserPageResponse;
-import com.backend.domain.RecruitmentUser.service.RecruitmentAuthorService;
+import com.backend.domain.recruitmentUser.dto.request.AuthorRequest;
+import com.backend.domain.recruitmentUser.dto.response.RecruitmentUserPageResponse;
+import com.backend.domain.recruitmentUser.service.RecruitmentAuthorService;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/recruitment-author")

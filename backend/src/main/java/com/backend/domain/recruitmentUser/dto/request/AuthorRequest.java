@@ -1,4 +1,4 @@
-package com.backend.domain.RecruitmentUser.dto.request;
+package com.backend.domain.recruitmentUser.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 

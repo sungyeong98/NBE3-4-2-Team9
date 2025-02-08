@@ -1,7 +1,7 @@
-package com.backend.domain.RecruitmentUser.dto.response;
+package com.backend.domain.recruitmentUser.dto.response;
 
-import com.backend.domain.RecruitmentUser.entity.RecruitmentUser;
-import com.backend.domain.RecruitmentUser.entity.RecruitmentUserStatus;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
 import com.backend.domain.user.dto.response.UserGetProfileResponse;
 
 /**

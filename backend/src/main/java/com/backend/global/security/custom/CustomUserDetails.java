@@ -27,10 +27,6 @@ public class CustomUserDetails implements UserDetails {
         return siteUser;
     }
 
-    public String getRole() {
-        return siteUser.getUserRole();
-    }
-
     @Override
     public String getUsername() {
         return siteUser.getEmail();

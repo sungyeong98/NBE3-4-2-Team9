@@ -52,7 +52,11 @@ INSERT INTO post (created_at, modified_at, content, num_of_applicants, recruitme
                   recruitment_status, subject, category_id, job_id, user_id)
 VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', null, CURRENT_DATE + 1, null, 'testSubject', 1,
         null,1),
-    (CURRENT_DATE, CURRENT_DATE, '테스트 내용', null, CURRENT_DATE + 1, null, '테스트 제목', 2,
+        (CURRENT_DATE, CURRENT_DATE, '테스트 내용', null, CURRENT_DATE + 1, null, '테스트 제목', 2,
+        null,2),
+        (CURRENT_DATE, CURRENT_DATE, '모집', null, CURRENT_DATE + 1, null, '모집', 2,
+        null,1),
+        (CURRENT_DATE, CURRENT_DATE, '새 게시글 내용', null, CURRENT_DATE + 1, null, '새 게시글 제목', 2,
         null,2);
 
 -- JobSkill 데이터 생성
@@ -68,8 +72,9 @@ VALUES
     (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1, 'APPLIED'),  -- 지원자 1이 게시글 1에 지원
     (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 2, 'ACCEPTED'), -- 지원자 2가 게시글 1에 승인
     (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2, 3, 'REJECTED'), -- 지원자 3이 게시글 2에 거절
-    (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2, 1, 'APPLIED');  -- 지원자 1이 게시글 2에 다시 지원
-
+    (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2, 1, 'APPLIED'),  -- 지원자 1이 게시글 2에 다시 지원
+    (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3, 2, 'APPLIED'),  -- 지원자 3이 게시글 2에 지원
+    (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 4, 2, 'APPLIED');  -- 지원자 2가 게시글 4에 지원
 
 -- Chat 데이터 생성
 INSERT INTO chat (created_at, modified_at, post_id, user_id, content, type)

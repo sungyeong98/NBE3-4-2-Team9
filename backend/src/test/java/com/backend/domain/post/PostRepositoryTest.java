@@ -65,7 +65,7 @@ class PostRepositoryTest {
         // 모집 게시판 조회
         Page<Post> recruitmentPosts = postRepository.findAllByCategoryId(
                 recruitmentBoardCategory.getId(), pageable);
-        assertThat(recruitmentPosts.getContent()).hasSize(1);
+        assertThat(recruitmentPosts.getContent()).hasSize(3);
     }
 
     @Test

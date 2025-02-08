@@ -1,4 +1,4 @@
-package com.backend.domain.RecruitmentUser.entity;
+package com.backend.domain.recruitmentUser.entity;
 
 public enum RecruitmentUserStatus {
     APPLIED,   // 지원 완료

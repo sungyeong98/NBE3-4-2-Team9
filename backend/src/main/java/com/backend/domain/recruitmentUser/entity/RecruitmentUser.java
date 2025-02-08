@@ -1,4 +1,4 @@
-package com.backend.domain.RecruitmentUser.entity;
+package com.backend.domain.recruitmentUser.entity;
 
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.user.entity.SiteUser;

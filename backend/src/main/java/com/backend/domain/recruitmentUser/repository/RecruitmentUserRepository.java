@@ -1,7 +1,7 @@
-package com.backend.domain.RecruitmentUser.repository;
+package com.backend.domain.recruitmentUser.repository;
 
-import com.backend.domain.RecruitmentUser.entity.RecruitmentUser;
-import com.backend.domain.RecruitmentUser.entity.RecruitmentUserStatus;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

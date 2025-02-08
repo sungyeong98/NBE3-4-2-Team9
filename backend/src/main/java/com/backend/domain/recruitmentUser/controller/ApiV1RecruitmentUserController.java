@@ -1,7 +1,7 @@
-package com.backend.domain.RecruitmentUser.controller;
+package com.backend.domain.recruitmentUser.controller;
 
-import com.backend.domain.RecruitmentUser.entity.RecruitmentUserStatus;
-import com.backend.domain.RecruitmentUser.service.RecruitmentUserService;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
+import com.backend.domain.recruitmentUser.service.RecruitmentUserService;
 import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
