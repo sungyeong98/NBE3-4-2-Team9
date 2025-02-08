@@ -1,12 +1,11 @@
 package com.backend.domain.recruitmentUser.controller;
 
+import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
 import com.backend.domain.recruitmentUser.service.RecruitmentUserService;
-import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 모집 신청 및 조회를 담당하는 컨트롤러 요청 경로: /api/v1/recruitment-user
  */
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/recruitment-user")
