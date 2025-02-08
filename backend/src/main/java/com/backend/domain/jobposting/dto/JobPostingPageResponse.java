@@ -23,6 +23,7 @@ import lombok.Builder;
  * @param applyCnt         지원자 수
  * @author Kim Dong O
  */
+@Builder
 public record JobPostingPageResponse(
 	Long id,
 	String subject, //제목
@@ -41,19 +42,7 @@ public record JobPostingPageResponse(
 	Long applyCnt //지원자 수
 ) {
 
-	@Builder
 	@QueryProjection
-	public JobPostingPageResponse(Long id, String subject, ZonedDateTime openDate,
-		ZonedDateTime closeDate, ExperienceLevel experienceLevel, RequireEducate requireEducate,
-		JobPostingStatus jobPostingStatus, Salary salary, Long applyCnt) {
-		this.id = id;
-		this.subject = subject;
-		this.openDate = openDate;
-		this.closeDate = closeDate;
-		this.experienceLevel = experienceLevel;
-		this.requireEducate = requireEducate;
-		this.jobPostingStatus = jobPostingStatus;
-		this.salary = salary;
-		this.applyCnt = applyCnt;
+	public JobPostingPageResponse {
 	}
 }
