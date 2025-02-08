@@ -13,6 +13,7 @@ build/
 .settings
 .springBeans
 .sts4-cache
+#../.idea
 bin/
 src/main/generated/
 !**/src/main/**/bin/
