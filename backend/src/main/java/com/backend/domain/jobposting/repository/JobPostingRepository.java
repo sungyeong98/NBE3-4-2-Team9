@@ -1,5 +1,6 @@
 package com.backend.domain.jobposting.repository;
 
+import com.backend.domain.jobposting.dto.JobPostingDetailResponse;
 import com.backend.domain.jobposting.dto.JobPostingPageResponse;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.util.JobPostingSearchCondition;
@@ -22,6 +23,15 @@ public interface JobPostingRepository {
 	 * @implSpec Id 값으로 조회 메서드 입니다.
 	 */
 	Optional<JobPosting> findById(Long id);
+
+	/**
+	 * @param jobPostingId JobPosting id
+	 * @param siteUserId   SiteUser id
+	 * @return {@link Optional<JobPostingDetailResponse>}
+	 * @implSpec jobPostingId, siteUserId 값으로 조회 메서드 입니다.
+	 */
+	Optional<JobPostingDetailResponse> findDetailById(Long jobPostingId, Long siteUserId);
+
 
 	/**
 	 * @param jobPosting JobPosting 객체

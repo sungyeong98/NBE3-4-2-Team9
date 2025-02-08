@@ -1,23 +1,29 @@
 package com.backend.domain.jobposting.repository;
 
 import static com.backend.domain.jobposting.entity.QJobPosting.jobPosting;
+import static com.backend.domain.jobposting.entity.QJobPostingJobSkill.jobPostingJobSkill;
 import static com.backend.domain.voter.entity.QVoter.voter;
 
 import com.backend.domain.jobposting.dto.JobPostingDetailResponse;
 import com.backend.domain.jobposting.dto.JobPostingPageResponse;
 import com.backend.domain.jobposting.dto.QJobPostingDetailResponse;
 import com.backend.domain.jobposting.dto.QJobPostingPageResponse;
-import com.backend.domain.jobposting.entity.QJobPostingJobSkill;
 import com.backend.domain.jobposting.util.JobPostingSearchCondition;
+import com.backend.domain.jobskill.dto.JobSkillResponse;
+import com.backend.domain.jobskill.dto.QJobSkillResponse;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -32,6 +38,7 @@ import org.springframework.util.StringUtils;
  */
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class JobPostingQueryRepository {
 
 	private final JPAQueryFactory queryFactory;
@@ -65,22 +72,47 @@ public class JobPostingQueryRepository {
 		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
 	}
 
-	public JobPostingDetailResponse findById(Long id) {
-		queryFactory.select(new QJobPostingDetailResponse(jobPosting.id, jobPosting.subject, jobPosting.url,
-				jobPosting.postDate, jobPosting.openDate, jobPosting.closeDate,
-				jobPosting.companyName, jobPosting.companyLink, jobPosting.experienceLevel,
-				jobPosting.requireEducate, jobPosting.jobPostingStatus, jobPosting.salary, null,
-				jobPosting.applyCnt, null))
+	public Optional<JobPostingDetailResponse> findDetailById(Long jobPostingId, Long siteUserId) {
+		BooleanExpression siteUserVoted = JPAExpressions
+			.selectOne()
+			.from(voter)
+			.leftJoin(voter.jobPosting)
+			.where(
+				voter.jobPosting.id.eq(jobPostingId)
+			)
+			.exists();
+
+		List<JobSkillResponse> jobSkillResponses = queryFactory.select(
+				new QJobSkillResponse(jobPostingJobSkill.jobSkill.name,
+					jobPostingJobSkill.jobSkill.code))
+			.from(jobPostingJobSkill)
+			.leftJoin(jobPostingJobSkill.jobPosting)
+			.leftJoin(jobPostingJobSkill.jobSkill)
+			.where(jobPostingJobSkill.jobPosting.id.eq(jobPostingId))
+			.fetch();
+
+		JobPostingDetailResponse jobPostingDetailResponse = queryFactory.selectDistinct(
+				new QJobPostingDetailResponse(jobPosting.id, jobPosting.subject, jobPosting.url,
+					jobPosting.postDate, jobPosting.openDate, jobPosting.closeDate,
+					jobPosting.companyName, jobPosting.companyLink, jobPosting.experienceLevel,
+					jobPosting.requireEducate, jobPosting.jobPostingStatus, jobPosting.salary,
+					Expressions.constant(jobSkillResponses),
+					jobPosting.applyCnt, voter.countDistinct(), siteUserVoted))
 			.from(jobPosting)
 			.leftJoin(jobPosting.voterList, voter)
-			.leftJoin(jobPosting.jobPostingJobSkillList, QJobPostingJobSkill.jobPostingJobSkill)
+			.groupBy(jobPosting.id, jobPosting.postDate, jobPosting.openDate, jobPosting.closeDate,
+				jobPosting.companyName, jobPosting.companyLink, jobPosting.experienceLevel,
+				jobPosting.requireEducate, jobPosting.jobPostingStatus, jobPosting.salary,
+				jobPosting.applyCnt)
+			.where(jobPosting.id.eq(jobPostingId))
 			.fetchOne();
 
-		return null;
+		return Optional.ofNullable(jobPostingDetailResponse);
 	}
 
 	/**
 	 * 정렬할 필드와 정렬 방식을 OrderSpecifier로 반환합니다.
+	 *
 	 * @param jobPostingSearchCondition
 	 * @return {@link OrderSpecifier<?>}
 	 */
@@ -107,6 +139,7 @@ public class JobPostingQueryRepository {
 
 	/**
 	 * 연봉 코드 조건식을 반환합니다.
+	 *
 	 * @param salaryCode 연봉 코드
 	 * @return {@link BooleanExpression}
 	 */
@@ -125,6 +158,7 @@ public class JobPostingQueryRepository {
 
 	/**
 	 * 학력 코드 조건식을 반환합니다.
+	 *
 	 * @param requireEducateCode 학력 코드
 	 * @return {@link BooleanExpression}
 	 */
@@ -135,6 +169,7 @@ public class JobPostingQueryRepository {
 
 	/**
 	 * 경력 코드 조건식을 반환합니다.
+	 *
 	 * @param experienceLevel 경력 코드
 	 * @return {@link BooleanExpression}
 	 */
@@ -145,6 +180,7 @@ public class JobPostingQueryRepository {
 
 	/**
 	 * 키워드 조건식을 반환합니다.
+	 *
 	 * @param kw
 	 * @return {@link BooleanExpression}
 	 */
