@@ -1,9 +1,13 @@
 package com.backend.domain.jobposting.repository;
 
 import static com.backend.domain.jobposting.entity.QJobPosting.jobPosting;
+import static com.backend.domain.voter.entity.QVoter.voter;
 
+import com.backend.domain.jobposting.dto.JobPostingDetailResponse;
 import com.backend.domain.jobposting.dto.JobPostingPageResponse;
+import com.backend.domain.jobposting.dto.QJobPostingDetailResponse;
 import com.backend.domain.jobposting.dto.QJobPostingPageResponse;
+import com.backend.domain.jobposting.entity.QJobPostingJobSkill;
 import com.backend.domain.jobposting.util.JobPostingSearchCondition;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -59,6 +63,20 @@ public class JobPostingQueryRepository {
 				getSalaryCodeBetween(jobPostingSearchCondition.salaryCode()));
 
 		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+	}
+
+	public JobPostingDetailResponse findById(Long id) {
+		queryFactory.select(new QJobPostingDetailResponse(jobPosting.id, jobPosting.subject, jobPosting.url,
+				jobPosting.postDate, jobPosting.openDate, jobPosting.closeDate,
+				jobPosting.companyName, jobPosting.companyLink, jobPosting.experienceLevel,
+				jobPosting.requireEducate, jobPosting.jobPostingStatus, jobPosting.salary, null,
+				jobPosting.applyCnt, null))
+			.from(jobPosting)
+			.leftJoin(jobPosting.voterList, voter)
+			.leftJoin(jobPosting.jobPostingJobSkillList, QJobPostingJobSkill.jobPostingJobSkill)
+			.fetchOne();
+
+		return null;
 	}
 
 	/**
