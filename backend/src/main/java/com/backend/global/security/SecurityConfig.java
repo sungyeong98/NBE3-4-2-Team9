@@ -1,24 +1,10 @@
 package com.backend.global.security;
 
-
-import com.backend.global.redis.repository.RedisRepository;
-import com.backend.global.response.GenericResponse;
-import com.backend.global.security.filter.JwtAuthenticationFilter;
-import com.backend.global.security.filter.JwtAuthorizationFilter;
-import com.backend.global.security.handler.JwtLogoutHandler;
-import com.backend.global.security.handler.JwtLogoutSuccessHandler;
-import com.backend.global.security.handler.OAuth2LoginFailureHandler;
-import com.backend.global.security.handler.OAuth2LoginSuccessHandler;
-import com.backend.global.security.oauth.CustomOAuth2UserService;
-import com.backend.standard.util.AuthResponseUtil;
-import com.backend.standard.util.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +20,22 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.backend.global.redis.repository.RedisRepository;
+import com.backend.global.response.GenericResponse;
+import com.backend.global.security.filter.JwtAuthenticationFilter;
+import com.backend.global.security.filter.JwtAuthorizationFilter;
+import com.backend.global.security.handler.JwtLogoutHandler;
+import com.backend.global.security.handler.JwtLogoutSuccessHandler;
+import com.backend.global.security.handler.OAuth2LoginFailureHandler;
+import com.backend.global.security.handler.OAuth2LoginSuccessHandler;
+import com.backend.global.security.oauth.CustomOAuth2UserService;
+import com.backend.standard.util.AuthResponseUtil;
+import com.backend.standard.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -75,7 +77,9 @@ public class SecurityConfig {
 			"/api/v1/chat/**",
 			"/ws/**",
 			"/oauth2/authorization/kakao",
-			"/api/v1/posts" // 게시글 전체 조회에는 로그인 하지 않은 유저도 이용 가능해야 함
+			"/api/v1/posts", // 게시글 전체 조회에는 로그인 하지 않은 유저도 이용 가능해야 함
+			"/api/v1/recruitment-user",
+			"/api/v1/recruitment-author"
 		));
 	}
 
@@ -142,8 +146,8 @@ public class SecurityConfig {
 					)
 					.successHandler(oAuth2LoginSuccessHandler)
 					.failureHandler(oAuth2LoginFailureHandler)
-//                        .defaultSuccessUrl("/")
-//                        .failureUrl("/login/oauth2/code/kakao")
+				//                        .defaultSuccessUrl("/")
+				//                        .failureUrl("/login/oauth2/code/kakao")
 			);
 
 		return http.build();
