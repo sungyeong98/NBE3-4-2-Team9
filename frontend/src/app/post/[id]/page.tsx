@@ -188,6 +188,12 @@ export default function PostDetail() {
               </div>
               <div className="flex items-center gap-2">
                 <button 
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => alert('수정 기능은 준비 중입니다.')}
+                >
+                  수정
+                </button>
+                <button 
                   className="px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors"
                   onClick={handleDelete}
                   disabled={isDeleting}
