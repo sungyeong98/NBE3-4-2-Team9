@@ -47,6 +47,12 @@ public class ApiV1JobPostingController {
 		return GenericResponse.of(true, HttpStatus.OK.value(), findAll);
 	}
 
+	/**
+	 * 상세 조회 메서드 입니다.
+	 * @param jobPostingId
+	 * @param customUserDetails
+	 * @return {@link GenericResponse<JobPostingDetailResponse>}
+	 */
 	@GetMapping("/{id}")
 	public GenericResponse<JobPostingDetailResponse> findDetailId(@PathVariable("id") Long jobPostingId, @AuthenticationPrincipal
 		CustomUserDetails customUserDetails) {
