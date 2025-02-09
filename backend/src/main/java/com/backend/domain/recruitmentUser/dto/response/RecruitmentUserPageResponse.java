@@ -1,7 +1,8 @@
 package com.backend.domain.recruitmentUser.dto.response;
 
-import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
 import org.springframework.data.domain.Page;
+
+import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
 
 /**
  * 모집 지원자 목록을 포함하는 DTO (페이징 적용)
