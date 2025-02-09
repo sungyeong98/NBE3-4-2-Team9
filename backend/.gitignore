@@ -21,6 +21,7 @@ bin/
 **/test/resources/application.yml
 ../.idea
 
+
 ### IntelliJ IDEA ###
 .idea/
 *.iws
