@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { RootState } from '@/store/store';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleLeftIcon, UserGroupIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 
 interface UserProfile {
   id: number;
@@ -157,6 +157,36 @@ export default function UserProfile({ params }: { params: { id: string } }) {
             >
               첫 게시글 작성하기
             </Link>
+          </div>
+        </div>
+
+        {/* 모집자 명단 섹션 */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <UserGroupIcon className="h-6 w-6 text-blue-600" />
+            모집자 명단
+          </h3>
+          
+          <div className="text-center py-12">
+            <div className="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <UserGroupIcon className="h-8 w-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500 mb-4">아직 모집 중인 프로젝트가 없습니다</p>
+          </div>
+        </div>
+
+        {/* 모집 신청 리스트 섹션 */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <ClipboardDocumentListIcon className="h-6 w-6 text-blue-600" />
+            모집 신청 리스트
+          </h3>
+          
+          <div className="text-center py-12">
+            <div className="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <ClipboardDocumentListIcon className="h-8 w-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500 mb-4">아직 신청한 프로젝트가 없습니다</p>
           </div>
         </div>
       </div>
