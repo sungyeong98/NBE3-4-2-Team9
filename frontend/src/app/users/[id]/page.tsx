@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { RootState } from '@/store/store';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 
 interface UserProfile {
   id: number;
@@ -24,6 +25,7 @@ export default function UserProfile({ params }: { params: { id: string } }) {
   const { isAuthenticated, token, user } = useSelector((state: RootState) => state.auth);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [myPosts, setMyPosts] = useState([]); // 추후 API 연동 시 사용
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -136,6 +138,25 @@ export default function UserProfile({ params }: { params: { id: string } }) {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* 내가 작성한 게시글 섹션만 추가 */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
+          <h3 className="text-xl font-bold mb-6">내가 작성한 게시글</h3>
+          
+          {/* 게시글이 없을 때 */}
+          <div className="text-center py-12">
+            <div className="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <ChatBubbleLeftIcon className="h-8 w-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500 mb-4">아직 작성한 게시글이 없습니다</p>
+            <Link
+              href="/post/write"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              첫 게시글 작성하기
+            </Link>
           </div>
         </div>
       </div>
