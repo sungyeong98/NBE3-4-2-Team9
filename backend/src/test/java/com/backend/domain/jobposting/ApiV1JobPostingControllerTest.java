@@ -315,4 +315,23 @@ public class ApiV1JobPostingControllerTest {
 			.andExpect(jsonPath("$.data.isVoter").value(givenJobPosting.isVoter()));
 	}
 
+	@DisplayName("채용 공고 단건 조회 실패 테스트")
+	@Test
+	void findDetailById_not_found_fail() throws Exception {
+		//given
+		Long givenId = 999L;
+
+		//when
+		ResultActions resultActions = mockMvc.perform(
+			get("/api/v1/job-posting/{id}", givenId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer " + accessToken2));
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.code").value(GlobalErrorCode.JOB_POSTING_NOT_FOUND.getCode()))
+			.andExpect(jsonPath("$.message").value(GlobalErrorCode.JOB_POSTING_NOT_FOUND.getMessage()));
+	}
+
 }
