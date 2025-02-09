@@ -14,9 +14,10 @@ import com.backend.standard.util.AuthResponseUtil;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.*;
-
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -109,8 +110,8 @@ public class SecurityConfig {
 
 				// 나머지 특정 권한이 필요한 URL들
 				authorizeRequests
-					.requestMatchers(HttpMethod.POST, "/api/v1/posts").hasRole("USER")
-					.requestMatchers(HttpMethod.GET, "/api/v1/job-posting/{id}").hasRole("USER")
+					.requestMatchers(HttpMethod.POST, "/api/v1/posts", "/api/v1/voter").hasAnyRole("USER", "ADMIN")
+					.requestMatchers(HttpMethod.GET, "/api/v1/job-posting/{id}").hasAnyRole("USER", "ADMIN")
 					.requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.PUT, "/api/v1/category/**").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.PATCH, "/api/v1/category/**").hasRole("ADMIN")
