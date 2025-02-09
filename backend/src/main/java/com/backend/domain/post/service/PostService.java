@@ -128,6 +128,7 @@ public class PostService {
         // 게시글 조회
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+
         // 작성자 검증
         if (!post.getAuthor().getId().equals(userId)) {
             throw new GlobalException(GlobalErrorCode.POST_UPDATE_FORBIDDEN);

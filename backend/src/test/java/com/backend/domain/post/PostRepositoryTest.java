@@ -179,7 +179,7 @@ class PostRepositoryTest {
 
         assertThat(updatedPost).isPresent();
         assertThat(updatedPost.get().getSubject()).isEqualTo(updatedTitle);
-        assertThat(updatedPost.get().getContent()).isEqualTo(updatedContent);}
-
+        assertThat(updatedPost.get().getContent()).isEqualTo(updatedContent);
+    }
 }
 

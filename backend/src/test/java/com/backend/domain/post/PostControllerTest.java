@@ -1,6 +1,7 @@
 package com.backend.domain.post;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,11 +18,14 @@ import com.backend.global.security.custom.CustomUserDetails;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -56,9 +60,9 @@ public class PostControllerTest {
     @DisplayName("게시글 생성 테스트")
     void testCreatePost() throws Exception {
         //init.sql에 삽입된 유저 데이터 가져오기
-        SiteUser siteUser = userRepository.findByEmail("testEmail1@naver.com").get();
+        SiteUser writer = userRepository.findByEmail("testEmail1@naver.com").get();
         //가져온 유저 데이터로 시큐리티 유저 생성
-        CustomUserDetails customUserDetails = new CustomUserDetails(siteUser);
+        CustomUserDetails customUserDetails = new CustomUserDetails(writer);
         //액세스 토큰 발급
         String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
 
@@ -75,7 +79,7 @@ public class PostControllerTest {
     }
 
     @Test
-    @DisplayName("게시글 상세 조회 테스트")
+    @DisplayName("게시글 조건별 조회 테스트")
     void testGetPostById() throws Exception {
         //init.sql에 삽입된 유저 데이터 가져오기
         SiteUser siteUser = userRepository.findByEmail("testEmail1@naver.com").get();
@@ -107,52 +111,121 @@ public class PostControllerTest {
                 .andDo(print());
 
     }
+
+    @Test
+    @DisplayName("게시글 수정 - 작성자가 게시글 수정 -> 성공")
+    void updatePost_Success() throws Exception {
+        // 작성자 조회
+        SiteUser writer = userRepository.findByEmail("testEmail2@naver.com")
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // jwt 토큰 생성
+        CustomUserDetails customUserDetails = new CustomUserDetails(writer);
+        String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
+
+        // 테스트 할 게시글 조회
+        Post testPost = postRepository.findBySubject("테스트 제목")
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+
+        // 수정할 데이터 생성
+        PostCreateRequestDto updateRequest = PostCreateRequestDto.builder()
+                .subject("수정된 제목")
+                .content("수정된 내용")
+                .categoryId(testPost.getCategoryId().getId())
+                .build();
+
+        // 수정 성공하면 응답 코드가 200 OK, 내용 변경됐는지 확인 필요
+        mockMvc.perform(put("/api/v1/posts/{id}", testPost.getPostId())
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 - 작성자가 아닌 유저가 게시글 수정 -> 실패")
+    void updatePost_Forbidden() throws Exception {
+        // 작성자가 아닌 유저 조회
+        SiteUser otherUser = userRepository.findByEmail("testEmail2@naver.com")
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // jwt 토큰 생성
+        CustomUserDetails otherUserDetails = new CustomUserDetails(otherUser);
+        String accessToken = jwtUtil.createAccessToken(otherUserDetails, ACCESS_EXPIRATION);
+
+        // 테스트 할 게시글 조회
+        Post testPost = postRepository.findBySubject("testSubject")
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+
+        // 수정할 데이터 생성
+        PostCreateRequestDto updateRequest = PostCreateRequestDto.builder()
+                .subject("수정된 제목")
+                .content("수정된 내용")
+                .categoryId(testPost.getCategoryId().getId())
+                .build();
+
+        // 수정 실패하고 응답 코드가 403 Or 401, 내용 변경되지 않음
+        mockMvc.perform(put("/api/v1/posts/{id}", testPost.getPostId())
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+    }
+
     @Test
     @DisplayName("게시글 삭제 - 작성자가 삭제 -> 성공")
     void testDeletePost_Success() throws Exception {
-        SiteUser siteUser = userRepository.findByEmail("testEmail1@naver.com")
+        SiteUser writer = userRepository.findByEmail("testEmail3@naver.com")
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(siteUser);
+        CustomUserDetails customUserDetails = new CustomUserDetails(writer);
         String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
 
-        Post post = postRepository.findAll().get(0);
+        Post testPost = postRepository.findBySubject("테스트 제목3")
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
-        mockMvc.perform(delete("/api/v1/posts/{id}", post.getPostId())
+        mockMvc.perform(delete("/api/v1/posts/{id}", testPost.getPostId())
                         .header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
 
-        // 🔹 삭제 후 존재 여부 확인
-        boolean exists = postRepository.existsById(post.getPostId());
+        // 삭제 후 존재 여부 확인
+        boolean exists = postRepository.existsById(testPost.getPostId());
         assertThat(exists).isFalse();
     }
+
     @Test
+    @Order(5)
     @DisplayName("게시글 삭제 - 작성자가 아닌 유저가 삭제 -> 실패")
-    void deletePost_Forbidden() throws Exception{
-    Post testPost = postRepository.findBySubject("새로운 제목")
-            .orElseThrow(() -> new RuntimeException("테스트 게시글을 찾을 수 없습니다."));
+    void deletePost_Forbidden() throws Exception {
+        Post testPost = postRepository.findBySubject("testSubject")
+                .orElseThrow(() -> new RuntimeException("테스트 게시글을 찾을 수 없습니다."));
 
-    SiteUser otherUser = userRepository.findByEmail("testEmail2@naver.com")
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        SiteUser otherUser = userRepository.findByEmail("testEmail3@naver.com")
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-    CustomUserDetails otherUserDetails = new CustomUserDetails(otherUser);
-    String accessToken = jwtUtil.createAccessToken(otherUserDetails, ACCESS_EXPIRATION);
+        CustomUserDetails otherUserDetails = new CustomUserDetails(otherUser);
+        String accessToken = jwtUtil.createAccessToken(otherUserDetails, ACCESS_EXPIRATION);
 
-    mockMvc.perform(delete("/api/v1/posts/{id}", testPost.getPostId())
-                    .header("Authorization", "Bearer " + accessToken)) // 다른 유저의 토큰 사용
-            .andExpect(status().isForbidden()) // 403 응답이 나와야 함
-            .andDo(print());
+        mockMvc.perform(delete("/api/v1/posts/{id}", testPost.getPostId())
+                        .header("Authorization", "Bearer " + accessToken)) // 다른 유저의 토큰 사용
+                .andExpect(status().isForbidden()) // 403 응답이 나와야 함
+                .andDo(print());
 
     }
 
     @Test
+    @Order(6)
     @DisplayName("게시글 삭제 - 존재하지 않는 게시글 삭제 -> 실패")
-    void deletePost_NotFound() throws Exception{
+    void deletePost_NotFound() throws Exception {
         Long nonExistentPostId = 9999L;
 
-        SiteUser siteUser = userRepository.findByEmail("testEmail1@naver.com")
+        SiteUser writer = userRepository.findByEmail("testEmail3@naver.com")
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        CustomUserDetails customUserDetails = new CustomUserDetails(siteUser);
+
+        CustomUserDetails customUserDetails = new CustomUserDetails(writer);
         String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
 
         mockMvc.perform(delete("/api/v1/posts/{id}", nonExistentPostId)

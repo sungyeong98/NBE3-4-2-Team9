@@ -67,9 +67,9 @@ public class ApiV1PostController {
     @PutMapping("/{id}")
     public GenericResponse<PostResponseDto> updatePost(@PathVariable Long id,
             @Valid @RequestBody PostCreateRequestDto requestDto,
-            @AuthenticationPrincipal CustomUserDetails user) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         PostResponseDto updatedPost = postService.updatePost
-                (id, requestDto, user.getSiteUser().getId());
+                (id, requestDto, userDetails.getSiteUser().getId());
         return GenericResponse.of(true, HttpStatus.OK.value(), updatedPost);
     }
 
