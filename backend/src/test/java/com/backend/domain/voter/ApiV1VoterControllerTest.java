@@ -53,7 +53,7 @@ public class ApiV1VoterControllerTest {
 	JwtUtil jwtUtil;
 
 	@Autowired
-	UserRepository userRepostiory;
+	UserRepository userRepository;
 
 	@Autowired
 	VoterRepository likeRepository;
@@ -66,11 +66,11 @@ public class ApiV1VoterControllerTest {
 
 	@BeforeAll
 	void setUp() {
-		SiteUser givenSiteUser1 = userRepostiory.findByEmail("testEmail1@naver.com").get();
+		SiteUser givenSiteUser1 = userRepository.findByEmail("testEmail1@naver.com").get();
 		CustomUserDetails givenCustomUserDetails1 = new CustomUserDetails(givenSiteUser1);
 		accessToken1 = jwtUtil.createAccessToken(givenCustomUserDetails1, accessExpiration);
 
-		SiteUser givenSiteUser2 = userRepostiory.findByEmail("testEmail1@naver.com").get();
+		SiteUser givenSiteUser2 = userRepository.findByEmail("testEmail1@naver.com").get();
 		CustomUserDetails givenCustomUserDetails2 = new CustomUserDetails(givenSiteUser2);
 		accessToken2 = jwtUtil.createAccessToken(givenCustomUserDetails2, accessExpiration);
 	}
@@ -108,7 +108,7 @@ public class ApiV1VoterControllerTest {
 			.targetId(1L)
 			.build();
 
-		SiteUser givenSiteUser2 = userRepostiory.findByEmail("testEmail1@naver.com").get();
+		SiteUser givenSiteUser2 = userRepository.findByEmail("testEmail1@naver.com").get();
 
 		likeRepository.save(Voter.builder()
 			.siteUser(givenSiteUser2)
