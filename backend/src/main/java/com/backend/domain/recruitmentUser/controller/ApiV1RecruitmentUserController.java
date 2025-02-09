@@ -96,7 +96,6 @@ public class ApiV1RecruitmentUserController {
                 status,
                 pageable
         );
-        System.out.println(acceptedPosts.getContent()); // ✅ 여기서 status 값이 포함되는지 확인
 
         return GenericResponse.of(true, HttpStatus.OK.value(), acceptedPosts);
     }
