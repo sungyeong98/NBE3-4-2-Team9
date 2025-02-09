@@ -4,6 +4,7 @@ import com.backend.domain.comment.dto.request.CommentRequestDto;
 import com.backend.domain.comment.dto.response.CommentCreateResponseDto;
 import com.backend.domain.comment.dto.response.CommentModifyResponseDto;
 import com.backend.domain.comment.service.CommentService;
+import com.backend.domain.post.service.PostService;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
 
     private final CommentService commentService;
+    private final PostService postService;
 
     @PostMapping
     @Transactional
