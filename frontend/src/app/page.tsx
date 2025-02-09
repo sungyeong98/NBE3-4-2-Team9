@@ -176,13 +176,26 @@ export default function Home() {
                     <div>
                       <h2 className="text-lg font-semibold mb-2 line-clamp-2">{post.subject}</h2>
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-sm text-blue-600">
+                        <span className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">
                           {categories.find(cat => cat.id === String(post.categoryId))?.name}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between text-sm text-gray-500">
-                      <span>익명</span>
+                      <div className="flex items-center gap-2">
+                        {post.authorImg ? (
+                          <img 
+                            src={post.authorImg} 
+                            alt={post.authorName}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-xs text-gray-500">익명</span>
+                          </div>
+                        )}
+                        <span>{post.authorName}</span>
+                      </div>
                       <span>{formatDate(post.createdAt)}</span>
                     </div>
                   </div>
