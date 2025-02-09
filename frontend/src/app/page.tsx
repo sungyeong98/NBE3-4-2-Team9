@@ -98,7 +98,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 py-12">
         {/* 채용 공고 섹션 */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
@@ -129,12 +129,13 @@ export default function Home() {
               ))
             ) : (
               jobPostings.slice(0, 3).map((posting) => (
-                <div 
-                  key={posting.id} 
-                  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
+                <Link 
+                  key={posting.id}
+                  href={`/job-posting/${posting.id}`}
+                  className="block bg-white rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-200 transform hover:-translate-y-1"
                 >
                   <JobPostingCard posting={posting} />
-                </div>
+                </Link>
               ))
             )}
           </div>
@@ -156,7 +157,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
             {isLoading ? (
               [...Array(3)].map((_, index) => (
                 <div
@@ -173,7 +174,7 @@ export default function Home() {
                 <Link 
                   key={`main-post-${post.id}`}
                   href={`/post/${post.id}`}
-                  className="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 h-full"
+                  className="block bg-white rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-200 transform hover:-translate-y-1"
                 >
                   <div className="p-6 flex flex-col h-full justify-between">
                     <div>
