@@ -164,4 +164,22 @@ class PostRepositoryTest {
             postRepository.delete(post);
         });
     }
+
+    @Test
+    @DisplayName("게시글 수정 - 수정 후 조회")
+    void testUpdatePost_Success(){
+
+        String updatedTitle = "수정된 제목";
+        String updatedContent = "수정된 내용";
+
+        testPost.updatePost(updatedTitle, updatedContent);
+        postRepository.save(testPost);
+
+        Optional<Post> updatedPost = postRepository.findById(testPost.getPostId());
+
+        assertThat(updatedPost).isPresent();
+        assertThat(updatedPost.get().getSubject()).isEqualTo(updatedTitle);
+        assertThat(updatedPost.get().getContent()).isEqualTo(updatedContent);}
+
 }
+
