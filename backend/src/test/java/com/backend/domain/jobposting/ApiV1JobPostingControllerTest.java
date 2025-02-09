@@ -5,14 +5,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.backend.domain.jobposting.dto.JobPostingDetailResponse;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.repository.UserRepository;
 import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.security.custom.CustomUserDetails;
+import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.format.DateTimeFormatter;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -26,7 +37,10 @@ import org.springframework.test.web.servlet.ResultActions;
 @Sql(scripts = {"/sql/delete.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_CLASS)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestInstance(Lifecycle.PER_CLASS)
 public class ApiV1JobPostingControllerTest {
+
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 	@Autowired
 	ObjectMapper objectMapper;
@@ -35,7 +49,30 @@ public class ApiV1JobPostingControllerTest {
 	JobPostingRepository jobPostingRepository;
 
 	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
 	MockMvc mockMvc;
+
+	@Autowired
+	JwtUtil jwtUtil;
+
+	@Value("${jwt.token.access-expiration}")
+	long accessExpiration;
+
+	String accessToken1;
+	String accessToken2;
+
+	@BeforeAll
+	void setUp() {
+		SiteUser givenSiteUser1 = userRepository.findByEmail("testEmail1@naver.com").get();
+		CustomUserDetails givenCustomUserDetails1 = new CustomUserDetails(givenSiteUser1);
+		accessToken1 = jwtUtil.createAccessToken(givenCustomUserDetails1, accessExpiration);
+
+		SiteUser givenSiteUser2 = userRepository.findByEmail("testEmail3@naver.com").get();
+		CustomUserDetails givenCustomUserDetails2 = new CustomUserDetails(givenSiteUser2);
+		accessToken2 = jwtUtil.createAccessToken(givenCustomUserDetails2, accessExpiration);
+	}
 
 	@DisplayName("기본 페이징 조회 성공 테스트")
 	@Test
@@ -58,7 +95,7 @@ public class ApiV1JobPostingControllerTest {
 	void findAll_experience_level_1_success() throws Exception {
 		//when
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
-				.queryParam("experienceLevel", "1")
+			.queryParam("experienceLevel", "1")
 			.contentType(MediaType.APPLICATION_JSON));
 
 		//then
@@ -76,7 +113,7 @@ public class ApiV1JobPostingControllerTest {
 	void findAll_experience_level_2_success() throws Exception {
 		//when
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
-				.queryParam("experienceLevel", "2")
+			.queryParam("experienceLevel", "2")
 			.contentType(MediaType.APPLICATION_JSON));
 
 		//then
@@ -94,7 +131,7 @@ public class ApiV1JobPostingControllerTest {
 	void findAll_salary_code_99_success() throws Exception {
 		//when
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
-				.queryParam("salaryCode", "99")
+			.queryParam("salaryCode", "99")
 			.contentType(MediaType.APPLICATION_JSON));
 
 		//then
@@ -112,7 +149,7 @@ public class ApiV1JobPostingControllerTest {
 	void findAll_page_size_negative_fail() throws Exception {
 		//when
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
-				.queryParam("pageSize", "-1")
+			.queryParam("pageSize", "-1")
 			.contentType(MediaType.APPLICATION_JSON));
 
 		//then
@@ -129,7 +166,7 @@ public class ApiV1JobPostingControllerTest {
 	void findAll_page_num_negative_fail() throws Exception {
 		//when
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/job-posting")
-				.queryParam("pageNum", "-1")
+			.queryParam("pageNum", "-1")
 			.contentType(MediaType.APPLICATION_JSON));
 
 		//then
@@ -139,6 +176,73 @@ public class ApiV1JobPostingControllerTest {
 			.andExpect(jsonPath("$.data[0].field").value("pageNum"))
 			.andExpect(jsonPath("$.message").value(GlobalErrorCode.NOT_VALID.getMessage()))
 			.andDo(print());
+	}
+
+	@DisplayName("채용 공고 단건 조회 성공 테스트")
+	@Test
+	void findDetailById_success() throws Exception {
+		//given
+		JobPostingDetailResponse givenJobPosting = jobPostingRepository
+			.findDetailById(1L, 1L).get();
+
+		//when
+		ResultActions resultActions = mockMvc.perform(
+			get("/api/v1/job-posting/{id}", givenJobPosting.id())
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer " + accessToken1));
+
+		//then
+		resultActions
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+			//공고 ID 검증
+			.andExpect(jsonPath("$.data.id").value(givenJobPosting.id()))
+			//공고 제목 검증
+			.andExpect(jsonPath("$.data.subject").value(givenJobPosting.subject()))
+			//공고 URL 검증
+			.andExpect(jsonPath("$.data.url").value(givenJobPosting.url()))
+			//공고 날짜 값 검증
+			.andExpect(jsonPath("$.data.postDate")
+				.value(givenJobPosting.postDate().format(FORMATTER)))
+			.andExpect(jsonPath("$.data.openDate")
+				.value(givenJobPosting.openDate().format(FORMATTER)))
+			.andExpect(jsonPath("$.data.closeDate")
+				.value(givenJobPosting.closeDate().format(FORMATTER)))
+			//회사 검증
+			.andExpect(jsonPath("$.data.companyName").value(givenJobPosting.companyName()))
+			.andExpect(jsonPath("$.data.companyLink").value(givenJobPosting.companyLink()))
+			//경력 검증
+			.andExpect(jsonPath("$.data.experienceLevel.code")
+				.value(givenJobPosting.experienceLevel().getCode()))
+			.andExpect(jsonPath("$.data.experienceLevel.min")
+				.value(givenJobPosting.experienceLevel().getMin()))
+			.andExpect(jsonPath("$.data.experienceLevel.max")
+				.value(givenJobPosting.experienceLevel().getMax()))
+			.andExpect(jsonPath("$.data.experienceLevel.name")
+				.value(givenJobPosting.experienceLevel().getName()))
+			//학력 검증
+			.andExpect(jsonPath("$.data.requireEducate.code")
+				.value(givenJobPosting.requireEducate().getCode()))
+			.andExpect(jsonPath("$.data.requireEducate.name")
+				.value(givenJobPosting.requireEducate().getName()))
+			//공고 상태 검증
+			.andExpect(jsonPath("$.data.jobPostingStatus")
+				.value(givenJobPosting.jobPostingStatus().toString()))
+			//JobSkillList 검증
+			.andExpect(jsonPath("$.data.jobSkillList[0].name")
+				.value(givenJobPosting.jobSkillList().getFirst().name()))
+			.andExpect(jsonPath("$.data.jobSkillList[0].code")
+				.value(givenJobPosting.jobSkillList().getFirst().code()))
+			.andExpect(jsonPath("$.data.jobSkillList[1].name")
+				.value(givenJobPosting.jobSkillList().get(1).name()))
+			.andExpect(jsonPath("$.data.jobSkillList[1].code")
+				.value(givenJobPosting.jobSkillList().get(1).code()))
+			//지원자 수 검증
+			.andExpect(jsonPath("$.data.applyCnt").value(givenJobPosting.applyCnt()))
+			//추천 수 검증
+			.andExpect(jsonPath("$.data.voterCount").value(givenJobPosting.voterCount()))
+			//추천 여부 검증
+			.andExpect(jsonPath("$.data.isVoter").value(givenJobPosting.isVoter()));
 	}
 
 }
