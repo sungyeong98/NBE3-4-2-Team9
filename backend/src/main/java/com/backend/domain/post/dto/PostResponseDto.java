@@ -20,6 +20,7 @@ public class PostResponseDto {
     private Long jobPostingId;
     private Long authorId;
     private String authorName;
+    private String authorImg;
     private ZonedDateTime createdAt;
 
     // Entity -> DTO 변환(Builder 활용)
@@ -31,6 +32,9 @@ public class PostResponseDto {
                 .categoryId(post.getCategoryId().getId())
                 .jobPostingId(post.getJobId() != null ? post.getJobId().getId() : null)
                 .createdAt(post.getCreatedAt())
+                .authorId(post.getAuthor().getId())
+                .authorName(post.getAuthor().getName())
+                .authorImg(post.getAuthor().getProfileImg())
                 .build();
 
     }
