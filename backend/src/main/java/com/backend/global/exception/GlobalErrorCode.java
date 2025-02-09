@@ -36,6 +36,9 @@ public enum GlobalErrorCode {
     INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3002, "카테고리 이름이 유효하지 않습니다."),
     NAME_MISMATCH(HttpStatus.BAD_REQUEST, 3004, "카테고리 이름이 일치하지 않습니다."),
 
+    // 댓글 도메인 에러 코드
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 4001, "댓글이 존재하지않습니다."),
+
 	// 관심 에러 코드 7001 ~
 	ALREADY_VOTER(HttpStatus.BAD_REQUEST, 7001, "이미 관심을 추가하였습니다."),
 	NOT_SUPPORT_TYPE(HttpStatus.BAD_REQUEST, 7002, "지원하지 않는 관심 타입 입니다."),
@@ -47,7 +50,7 @@ public enum GlobalErrorCode {
     JOB_POSTING_NOT_FOUND(HttpStatus.NOT_FOUND, 2001, "채용 정보가 존재하지 않습니다."),
     JOB_POSTING_REQUIRED(HttpStatus.BAD_REQUEST, 2002, "채용 정보가 필요합니다."),
 
-	// 채용공고 서비스 에러 코드
+	// 채용공고 스케줄러 서비스 에러 코드
 	NO_DATA_RECEIVED(HttpStatus.NO_CONTENT, 5003, "받아온 데이터가 없습니다."),
 	API_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, 5001, "외부 API 요청에 실패했습니다."),
 	JSON_PARSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "응답 데이터를 처리하는중 오류가 발생했습니다."),

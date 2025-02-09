@@ -2,6 +2,7 @@ package com.backend.domain.comment.service;
 
 import com.backend.domain.comment.dto.request.CommentRequestDto;
 import com.backend.domain.comment.dto.response.CommentCreateResponseDto;
+import com.backend.domain.comment.dto.response.CommentModifyResponseDto;
 import com.backend.domain.comment.entity.Comment;
 import com.backend.domain.comment.repository.CommentRepository;
 import com.backend.domain.post.entity.Post;
@@ -46,6 +47,33 @@ public class CommentService {
         Comment saveComment = commentRepository.save(comment);
 
         return CommentCreateResponseDto.convertEntity(saveComment);
+    }
+
+    public CommentModifyResponseDto modifyComment(Long postId, Long commentId, CommentRequestDto dto, CustomUserDetails user) {
+
+        postRepository.findById(postId).orElseThrow(
+            () -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND)
+        );
+
+        SiteUser loginUser = userRepository.findById(user.getSiteUser().getId()).orElseThrow(
+            () -> new GlobalException(GlobalErrorCode.USER_NOT_FOUND)
+        );
+
+        // 댓글정보가 db에 있는지에 대한 검증
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+            () -> new GlobalException(GlobalErrorCode.COMMENT_NOT_FOUND)
+        );
+
+        // 로그인한 사용자와 댓글 작성자가 일치하는지 검증
+        boolean isAuthor = true;
+        if (!loginUser.getId().equals(comment.getSiteUser().getId())) {
+            isAuthor = false;
+        }
+
+        comment.modify(dto);
+        commentRepository.save(comment);
+
+        return CommentModifyResponseDto.convertEntity(comment, isAuthor);
     }
 
 
