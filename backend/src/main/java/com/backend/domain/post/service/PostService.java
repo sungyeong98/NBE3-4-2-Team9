@@ -108,8 +108,8 @@ public class PostService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long id, long userId) {
-        Post post = postRepository.findById(id).orElseThrow(() ->
-                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+        Post post = postRepository.findById(id).orElseThrow(
+            () -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
         log.info("삭제 요청한 사용자 ID: " + userId);
         log.info("게시글 작성자 ID: " + post.getAuthor().getId());
