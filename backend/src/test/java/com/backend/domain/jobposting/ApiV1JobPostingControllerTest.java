@@ -60,16 +60,19 @@ public class ApiV1JobPostingControllerTest {
 	@Value("${jwt.token.access-expiration}")
 	long accessExpiration;
 
+	SiteUser givenSiteUser1;
+	SiteUser givenSiteUser2;
+
 	String accessToken1;
 	String accessToken2;
 
 	@BeforeAll
 	void setUp() {
-		SiteUser givenSiteUser1 = userRepository.findByEmail("testEmail1@naver.com").get();
+		givenSiteUser1 = userRepository.findByEmail("testEmail1@naver.com").get();
 		CustomUserDetails givenCustomUserDetails1 = new CustomUserDetails(givenSiteUser1);
 		accessToken1 = jwtUtil.createAccessToken(givenCustomUserDetails1, accessExpiration);
 
-		SiteUser givenSiteUser2 = userRepository.findByEmail("testEmail3@naver.com").get();
+		givenSiteUser2 = userRepository.findByEmail("testEmail3@naver.com").get();
 		CustomUserDetails givenCustomUserDetails2 = new CustomUserDetails(givenSiteUser2);
 		accessToken2 = jwtUtil.createAccessToken(givenCustomUserDetails2, accessExpiration);
 	}
@@ -183,13 +186,80 @@ public class ApiV1JobPostingControllerTest {
 	void findDetailById_success() throws Exception {
 		//given
 		JobPostingDetailResponse givenJobPosting = jobPostingRepository
-			.findDetailById(1L, 1L).get();
+			.findDetailById(1L, givenSiteUser1.getId()).get();
 
 		//when
 		ResultActions resultActions = mockMvc.perform(
 			get("/api/v1/job-posting/{id}", givenJobPosting.id())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + accessToken1));
+
+		//then
+		resultActions
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(HttpStatus.OK.value()))
+			//공고 ID 검증
+			.andExpect(jsonPath("$.data.id").value(givenJobPosting.id()))
+			//공고 제목 검증
+			.andExpect(jsonPath("$.data.subject").value(givenJobPosting.subject()))
+			//공고 URL 검증
+			.andExpect(jsonPath("$.data.url").value(givenJobPosting.url()))
+			//공고 날짜 값 검증
+			.andExpect(jsonPath("$.data.postDate")
+				.value(givenJobPosting.postDate().format(FORMATTER)))
+			.andExpect(jsonPath("$.data.openDate")
+				.value(givenJobPosting.openDate().format(FORMATTER)))
+			.andExpect(jsonPath("$.data.closeDate")
+				.value(givenJobPosting.closeDate().format(FORMATTER)))
+			//회사 검증
+			.andExpect(jsonPath("$.data.companyName").value(givenJobPosting.companyName()))
+			.andExpect(jsonPath("$.data.companyLink").value(givenJobPosting.companyLink()))
+			//경력 검증
+			.andExpect(jsonPath("$.data.experienceLevel.code")
+				.value(givenJobPosting.experienceLevel().getCode()))
+			.andExpect(jsonPath("$.data.experienceLevel.min")
+				.value(givenJobPosting.experienceLevel().getMin()))
+			.andExpect(jsonPath("$.data.experienceLevel.max")
+				.value(givenJobPosting.experienceLevel().getMax()))
+			.andExpect(jsonPath("$.data.experienceLevel.name")
+				.value(givenJobPosting.experienceLevel().getName()))
+			//학력 검증
+			.andExpect(jsonPath("$.data.requireEducate.code")
+				.value(givenJobPosting.requireEducate().getCode()))
+			.andExpect(jsonPath("$.data.requireEducate.name")
+				.value(givenJobPosting.requireEducate().getName()))
+			//공고 상태 검증
+			.andExpect(jsonPath("$.data.jobPostingStatus")
+				.value(givenJobPosting.jobPostingStatus().toString()))
+			//JobSkillList 검증
+			.andExpect(jsonPath("$.data.jobSkillList[0].name")
+				.value(givenJobPosting.jobSkillList().getFirst().name()))
+			.andExpect(jsonPath("$.data.jobSkillList[0].code")
+				.value(givenJobPosting.jobSkillList().getFirst().code()))
+			.andExpect(jsonPath("$.data.jobSkillList[1].name")
+				.value(givenJobPosting.jobSkillList().get(1).name()))
+			.andExpect(jsonPath("$.data.jobSkillList[1].code")
+				.value(givenJobPosting.jobSkillList().get(1).code()))
+			//지원자 수 검증
+			.andExpect(jsonPath("$.data.applyCnt").value(givenJobPosting.applyCnt()))
+			//추천 수 검증
+			.andExpect(jsonPath("$.data.voterCount").value(givenJobPosting.voterCount()))
+			//추천 여부 검증
+			.andExpect(jsonPath("$.data.isVoter").value(givenJobPosting.isVoter()));
+	}
+
+	@DisplayName("채용 공고 단건 조회 사용자 미추천 검증 성공 테스트")
+	@Test
+	void findDetailById_isVoter_false_success() throws Exception {
+		//given
+		JobPostingDetailResponse givenJobPosting = jobPostingRepository
+			.findDetailById(1L, givenSiteUser2.getId()).get();
+
+		//when
+		ResultActions resultActions = mockMvc.perform(
+			get("/api/v1/job-posting/{id}", givenJobPosting.id())
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer " + accessToken2));
 
 		//then
 		resultActions
