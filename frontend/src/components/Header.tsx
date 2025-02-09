@@ -12,6 +12,7 @@ import {
   UserIcon,
   ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
+  ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Header() {
@@ -118,6 +119,14 @@ export default function Header() {
                       </>
                     )}
                     <div className="h-px bg-gray-100" />
+                    <Link 
+                      href="/chat"
+                      className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                      title="채팅"
+                    >
+                      <ChatBubbleLeftIcon className="w-4 h-4 mr-3 text-gray-500" />
+                      채팅
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
