@@ -81,8 +81,8 @@ public class RecruitmentUserService {
     }
 
     /**
-     * 사용자가 특정 상태(ACCEPTED 등)인 모집 게시글 조회 사용자가 특정 상태(ACCEPTED, APPLIED, REJECTED) 기본값(ACCEPTED) 인 모집
-     * 게시글을 페이징하여 조회합니다.
+     * 사용자가 특정 상태(ACCEPTED 등)인 모집 게시글 조회 사용자가 특정 상태(ACCEPTED, APPLIED, REJECTED)
+     * 기본값(ACCEPTED) 인 모집 게시글을 페이징하여 조회합니다.
      *
      * @param siteUser 현재 로그인한 사용자
      * @param status   조회할 모집 상태 (ACCEPTED, APPLIED, REJECTED 등)
@@ -93,12 +93,21 @@ public class RecruitmentUserService {
             SiteUser siteUser,
             RecruitmentUserStatus status,
             Pageable pageable) {
+
+        // 사용자가 특정 상태로 참여한 모집 게시글을 조회
         return recruitmentUserRepository.findAllBySiteUser_IdAndStatus(
                         siteUser.getId(),
                         status,
                         pageable)
-                .map(RecruitmentUser::getPost)
-                .map(PostResponseDto::fromEntity); // RecruitmentUser → Post → DTO 변환
+        .map(recruitmentUser -> {
+
+            // 모집 사용자 엔티티에서 게시글을 가져오고, 게시글 상태를 포함하여 변환
+            Post post = recruitmentUser.getPost();
+            RecruitmentUserStatus userStatus = recruitmentUser.getStatus();
+
+            // PostResponseDto 생성 시 상태도 함께 포함
+            return PostResponseDto.fromEntity(post, userStatus);
+        });
     }
 
     // ==============================

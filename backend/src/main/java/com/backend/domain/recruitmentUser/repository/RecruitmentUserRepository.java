@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * 모집 지원자 관련 데이터 처리 리포지토리
@@ -39,4 +41,16 @@ public interface RecruitmentUserRepository extends JpaRepository<RecruitmentUser
      * @return 모집된 게시글 목록 (페이징 결과)
      */
     Page<RecruitmentUser> findAllBySiteUser_IdAndStatus(Long userId, RecruitmentUserStatus status, Pageable pageable);
+
+    /**
+     * 특정 모집 지원 상태를 post ID로 조회
+     *
+     * @param postId 모집 지원 상태
+     * @return 모집 지원 상태
+     */
+    @Query("SELECT ru.status FROM RecruitmentUser ru WHERE ru.post.id = :postId")
+    RecruitmentUserStatus findStatusByPostId(@Param("postId") Long postId);
+
+    @Query("SELECT ru.status FROM RecruitmentUser ru WHERE ru.post.id = :postId AND ru.siteUser.id = :userId")
+    Optional<RecruitmentUserStatus> findStatusByPostIdAndUserId(@Param("postId") Long postId, @Param("userId") Long userId);
 }
