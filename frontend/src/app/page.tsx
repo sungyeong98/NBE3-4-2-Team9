@@ -128,8 +128,11 @@ export default function Home() {
                 </div>
               ))
             ) : (
-              jobPostings.map((posting) => (
-                <div key={posting.id} className="bg-white rounded-lg shadow-lg">
+              jobPostings.slice(0, 3).map((posting) => (
+                <div 
+                  key={posting.id} 
+                  className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
+                >
                   <JobPostingCard posting={posting} />
                 </div>
               ))
@@ -166,7 +169,7 @@ export default function Home() {
                 </div>
               ))
             ) : (
-              posts.map((post) => (
+              posts.slice(0, 3).map((post) => (
                 <Link 
                   key={`main-post-${post.id}`}
                   href={`/post/${post.id}`}
