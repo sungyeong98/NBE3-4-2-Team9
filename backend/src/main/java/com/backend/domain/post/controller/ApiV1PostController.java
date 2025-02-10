@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,7 +60,6 @@ public class ApiV1PostController {
     }
 
     // 특정 게시글 조회
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public GenericResponse<PostResponseDto> getPostById(@PathVariable("id") Long id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
