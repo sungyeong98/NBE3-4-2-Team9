@@ -84,7 +84,7 @@ export default function PostsPage({ searchParams }: { searchParams: { [key: stri
             posts.map((post) => (
               <Link
                 key={post.id}
-                href={`/posts/${post.id}`}
+                href={`/post/${post.id}`}
                 className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow"
               >
                 <div className="p-6">
