@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/voter")
+@RequestMapping("/api/v1/")
 public class ApiV1VoterController {
 
 	private final VoterService voterService;
 
-	@PostMapping
+	@PostMapping("/voter")
 	public GenericResponse<VoterCreateResponse> create(
 		@RequestBody @Validated VoterCreateRequest voterCreateRequest, @AuthenticationPrincipal
 	CustomUserDetails customUserDetails) {
