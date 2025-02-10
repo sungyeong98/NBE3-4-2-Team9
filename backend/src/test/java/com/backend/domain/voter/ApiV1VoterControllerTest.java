@@ -53,7 +53,7 @@ public class ApiV1VoterControllerTest {
 	JwtUtil jwtUtil;
 
 	@Autowired
-	UserRepository userRepostiory;
+	UserRepository userRepository;
 
 	@Autowired
 	VoterRepository likeRepository;
@@ -66,11 +66,11 @@ public class ApiV1VoterControllerTest {
 
 	@BeforeAll
 	void setUp() {
-		SiteUser givenSiteUser1 = userRepostiory.findByEmail("testEmail1@naver.com").get();
+		SiteUser givenSiteUser1 = userRepository.findByEmail("testEmail1@naver.com").get();
 		CustomUserDetails givenCustomUserDetails1 = new CustomUserDetails(givenSiteUser1);
 		accessToken1 = jwtUtil.createAccessToken(givenCustomUserDetails1, accessExpiration);
 
-		SiteUser givenSiteUser2 = userRepostiory.findByEmail("testEmail1@naver.com").get();
+		SiteUser givenSiteUser2 = userRepository.findByEmail("testEmail2@naver.com").get();
 		CustomUserDetails givenCustomUserDetails2 = new CustomUserDetails(givenSiteUser2);
 		accessToken2 = jwtUtil.createAccessToken(givenCustomUserDetails2, accessExpiration);
 	}
@@ -108,10 +108,10 @@ public class ApiV1VoterControllerTest {
 			.targetId(1L)
 			.build();
 
-		SiteUser givenSiteUser2 = userRepostiory.findByEmail("testEmail1@naver.com").get();
+		SiteUser givenSiteUser1 = userRepository.findByEmail("testEmail1@naver.com").get();
 
 		likeRepository.save(Voter.builder()
-			.siteUser(givenSiteUser2)
+			.siteUser(givenSiteUser1)
 			.voterType(VoterType.JOB_POSTING)
 			.jobPosting(JobPosting.builder()
 				.id(1L)
@@ -121,7 +121,7 @@ public class ApiV1VoterControllerTest {
 		//when
 		ResultActions resultActions = mockMvc.perform(post("/api/v1/voter")
 				.contentType(MediaType.APPLICATION_JSON)
-				.header("Authorization", "Bearer " + accessToken2)
+				.header("Authorization", "Bearer " + accessToken1)
 				.content(objectMapper.writeValueAsString(givenRequest)))
 			.andExpect(status().isBadRequest());
 
