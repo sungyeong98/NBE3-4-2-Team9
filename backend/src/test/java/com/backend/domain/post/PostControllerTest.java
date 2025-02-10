@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.backend.domain.post.dto.PostCreateRequestDto;
+import com.backend.domain.post.dto.PostRequestDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.repository.PostRepository;
 import com.backend.domain.user.entity.SiteUser;
@@ -60,7 +60,7 @@ public class PostControllerTest {
         //액세스 토큰 발급
         String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
 
-        PostCreateRequestDto requestDto = PostCreateRequestDto.builder().subject("새로운 제목")
+        PostRequestDto requestDto = PostRequestDto.builder().subject("새로운 제목")
                 .content("새로운 내용").categoryId(1L).build();
 
         mockMvc.perform(post("/api/v1/posts") // 게시글 생성 API 요청

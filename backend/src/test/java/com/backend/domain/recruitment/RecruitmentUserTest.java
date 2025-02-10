@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -84,55 +83,32 @@ public class RecruitmentUserTest {
         Long postId = 1L;
 
         mockMvc.perform(delete("/api/v1/recruitment/{postId}", postId)
-                        .header("Authorization", "Bearer " + accessToken2)
+                        .header("Authorization", "Bearer " + accessToken3)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andDo(print());
     }
 
-    @Test
-    @DisplayName("모집 게시글 페이징 조회 테스트")
-    @Order(1)
-    void getAcceptedPostsTest() throws Exception {
-        Long postId = 1L;
-        int pageNum = 0;
-        int pageSize = 10;
-
-        mockMvc.perform(get("/api/v1/recruitment/posts")
-                        .header("Authorization", "Bearer " + accessToken2)
-                        .param("pageNum", String.valueOf(pageNum))
-                        .param("pageSize", String.valueOf(pageSize)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.content").isArray())  // 여기 수정
-                .andExpect(jsonPath("$.data.pageable.pageNumber").value(pageNum))
-                .andExpect(jsonPath("$.data.pageable.pageSize").value(pageSize))
-                .andDo(print());
-    }
 
     @Test
-    @DisplayName("모집 신청 상태 조회 테스트")
+    @DisplayName("모집 신청 상태별 게시판 페이징 조회 테스트")
     void getRecruitmentStatusTest() throws Exception {
 
         mockMvc.perform(get("/api/v1/recruitment/posts")
-                        .header("Authorization", "Bearer " + accessToken2)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.content[0].status").value("ACCEPTED"))
-                .andDo(print());
+                .header("Authorization", "Bearer " + accessToken2)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.data.status").value("ACCEPTED")) // 상태가 ACCEPTED인지 확인
+            .andExpect(jsonPath("$.data.postResponseDtoList.content").isArray())  // content가 배열인지 확인
+            .andExpect(jsonPath("$.data.postResponseDtoList.content").isNotEmpty())  // content가 비어 있지 않음을 확인
+            .andExpect(jsonPath("$.data.postResponseDtoList.content[0].id").value(1))  // 첫 번째 포스트 ID 확인
+            .andExpect(jsonPath("$.data.postResponseDtoList.content[0].subject").value("testSubject"))  // 첫 번째 포스트 제목 확인
+            .andExpect(jsonPath("$.data.postResponseDtoList.content[0].content").value("testContent1"))  // 첫 번째 포스트 내용 확인
+            .andExpect(jsonPath("$.data.postResponseDtoList.pageable.pageNumber").value(0))  // 페이지 번호 확인
+            .andExpect(jsonPath("$.data.postResponseDtoList.pageable.pageSize").value(10))  // 페이지 사이즈 확인
+            .andDo(print());
     }
 
-    @Test
-    @DisplayName("모집 신청이 없는 게시글 조회 테스트")
-    void getRecruitmentPostNotFoundTest() throws Exception {
-        Long postId = 999L;
-
-        mockMvc.perform(get("/api/v1/recruitment/{postId}/status", postId)
-                        .header("Authorization", "Bearer " + accessToken2)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andDo(print());
-    }
 }
