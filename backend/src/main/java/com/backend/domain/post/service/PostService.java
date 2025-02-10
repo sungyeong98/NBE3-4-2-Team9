@@ -105,9 +105,6 @@ public class PostService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long id, long userId) {
-      
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
         Post post = postRepository.findById(id).orElseThrow(
             () -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 

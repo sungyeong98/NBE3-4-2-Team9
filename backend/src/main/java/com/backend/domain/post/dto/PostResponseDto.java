@@ -32,7 +32,6 @@ public class PostResponseDto {
                 .categoryId(post.getCategoryId().getId())
                 .jobPostingId(post.getJobId() != null ? post.getJobId().getId() : null)
                 .createdAt(post.getCreatedAt())
-                .authorId(post.getAuthor().getId())
                 .authorName(post.getAuthor().getName())
                 .authorImg(post.getAuthor().getProfileImg())
                 .build();

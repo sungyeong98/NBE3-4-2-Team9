@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.domain.post.dto.PostRequestDto;
 import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.service.PostService;
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 
