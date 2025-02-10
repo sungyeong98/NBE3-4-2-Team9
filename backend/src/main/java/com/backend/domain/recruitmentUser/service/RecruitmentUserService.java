@@ -1,20 +1,22 @@
 package com.backend.domain.recruitmentUser.service;
 
-import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
-import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
-import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
-import com.backend.domain.post.dto.PostResponseDto;
-import com.backend.domain.post.entity.Post;
-import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostRepository;
-import com.backend.domain.user.entity.SiteUser;
-import com.backend.global.exception.GlobalErrorCode;
-import com.backend.global.exception.GlobalException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.backend.domain.post.dto.PostResponseDto;
+import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.entity.RecruitmentStatus;
+import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
+import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * RecruitmentUserService 유저 모집 신청 및 모집 관련 조회를 담당하는 서비스 클래스입니다.
@@ -23,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class RecruitmentUserService {
 
     private final RecruitmentUserRepository recruitmentUserRepository;
