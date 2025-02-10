@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostCreateRequestDto {
+public class PostRequestDto {
 
     @NotBlank(message = "제목을 입력해 주세요.")
     private String subject;

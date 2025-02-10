@@ -25,16 +25,16 @@ public enum GlobalErrorCode {
     INVALID_JOB_SKILL(HttpStatus.BAD_REQUEST, 4006, "유효하지 않은 직무 기술입니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, 4007, "유효하지 않은 토큰입니다."),
 
-
     // 게시글 도메인 에러 코드
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "카테고리가 존재하지 않습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, 1002, "게시글이 존재하지 않습니다."),
     POST_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, 1003, "게시글 삭제 권한이 없습니다."),
+    POST_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, 1004, "게시글 업데이트 권한이 없습니다."),
 
-	// 카테고리 도메인 에러 코드
-	DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3001, "카테고리 이름이 이미 존재합니다."),
-	INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3002, "카테고리 이름이 유효하지 않습니다."),
-	NAME_MISMATCH(HttpStatus.BAD_REQUEST, 3004, "카테고리 이름이 일치하지 않습니다."),
+    // 카테고리 도메인 에러 코드
+    DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3001, "카테고리 이름이 이미 존재합니다."),
+    INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3002, "카테고리 이름이 유효하지 않습니다."),
+    NAME_MISMATCH(HttpStatus.BAD_REQUEST, 3004, "카테고리 이름이 일치하지 않습니다."),
 
 	// 관심 에러 코드 7001 ~
 	ALREADY_VOTER(HttpStatus.BAD_REQUEST, 7001, "이미 관심을 추가하였습니다."),

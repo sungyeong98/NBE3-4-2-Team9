@@ -3,7 +3,7 @@ package com.backend.domain.post.service;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
-import com.backend.domain.post.dto.PostCreateRequestDto;
+import com.backend.domain.post.dto.PostRequestDto;
 import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
@@ -35,7 +35,7 @@ public class PostService {
 
     //  게시글 생성
     @Transactional
-    public PostResponseDto createPost(PostCreateRequestDto requestDto, SiteUser user) {
+    public PostResponseDto createPost(PostRequestDto requestDto, SiteUser user) {
 
         // 1. 글 작성 전 카테고리 먼저 조회
         Category category = categoryRepository.findById(requestDto.getCategoryId())
@@ -122,15 +122,22 @@ public class PostService {
         log.info("게시글 삭제 완료! (postId={})", id);
     }
 
-// 게시글 수정 (DTO 적용)
-//    @Transactional
-//    public PostResponseDto updatePost(Long id, PostCreateRequestDto requestDto) {
-//        Post post = postRepository.findById(id).orElseThrow(() ->
-//                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-//
-//        post.updatePost(requestDto.getSubject(), requestDto.getContent());
-//
-//        return PostResponseDto.fromEntity(post); // 게시글 저장
-//    }
+    // 게시글 수정
+    @Transactional
+    public PostResponseDto updatePost(Long id, PostRequestDto requestDto, long userId) {
+
+        // 게시글 조회
+        Post post = postRepository.findById(id).orElseThrow(() ->
+                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+
+        // 작성자 검증
+        if (!post.getAuthor().getId().equals(userId)) {
+            throw new GlobalException(GlobalErrorCode.POST_UPDATE_FORBIDDEN);
+        }
+        // 게시글
+        post.updatePost(requestDto.getSubject(), requestDto.getContent());
+
+        return PostResponseDto.fromEntity(post); // 게시글 저장
+    }
 
 }
