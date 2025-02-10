@@ -13,6 +13,7 @@ import com.backend.global.exception.GlobalException;
 import com.backend.global.security.custom.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public CommentCreateResponseDto createComment(CommentRequestDto dto, Long postId,
         CustomUserDetails user) {
 
@@ -41,9 +43,9 @@ public class CommentService {
             .siteUser(findUser)
             .build();
 
-        commentRepository.save(comment);
+        Comment saveComment = commentRepository.save(comment);
 
-        return CommentCreateResponseDto.convertEntity(comment);
+        return CommentCreateResponseDto.convertEntity(saveComment);
     }
 
 
