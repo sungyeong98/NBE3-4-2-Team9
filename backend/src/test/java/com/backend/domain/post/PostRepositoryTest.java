@@ -74,12 +74,12 @@ class PostRepositoryTest {
         // 자유 게시판 조회
         Page<Post> freePosts = postRepository.findAllByCategoryId(freeBoardCategory.getId(),
                 pageable);
-        assertThat(freePosts.getContent()).hasSize(1);
+        assertThat(freePosts.getContent()).hasSize(3);
 
         // 모집 게시판 조회
         Page<Post> recruitmentPosts = postRepository.findAllByCategoryId(
                 recruitmentBoardCategory.getId(), pageable);
-        assertThat(recruitmentPosts.getContent()).hasSize(1);
+        assertThat(recruitmentPosts.getContent()).hasSize(3);
     }
 
     @Test
@@ -105,7 +105,7 @@ class PostRepositoryTest {
 
         // 자유게시판에서 "테스트" 포함된 게시글 검색 -> 없음
         Page<Post> posts_free2 = postRepository.findByCategoryAndKeyword(freeBoardCategory.getId(),
-                "테스트",
+                "없음",
                 pageable);
         assertThat(posts_free2.getContent()).hasSize(0);
 
@@ -113,7 +113,7 @@ class PostRepositoryTest {
         Page<Post> posts_recruitment1 = postRepository.findByCategoryAndKeyword(
                 recruitmentBoardCategory.getId(), "테스트",
                 pageable);
-        assertThat(posts_recruitment1.getContent()).hasSize(1);
+        assertThat(posts_recruitment1.getContent()).hasSize(3);
 
         // 모집게시판에서 "test" 포함된 게시글 검색 -> 없음
         Page<Post> posts_recruitment2 = postRepository.findByCategoryAndKeyword(

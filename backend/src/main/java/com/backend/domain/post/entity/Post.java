@@ -2,7 +2,7 @@ package com.backend.domain.post.entity;
 
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.jobposting.entity.JobPosting;
-import com.backend.domain.post.dto.PostCreateRequestDto;
+import com.backend.domain.post.dto.PostRequestDto;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.Column;
@@ -86,7 +86,7 @@ public class Post extends BaseEntity {
                 .build();
     }
 
-    public static Post createPost(PostCreateRequestDto dto, Category category,
+    public static Post createPost(PostRequestDto dto, Category category,
             SiteUser author, JobPosting jobPosting) {
         return Post.builder()
                 .subject(dto.getSubject())

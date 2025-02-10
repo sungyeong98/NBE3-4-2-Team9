@@ -52,9 +52,15 @@ INSERT INTO post (created_at, modified_at, content, num_of_applicants, recruitme
                   recruitment_status, subject, category_id, job_id, user_id)
 VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', null, CURRENT_DATE + 1, null, 'testSubject', 1,
         null,1),
-    (CURRENT_DATE, CURRENT_DATE, '테스트 내용', null, CURRENT_DATE + 1, null, '테스트 제목', 2,
+    (CURRENT_DATE, CURRENT_DATE, '테스트 내용2', null, CURRENT_DATE + 1, null, '테스트 제목2', 1,
+        null,1),
+    (CURRENT_DATE, CURRENT_DATE, '테스트 내용3', null, CURRENT_DATE + 1, null, '테스트 제목3', 1,
         null,2),
-    (CURRENT_DATE, CURRENT_DATE, '테스트 내용3', null, CURRENT_DATE + 1, null, '테스트 제목3', 2,
+    (CURRENT_DATE, CURRENT_DATE, '테스트 내용4', null, CURRENT_DATE + 1, null, '테스트 제목4', 2,
+        null,2),
+    (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', null, CURRENT_DATE + 1, null, '테스트 제목5', 2,
+        null,3),
+    (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', null, CURRENT_DATE + 1, null, '테스트 제목6', 2,
         null,3);
 
 -- JobSkill 데이터 생성

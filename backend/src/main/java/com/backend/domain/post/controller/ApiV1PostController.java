@@ -1,6 +1,6 @@
 package com.backend.domain.post.controller;
 
-import com.backend.domain.post.dto.PostCreateRequestDto;
+import com.backend.domain.post.dto.PostRequestDto;
 import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.service.PostService;
 import com.backend.global.response.GenericResponse;
@@ -31,7 +31,7 @@ public class ApiV1PostController {
     // 게시글 생성
     @PostMapping
     public GenericResponse<PostResponseDto> createPost
-    (@Valid @RequestBody PostCreateRequestDto responseDto,
+    (@Valid @RequestBody PostRequestDto responseDto,
             @AuthenticationPrincipal CustomUserDetails user) {
 
         PostResponseDto createdPost = postService.createPost(responseDto, user.getSiteUser());
@@ -66,7 +66,7 @@ public class ApiV1PostController {
     // 게사글 수정
     @PutMapping("/{id}")
     public GenericResponse<PostResponseDto> updatePost(@PathVariable Long id,
-            @Valid @RequestBody PostCreateRequestDto requestDto,
+            @Valid @RequestBody PostRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         PostResponseDto updatedPost = postService.updatePost
                 (id, requestDto, userDetails.getSiteUser().getId());

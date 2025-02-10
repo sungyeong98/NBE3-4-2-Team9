@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.backend.domain.post.dto.PostCreateRequestDto;
+import com.backend.domain.post.dto.PostRequestDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.repository.PostRepository;
 import com.backend.domain.user.entity.SiteUser;
@@ -18,9 +18,7 @@ import com.backend.global.security.custom.CustomUserDetails;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -66,7 +64,7 @@ public class PostControllerTest {
         //액세스 토큰 발급
         String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
 
-        PostCreateRequestDto requestDto = PostCreateRequestDto.builder().subject("새로운 제목")
+        PostRequestDto requestDto = PostRequestDto.builder().subject("새로운 제목")
                 .content("새로운 내용").categoryId(1L).build();
 
         mockMvc.perform(post("/api/v1/posts") // 게시글 생성 API 요청
@@ -124,11 +122,11 @@ public class PostControllerTest {
         String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
 
         // 테스트 할 게시글 조회
-        Post testPost = postRepository.findBySubject("테스트 제목")
+        Post testPost = postRepository.findBySubject("테스트 제목3")
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
         // 수정할 데이터 생성
-        PostCreateRequestDto updateRequest = PostCreateRequestDto.builder()
+        PostRequestDto updateRequest = PostRequestDto.builder()
                 .subject("수정된 제목")
                 .content("수정된 내용")
                 .categoryId(testPost.getCategoryId().getId())
@@ -155,11 +153,11 @@ public class PostControllerTest {
         String accessToken = jwtUtil.createAccessToken(otherUserDetails, ACCESS_EXPIRATION);
 
         // 테스트 할 게시글 조회
-        Post testPost = postRepository.findBySubject("testSubject")
+        Post testPost = postRepository.findBySubject("테스트 제목6")
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
         // 수정할 데이터 생성
-        PostCreateRequestDto updateRequest = PostCreateRequestDto.builder()
+        PostRequestDto updateRequest = PostRequestDto.builder()
                 .subject("수정된 제목")
                 .content("수정된 내용")
                 .categoryId(testPost.getCategoryId().getId())
@@ -177,13 +175,13 @@ public class PostControllerTest {
     @Test
     @DisplayName("게시글 삭제 - 작성자가 삭제 -> 성공")
     void testDeletePost_Success() throws Exception {
-        SiteUser writer = userRepository.findByEmail("testEmail3@naver.com")
+        SiteUser writer = userRepository.findByEmail("testEmail2@naver.com")
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         CustomUserDetails customUserDetails = new CustomUserDetails(writer);
         String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
 
-        Post testPost = postRepository.findBySubject("테스트 제목3")
+        Post testPost = postRepository.findBySubject("테스트 제목4")
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
         mockMvc.perform(delete("/api/v1/posts/{id}", testPost.getPostId())
@@ -200,10 +198,10 @@ public class PostControllerTest {
     @Order(5)
     @DisplayName("게시글 삭제 - 작성자가 아닌 유저가 삭제 -> 실패")
     void deletePost_Forbidden() throws Exception {
-        Post testPost = postRepository.findBySubject("testSubject")
+        Post testPost = postRepository.findBySubject("테스트 제목5")
                 .orElseThrow(() -> new RuntimeException("테스트 게시글을 찾을 수 없습니다."));
 
-        SiteUser otherUser = userRepository.findByEmail("testEmail3@naver.com")
+        SiteUser otherUser = userRepository.findByEmail("testEmail1@naver.com")
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         CustomUserDetails otherUserDetails = new CustomUserDetails(otherUser);
