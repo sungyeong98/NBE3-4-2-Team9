@@ -1,6 +1,5 @@
 package com.backend.domain.comment.entity;
 
-import com.backend.domain.comment.dto.request.CommentRequestDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.baseentity.BaseEntity;
@@ -42,8 +41,8 @@ public class Comment extends BaseEntity {
     private SiteUser siteUser;
 
 
-    public void modify(CommentRequestDto dto) {
-        this.content = dto.getContent();
+    public void setContent(String content) {
+        this.content = content;
     }
 
 

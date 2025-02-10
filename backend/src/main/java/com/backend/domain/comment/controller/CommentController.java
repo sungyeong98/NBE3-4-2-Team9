@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +25,6 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    @Transactional
     public GenericResponse<CommentCreateResponseDto> createComment(
         @PathVariable("postId") Long postId,
         @Valid @RequestBody CommentRequestDto requestDto,
@@ -43,7 +41,6 @@ public class CommentController {
     }
 
     @PatchMapping("/{id}")
-    @Transactional
     public GenericResponse<CommentModifyResponseDto> modifyComment(
         @PathVariable("postId") Long postId,
         @PathVariable("id") Long commentId,
