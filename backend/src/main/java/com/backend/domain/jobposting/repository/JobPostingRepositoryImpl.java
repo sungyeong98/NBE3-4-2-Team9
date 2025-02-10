@@ -1,5 +1,6 @@
 package com.backend.domain.jobposting.repository;
 
+import com.backend.domain.jobposting.dto.JobPostingDetailResponse;
 import com.backend.domain.jobposting.dto.JobPostingPageResponse;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.util.JobPostingSearchCondition;
@@ -20,6 +21,11 @@ public class JobPostingRepositoryImpl implements JobPostingRepository {
 	@Override
 	public Optional<JobPosting> findById(Long id) {
 		return jobPostingJpaRepository.findById(id);
+	}
+
+	@Override
+	public Optional<JobPostingDetailResponse> findDetailById(Long jobPostingId, Long siteUserId) {
+		return jobPostingQueryRepository.findDetailById(jobPostingId, siteUserId);
 	}
 
 	@Override
