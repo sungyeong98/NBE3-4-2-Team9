@@ -1,6 +1,7 @@
 package com.backend.domain.jobskill.repository;
 
 import com.backend.domain.jobskill.entity.JobSkill;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -27,4 +28,9 @@ public class JobSkillRepositoryImpl implements JobSkillRepository{
 
 	@Override
 	public Optional<JobSkill> findByName(String name) { return jobSkillJpaRepository.findByName(name); }
+
+	@Override
+	public void saveAll(List<JobSkill> newJobSkill) {
+		jobSkillJpaRepository.saveAll(newJobSkill);
+	}
 }

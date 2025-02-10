@@ -32,6 +32,7 @@ public class PostService {
     private final JobPostingRepository jobPostingRepository;
 
 
+
     //  게시글 생성
     @Transactional
     public PostResponseDto createPost(PostCreateRequestDto requestDto, SiteUser user) {

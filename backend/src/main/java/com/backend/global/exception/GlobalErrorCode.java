@@ -47,6 +47,12 @@ public enum GlobalErrorCode {
     JOB_POSTING_NOT_FOUND(HttpStatus.NOT_FOUND, 2001, "채용 정보가 존재하지 않습니다."),
     JOB_POSTING_REQUIRED(HttpStatus.BAD_REQUEST, 2002, "채용 정보가 필요합니다."),
 
+	// 채용공고 서비스 에러 코드
+	NO_DATA_RECEIVED(HttpStatus.NO_CONTENT, 5003, "받아온 데이터가 없습니다."),
+	API_REQUEST_FAILED(HttpStatus.BAD_GATEWAY, 5001, "외부 API 요청에 실패했습니다."),
+	JSON_PARSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "응답 데이터를 처리하는중 오류가 발생했습니다."),
+	DATABASE_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 5005, "데이터 저장중 오류가 발생했습니다."),
+
 	//공통 서버 에러 코드 500
 	NOT_VALID(HttpStatus.BAD_REQUEST, 5001, "요청하신 유효성 검증에 실패하였습니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5002, "서버 내부 오류가 발생하였습니다."),

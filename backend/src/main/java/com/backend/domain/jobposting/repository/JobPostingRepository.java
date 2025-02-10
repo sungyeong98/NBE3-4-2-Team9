@@ -36,6 +36,10 @@ public interface JobPostingRepository {
 	 */
 	List<JobPosting> findAll();
 
+	List<JobPosting> saveAll(List<JobPosting> publicDataList);
+
+	List<Long> findIdsAll();
+
 	/**
 	 * @return {@link Page<JobPostingPageResponse>}
 	 * @implSpec JobPosting 페이징 동적 조회 메서드 입니다.
@@ -48,4 +52,6 @@ public interface JobPostingRepository {
 	 * @implSpec JobPosting 페이징 동적 조회 메서드 입니다.
 	 */
 	boolean existsById(Long jobPostingId);
+
+
 }
