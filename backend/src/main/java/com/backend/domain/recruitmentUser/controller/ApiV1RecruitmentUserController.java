@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/recruitment-user")
+@RequestMapping("/api/v1/recruitment")
 public class ApiV1RecruitmentUserController {
 
     private final RecruitmentUserService recruitmentUserService;
@@ -81,7 +81,7 @@ public class ApiV1RecruitmentUserController {
      * @param pageSize    페이지 크기 (기본값: 10)
      * @return 모집 승인된 게시글 목록 (Page<PostResponseDto>)
      */
-    @GetMapping("/accept-posts")
+    @GetMapping("/posts")
     public GenericResponse<Page<PostResponseDto>> getAcceptedPosts(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "ACCEPTED") RecruitmentUserStatus status,

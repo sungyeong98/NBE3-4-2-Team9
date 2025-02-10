@@ -1,17 +1,9 @@
 package com.backend.domain.recruitment;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.backend.domain.user.entity.SiteUser;
-import com.backend.domain.user.repository.UserRepository;
-import com.backend.global.security.custom.CustomUserDetails;
-import com.backend.standard.util.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.repository.UserRepository;
+import com.backend.global.security.custom.CustomUserDetails;
+import com.backend.standard.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -72,7 +70,7 @@ public class RecruitmentUserTest {
     void applyForRecruitmentTest() throws Exception {
         Long postId = 3L;
 
-        mockMvc.perform(post("/api/v1/recruitment-user/{postId}", postId)
+        mockMvc.perform(post("/api/v1/recruitment/{postId}", postId)
                         .header("Authorization", "Bearer " + accessToken1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -85,7 +83,7 @@ public class RecruitmentUserTest {
     void cancelRecruitmentTest() throws Exception {
         Long postId = 1L;
 
-        mockMvc.perform(delete("/api/v1/recruitment-user/{postId}", postId)
+        mockMvc.perform(delete("/api/v1/recruitment/{postId}", postId)
                         .header("Authorization", "Bearer " + accessToken2)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -101,7 +99,7 @@ public class RecruitmentUserTest {
         int pageNum = 0;
         int pageSize = 10;
 
-        mockMvc.perform(get("/api/v1/recruitment-user/accept-posts")
+        mockMvc.perform(get("/api/v1/recruitment/posts")
                         .header("Authorization", "Bearer " + accessToken2)
                         .param("pageNum", String.valueOf(pageNum))
                         .param("pageSize", String.valueOf(pageSize)))
@@ -117,7 +115,7 @@ public class RecruitmentUserTest {
     @DisplayName("모집 신청 상태 조회 테스트")
     void getRecruitmentStatusTest() throws Exception {
 
-        mockMvc.perform(get("/api/v1/recruitment-user/accept-posts")
+        mockMvc.perform(get("/api/v1/recruitment/posts")
                         .header("Authorization", "Bearer " + accessToken2)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -131,7 +129,7 @@ public class RecruitmentUserTest {
     void getRecruitmentPostNotFoundTest() throws Exception {
         Long postId = 999L;
 
-        mockMvc.perform(get("/api/v1/recruitment-user/{postId}/status", postId)
+        mockMvc.perform(get("/api/v1/recruitment/{postId}/status", postId)
                         .header("Authorization", "Bearer " + accessToken2)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())

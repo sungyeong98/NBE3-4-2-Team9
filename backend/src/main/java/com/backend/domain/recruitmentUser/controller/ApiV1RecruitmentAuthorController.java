@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/recruitment-author")
+@RequestMapping("/api/v1/recruitment")
 public class ApiV1RecruitmentAuthorController {
 
     private final RecruitmentAuthorService recruitmentAuthorService;

@@ -75,7 +75,7 @@ public class RecruitmentAuthorTest {
         System.out.println("Request JSON: " + objectMapper.writeValueAsString(request));
 
         // When & Then: 게시글 3의 작성자(토큰: accessToken1, user1)로 지원자 2의 승인을 요청
-        mockMvc.perform(patch("/api/v1/recruitment-author/{postId}/accept", postId)
+        mockMvc.perform(patch("/api/v1/recruitment/{postId}/accept", postId)
                         .header("Authorization", "Bearer " + accessToken1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -93,7 +93,7 @@ public class RecruitmentAuthorTest {
         AuthorRequest request = new AuthorRequest(2L);
 
         // When & Then: 게시글 3의 작성자(토큰: accessToken1)로 지원자 2의 지원 거절 요청
-        mockMvc.perform(patch("/api/v1/recruitment-author/{postId}/reject", postId)
+        mockMvc.perform(patch("/api/v1/recruitment/{postId}/reject", postId)
                         .header("Authorization", "Bearer " + accessToken2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -110,7 +110,7 @@ public class RecruitmentAuthorTest {
         int pageNum = 0;
         int pageSize = 10;
 
-        mockMvc.perform(get("/api/v1/recruitment-author/{postId}/applied-users", postId)
+        mockMvc.perform(get("/api/v1/recruitment/{postId}/applied-users", postId)
                         .header("Authorization", "Bearer " + accessToken1)
                         .param("pageNum", String.valueOf(pageNum))
                         .param("pageSize", String.valueOf(pageSize)))
@@ -131,7 +131,7 @@ public class RecruitmentAuthorTest {
         int pageNum = 0;
         int pageSize = 10;
 
-        mockMvc.perform(get("/api/v1/recruitment-author/{postId}/accepted-users", postId)
+        mockMvc.perform(get("/api/v1/recruitment/{postId}/accepted-users", postId)
                         .header("Authorization", "Bearer " + accessToken1)
                         .param("pageNum", String.valueOf(pageNum))
                         .param("pageSize", String.valueOf(pageSize)))
@@ -152,7 +152,7 @@ public class RecruitmentAuthorTest {
         Long postId = 1L;
         AuthorRequest request = new AuthorRequest(2L);
 
-        mockMvc.perform(patch("/api/v1/recruitment-author/{postId}/accept", postId)
+        mockMvc.perform(patch("/api/v1/recruitment/{postId}/accept", postId)
                         .header("Authorization", "Bearer " + accessToken2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -167,7 +167,7 @@ public class RecruitmentAuthorTest {
         Long postId = 999L;
         AuthorRequest request = new AuthorRequest(2L);
 
-        mockMvc.perform(patch("/api/v1/recruitment-author/{postId}/accept", postId)
+        mockMvc.perform(patch("/api/v1/recruitment/{postId}/accept", postId)
                         .header("Authorization", "Bearer " + accessToken1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
