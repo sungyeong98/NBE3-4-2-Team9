@@ -1,22 +1,5 @@
 package com.backend.domain.post.service;
 
-import com.backend.domain.category.entity.Category;
-import com.backend.domain.category.repository.CategoryRepository;
-import com.backend.domain.jobposting.entity.JobPosting;
-import com.backend.domain.jobposting.repository.JobPostingRepository;
-import com.backend.domain.post.dto.PostCreateRequestDto;
-import com.backend.domain.post.dto.PostResponseDto;
-import com.backend.domain.post.entity.Post;
-import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostRepository;
-import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
-import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
-import com.backend.domain.user.entity.SiteUser;
-import com.backend.global.exception.GlobalErrorCode;
-import com.backend.global.exception.GlobalException;
-import com.backend.standard.util.SecurityUtil;
-import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +7,23 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.domain.category.entity.Category;
+import com.backend.domain.category.repository.CategoryRepository;
+import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.jobposting.repository.JobPostingRepository;
+import com.backend.domain.post.dto.PostRequestDto;
+import com.backend.domain.post.dto.PostResponseDto;
+import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.entity.RecruitmentStatus;
+import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -31,11 +31,12 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final CategoryRepository categoryRepository;
 	private final JobPostingRepository jobPostingRepository;
-	private final RecruitmentUserRepository recruitmentUserRepository;
+
+
 
 	//  게시글 생성
 	@Transactional
-	public PostResponseDto createPost(PostCreateRequestDto requestDto, SiteUser user) {
+	public PostResponseDto createPost(PostRequestDto requestDto, SiteUser user) {
 
 		// 1. 글 작성 전 카테고리 먼저 조회
 		Category category = categoryRepository.findById(requestDto.getCategoryId())
@@ -66,10 +67,7 @@ public class PostService {
 		// DB 저장
 		Post savedPost = postRepository.save(post);
 
-		// RecruitmentUser에서 상태 가져오기
-		RecruitmentUserStatus status = recruitmentUserRepository.findStatusByPostId(savedPost.getPostId());
-
-		return PostResponseDto.fromEntity(savedPost, status);
+		return PostResponseDto.fromEntity(savedPost);
 	}
 
 	// 게시글 전체 조회 (postType → categoryId 변경)
@@ -98,61 +96,49 @@ public class PostService {
 			posts = postRepository.findByKeyword(keyword, pageable);
 		}
 
-		return posts.map(post -> {
-			// 현재 로그인한 사용자 정보 가져오기 (없으면 Optional.empty())
-			Optional<Long> userIdOpt = SecurityUtil.getCurrentUserId();
-
-			// 사용자 정보가 없으면, 비로그인 상태로 처리 (예: 지원 상태는 NOT_APPLIED)
-			RecruitmentUserStatus status;
-
-			if (userIdOpt.isPresent()) {
-				Long userId = userIdOpt.get();
-				status = recruitmentUserRepository.findStatusByPostIdAndUserId(post.getPostId(), userId)
-						.orElse(RecruitmentUserStatus.NOT_APPLIED);
-
-			} else {
-				status = RecruitmentUserStatus.NOT_APPLIED;
-			}
-
-			return PostResponseDto.fromEntity(post, status);
-		});
+		// Entity -> DTO 변환 후 반환
+		return posts.map(PostResponseDto::fromEntity);
 	}
 
 	//  게시글 상세 조회 (유지)
 	public PostResponseDto getPostById(Long id) {
 		Post post = postRepository.findById(id).orElseThrow(() ->
 			new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-
-		// 현재 로그인한 사용자의 ID를 가져오기
-		Long userId = SecurityUtil.getCurrentUserId().orElseThrow(
-			() -> new GlobalException(GlobalErrorCode.UNAUTHENTICATION_USER)); // 로그인된 사용자 ID
-
-		// 해당 게시글에 대해 사용자의 상태를 조회
-		RecruitmentUserStatus status = null;
-		if (userId != null) {
-			status = recruitmentUserRepository.findStatusByPostIdAndUserId(post.getPostId(), userId)
-				.orElse(RecruitmentUserStatus.NOT_APPLIED);  // 없으면 지원하지 않은 상태로 적용
-		}
-
-		return PostResponseDto.fromEntity(post, status);
+		return PostResponseDto.fromEntity(post);
 	}
+
+	// 게시글 삭제
+	@Transactional
+	public void deletePost(Long id, long userId) {
+		Post post = postRepository.findById(id).orElseThrow(
+			() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+
+		log.info("삭제 요청한 사용자 ID: " + userId);
+		log.info("게시글 작성자 ID: " + post.getAuthor().getId());
+
+		if (!post.getAuthor().getId().equals(userId)) {
+			throw new GlobalException(GlobalErrorCode.POST_DELETE_FORBIDDEN);
+		}
+		postRepository.delete(post);
+		log.info("게시글 삭제 완료! (postId={})", id);
+	}
+
+	// 게시글 수정
+	@Transactional
+	public PostResponseDto updatePost(Long id, PostRequestDto requestDto, long userId) {
+
+		// 게시글 조회
+		Post post = postRepository.findById(id).orElseThrow(() ->
+			new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+
+		// 작성자 검증
+		if (!post.getAuthor().getId().equals(userId)) {
+			throw new GlobalException(GlobalErrorCode.POST_UPDATE_FORBIDDEN);
+		}
+		// 게시글
+		post.updatePost(requestDto.getSubject(), requestDto.getContent());
+
+		return PostResponseDto.fromEntity(post); // 게시글 저장
+	}
+
 }
-
-// 게시글 수정 (DTO 적용)
-//    @Transactional
-//    public PostResponseDto updatePost(Long id, PostCreateRequestDto requestDto) {
-//        Post post = postRepository.findById(id).orElseThrow(() ->
-//                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-//
-//        post.updatePost(requestDto.getSubject(), requestDto.getContent());
-//
-//        return PostResponseDto.fromEntity(post); // 게시글 저장
-//    }
-
-// 게시글 삭제
-//    @Transactional
-//    public void deletePost(Long id) {
-//        Post post = postRepository.findById(id).orElseThrow(() ->
-//                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-//        postRepository.delete(post);
-//    }
