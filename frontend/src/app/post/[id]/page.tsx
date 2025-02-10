@@ -148,22 +148,24 @@ export default function PostDetail() {
               <h1 className="text-2xl font-bold text-gray-900 mb-3">
                 {post.subject}
               </h1>
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
-                    <span className="text-gray-600">익</span>
+              <div className="flex items-center justify-between text-sm text-gray-500 mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    {post.authorImg ? (
+                      <img 
+                        src={post.authorImg} 
+                        alt={post.authorName}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-sm text-gray-500">익명</span>
+                      </div>
+                    )}
+                    <span>{post.authorName}</span>
                   </div>
-                  <span>익명</span>
+                  <span>{formatDate(post.createdAt)}</span>
                 </div>
-                <span>•</span>
-                <span>{formatDate(post.createdAt)}</span>
-                <div className="flex-1"></div>
-                <button className="text-gray-500 hover:text-blue-600 transition-colors">
-                  공유하기
-                </button>
-                <button className="text-gray-500 hover:text-red-600 transition-colors">
-                  신고하기
-                </button>
               </div>
             </div>
 
@@ -187,6 +189,12 @@ export default function PostDetail() {
                 </button>
               </div>
               <div className="flex items-center gap-2">
+                <button 
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-600 transition-colors"
+                  onClick={() => alert('수정 기능은 준비 중입니다.')}
+                >
+                  수정
+                </button>
                 <button 
                   className="px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors"
                   onClick={handleDelete}

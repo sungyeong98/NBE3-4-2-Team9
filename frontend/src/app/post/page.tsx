@@ -171,7 +171,20 @@ export default function PostList() {
                       {categories.find(cat => cat.id === String(post.categoryId))?.name}
                     </span>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <span>익명</span>
+                      <div className="flex items-center gap-2">
+                        {post.authorImg ? (
+                          <img 
+                            src={post.authorImg} 
+                            alt={post.authorName}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-xs text-gray-500">익명</span>
+                          </div>
+                        )}
+                        <span>{post.authorName}</span>
+                      </div>
                       <span>•</span>
                       <span>{formatDate(post.createdAt)}</span>
                     </div>
