@@ -133,6 +133,13 @@ class PostRepositoryTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 게시글 조회시 빈값 반환")
+    void findById_NotFound() {
+        Optional<Post> foundPost = postRepository.findById(9999L);
+        assertThat(foundPost).isEmpty();
+    }
+
+    @Test
     @DisplayName("게시글 저장 및 조회 테스트")
     void testSaveAndFindPost() {
         // given
@@ -176,7 +183,7 @@ class PostRepositoryTest {
 
     @Test
     @DisplayName("게시글 수정 - 수정 후 조회")
-    void testUpdatePost_Success(){
+    void testUpdatePost_Success() {
 
         String updatedTitle = "수정된 제목";
         String updatedContent = "수정된 내용";

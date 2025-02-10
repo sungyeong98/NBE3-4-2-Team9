@@ -48,20 +48,28 @@ public class ApiV1PostController {
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "sort", defaultValue = "latest") String sort,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long currentUserId = (userDetails != null) ? userDetails.getSiteUser().getId() : null;
 
         Page<PostResponseDto> posts = postService.getAllPosts(categoryId, keyword, sort,
-                page, size);
+                page, size, currentUserId);
 
         return GenericResponse.of(true, HttpStatus.OK.value(), posts);
     }
 
-    // 특정 게시글 조회 (DTO 적용)
+    // 특정 게시글 조회
     @GetMapping("/{id}")
-    public GenericResponse<PostResponseDto> getPostById(@PathVariable("id") Long id) {
+    public GenericResponse<PostResponseDto> getPostById(@PathVariable("id") Long id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        PostResponseDto post = postService.getPostById(id);
-
+        if (customUserDetails == null) {
+            throw new GlobalException(GlobalErrorCode.UNAUTHENTICATION_USER);
+        }
+        Long currentUserId =
+                (customUserDetails != null) ? customUserDetails.getSiteUser().getId() : null;
+        PostResponseDto post = postService.getPostById(id, currentUserId);
         return GenericResponse.of(true, HttpStatus.OK.value(), post);
     }
 

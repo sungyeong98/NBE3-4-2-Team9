@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.post.dto.PostRequestDto;
+import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.baseentity.BaseEntity;
 
@@ -86,6 +87,20 @@ public class Post extends BaseEntity {
             .author(author)
             .recruitmentStatus(isRecruitment ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
             .build();
+    }
+
+    public PostResponseDto toDto(Long currentUserId) {
+        return PostResponseDto.builder()
+                .id(this.postId)
+                .subject(this.subject)
+                .content(this.content)
+                .categoryId(this.categoryId.getId())
+                .jobPostingId(this.jobId != null ? this.jobId.getId() : null)
+                .isAuthor(currentUserId != null && this.author.getId().equals(currentUserId))
+                .authorName(this.author.getName())
+                .authorImg(this.author.getProfileImg())
+                .createdAt(this.getCreatedAt())
+                .build();
     }
 
     public static Post createPost(PostRequestDto dto, Category category,

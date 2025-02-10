@@ -77,6 +77,64 @@ public class PostControllerTest {
     }
 
     @Test
+    @DisplayName("로그인한 사용자가 게시글 상세 조회 성공")
+    void getPostById_Success() throws Exception {
+
+        //init.sql에 삽입된 유저 데이터 가져오기
+        SiteUser siteUser = userRepository.findByEmail("testEmail1@naver.com").get();
+        //가져온 유저 데이터로 시큐리티 유저 생성
+        CustomUserDetails customUserDetails = new CustomUserDetails(siteUser);
+        //액세스 토큰 발급
+        String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
+
+        // 게시글 ID 가져오기(ex. 가장 최근 게시글 조회)
+        Post testPost = postRepository.findBySubject("테스트 제목2")
+                .orElseThrow(() -> new RuntimeException(
+                        "게시글을 찾을 수 없습니다."));// 또는 ID가 작은 순으로 정렬해서 가져올 수도 있음
+
+        Long postId = testPost.getPostId(); // 실제 DB에 존재하는 ID 사용
+
+        mockMvc.perform(get("/api/v1/posts/{id}", postId).contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken)) // Authorization 헤더 포함
+                .andExpect(status().isOk()) // 200 응답 확인
+                .andExpect(jsonPath("$.data.id").value(postId))
+                .andExpect(jsonPath("$.data.subject").isNotEmpty())
+                .andExpect(jsonPath("$.data.content").isNotEmpty()).andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 하지 않은 사용자가 게시글 상세 조회")
+    void getPostById_Unauthorized() throws Exception {
+
+        Post testPost = postRepository.findBySubject("테스트 제목2")
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+
+        Long postId = testPost.getPostId(); // 실제 DB에 존재하는 ID 사용
+
+        mockMvc.perform(get("/api/v1/posts/{id}", postId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized()) //
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 조회")
+    void getPostById_NotFound() throws Exception {
+        Long notFoundPostNum = 99999L;
+
+        SiteUser writer = userRepository.findByEmail("testEmail3@naver.com")
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        CustomUserDetails customUserDetails = new CustomUserDetails(writer);
+        String accessToken = jwtUtil.createAccessToken(customUserDetails, ACCESS_EXPIRATION);
+
+        mockMvc.perform(get("/api/v1/posts/{id}", notFoundPostNum)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("게시글 조건별 조회 테스트")
     void testGetPostById() throws Exception {
         //init.sql에 삽입된 유저 데이터 가져오기
@@ -211,7 +269,6 @@ public class PostControllerTest {
                         .header("Authorization", "Bearer " + accessToken)) // 다른 유저의 토큰 사용
                 .andExpect(status().isForbidden()) // 403 응답이 나와야 함
                 .andDo(print());
-
     }
 
     @Test
