@@ -1,12 +1,5 @@
 package com.backend.domain.post.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.domain.jobposting.entity.JobPosting;
@@ -22,8 +15,14 @@ import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import com.backend.standard.util.SecurityUtil;
-
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -100,14 +99,20 @@ public class PostService {
 		}
 
 		return posts.map(post -> {
-			// 현재 로그인한 사용자 정보 가져오기 (SecurityContext 사용)
-			Long userId = SecurityUtil.getCurrentUserId().orElseThrow(
-				() -> new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER)); // 현재 로그인한 사용자
+			// 현재 로그인한 사용자 정보 가져오기 (없으면 Optional.empty())
+			Optional<Long> userIdOpt = SecurityUtil.getCurrentUserId();
 
-			// 해당 Post와 연결된 status 조회
-			RecruitmentUserStatus status = recruitmentUserRepository.findStatusByPostIdAndUserId(
-					post.getPostId(), userId)
-				.orElse(RecruitmentUserStatus.NOT_APPLIED); // 없으면 지원하지 않은 상태로 적용
+			// 사용자 정보가 없으면, 비로그인 상태로 처리 (예: 지원 상태는 NOT_APPLIED)
+			RecruitmentUserStatus status;
+
+			if (userIdOpt.isPresent()) {
+				Long userId = userIdOpt.get();
+				status = recruitmentUserRepository.findStatusByPostIdAndUserId(post.getPostId(), userId)
+						.orElse(RecruitmentUserStatus.NOT_APPLIED);
+
+			} else {
+				status = RecruitmentUserStatus.NOT_APPLIED;
+			}
 
 			return PostResponseDto.fromEntity(post, status);
 		});
