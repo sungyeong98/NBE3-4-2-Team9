@@ -9,6 +9,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { Category } from '@/types/post/Category';
 import { getCategories } from '@/api/category';
 import Link from 'next/link';
+import privateApi from '@/api/axios';
 
 export default function PostDetail() {
   const params = useParams();
@@ -17,6 +18,11 @@ export default function PostDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isAuthor, setIsAuthor] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSubject, setEditedSubject] = useState('');
+  const [editedContent, setEditedContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -35,35 +41,100 @@ export default function PostDetail() {
   }, []);
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const fetchData = async () => {
       try {
-        if (!params.id) {
-          console.error('No post ID provided');
-          return;
-        }
+        const [postResponse, categoriesResponse] = await Promise.all([
+          privateApi.get(`/api/v1/posts/${params.id}`),
+          privateApi.get('/api/v1/category')
+        ]);
 
-        const postId = parseInt(params.id as string);
-        if (isNaN(postId)) {
-          console.error('Invalid post ID:', params.id);
-          return;
-        }
-
-        const response = await getPost(postId);
-        if (response.success) {
-          setPost(response.data);
-          console.log('Post Category ID:', response.data.categoryId);
+        if (postResponse.data.success) {
+          setPost(postResponse.data.data);
           const currentUserId = localStorage.getItem('userId');
-          setIsAuthor(currentUserId === String(response.data.authorId));
+          setIsAuthor(currentUserId === String(postResponse.data.data.authorId));
+        }
+        if (categoriesResponse.data.success) {
+          setCategories(categoriesResponse.data.data);
         }
       } catch (error) {
-        console.error('Failed to fetch post:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPost();
+    fetchData();
   }, [params.id]);
+
+  useEffect(() => {
+    if (post) {
+      setEditedSubject(post.subject);
+      setEditedContent(post.content);
+    }
+  }, [post]);
+
+  const handleDelete = async () => {
+    if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const response = await privateApi.delete(`/api/v1/posts/${params.id}`);
+      
+      if (response.data.success) {
+        alert('게시글이 삭제되었습니다.');
+        router.push('/post');
+        router.refresh();
+      }
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        alert('본인이 작성한 게시글만 삭제할 수 있습니다.');
+      } else {
+        alert('게시글 삭제 중 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditedSubject(post?.subject || '');
+    setEditedContent(post?.content || '');
+  };
+
+  const handleUpdate = async () => {
+    if (!post || !editedSubject.trim() || !editedContent.trim()) return;
+
+    try {
+      setIsSubmitting(true);
+      const response = await privateApi.put(`/api/v1/posts/${post.id}`, {
+        subject: editedSubject,
+        content: editedContent,
+        categoryId: post.categoryId
+      });
+
+      if (response.data.success) {
+        setPost({
+          ...post,
+          subject: editedSubject,
+          content: editedContent
+        });
+        setIsEditing(false);
+        alert('게시글이 수정되었습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to update post:', error);
+      alert('게시글 수정에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -126,27 +197,63 @@ export default function PostDetail() {
               <h1 className="text-2xl font-bold text-gray-900 mb-3">
                 {post.subject}
               </h1>
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
-                    <span className="text-gray-600">익</span>
+              <div className="flex items-center justify-between text-sm text-gray-500 mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    {post.authorImg ? (
+                      <img 
+                        src={post.authorImg} 
+                        alt={post.authorName}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-sm text-gray-500">익명</span>
+                      </div>
+                    )}
+                    <span>{post.authorName}</span>
                   </div>
-                  <span>익명</span>
+                  <span>{formatDate(post.createdAt)}</span>
                 </div>
-                <span>•</span>
-                <span>{formatDate(post.createdAt)}</span>
-                <div className="flex-1"></div>
-                <button className="text-gray-500 hover:text-blue-600 transition-colors">
-                  공유하기
-                </button>
-                <button className="text-gray-500 hover:text-red-600 transition-colors">
-                  신고하기
-                </button>
               </div>
             </div>
 
             <div className="prose max-w-none text-gray-800 leading-relaxed mb-8">
-              {post.content}
+              {isEditing ? (
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={editedSubject}
+                    onChange={(e) => setEditedSubject(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <textarea
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="w-full h-64 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={handleUpdate}
+                      disabled={isSubmitting}
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                      {isSubmitting ? '저장 중...' : '저장'}
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h1 className="text-2xl font-bold mb-4">{post.subject}</h1>
+                  <div className="whitespace-pre-wrap">{post.content}</div>
+                </>
+              )}
             </div>
 
             <div className="flex items-center justify-between pt-6 border-t">
@@ -164,16 +271,21 @@ export default function PostDetail() {
                   <span>댓글</span>
                 </button>
               </div>
-              {isAuthor && (
-                <div className="flex items-center gap-2">
-                  <button className="px-4 py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                    수정
-                  </button>
-                  <button className="px-4 py-2 text-sm text-red-600 hover:text-red-700 transition-colors">
-                    삭제
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <button 
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-600 transition-colors"
+                  onClick={handleEdit}
+                >
+                  수정
+                </button>
+                <button 
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? '삭제 중...' : '삭제'}
+                </button>
+              </div>
             </div>
           </div>
         </article>

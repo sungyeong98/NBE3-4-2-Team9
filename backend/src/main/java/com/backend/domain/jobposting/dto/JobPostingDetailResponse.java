@@ -5,7 +5,9 @@ import com.backend.domain.jobposting.entity.JobPostingStatus;
 import com.backend.domain.jobposting.entity.RequireEducate;
 import com.backend.domain.jobposting.entity.Salary;
 import com.backend.domain.jobskill.dto.JobSkillResponse;
+import com.querydsl.core.annotations.QueryProjection;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +54,14 @@ public record JobPostingDetailResponse(
 
 	Long applyCnt, //지원자 수
 
-	boolean isLike //관심 여부
+	Long voterCount, //관심 수
+
+	boolean isVoter //관심 여부
 ) {
 
+
+	@QueryProjection
+	public JobPostingDetailResponse {
+		if (jobSkillList == null) jobSkillList = new ArrayList<>();
+	}
 }

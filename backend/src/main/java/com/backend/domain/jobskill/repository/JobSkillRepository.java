@@ -1,6 +1,7 @@
 package com.backend.domain.jobskill.repository;
 
 import com.backend.domain.jobskill.entity.JobSkill;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,4 +39,6 @@ public interface JobSkillRepository {
 	 * @implSpec name 값으로 조회 메서드 입니다.
 	 */
 	Optional<JobSkill> findByName(String name);
+
+    void saveAll(List<JobSkill> newJobSkill);
 }

@@ -13,16 +13,17 @@ build/
 .settings
 .springBeans
 .sts4-cache
+#../.idea
 bin/
-src/main/generated/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 **/main/resources/*.yml
 **/test/resources/application.yml
 ../.idea
 
+
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -42,7 +43,7 @@ out/
 
 ### CUSTOM ###
 application.yml
-application-build.yml
+application-dev.yml
 application-oauth.yml
 .env
 src/main/generated/

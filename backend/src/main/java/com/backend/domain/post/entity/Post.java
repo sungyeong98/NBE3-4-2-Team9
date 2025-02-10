@@ -36,6 +36,7 @@ public class Post extends BaseEntity {
     // postId: 게시글의 고유 식별자(PK, Auto Increment)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
     private Long postId;
 
     // subject: 게시글 제목
@@ -74,30 +75,30 @@ public class Post extends BaseEntity {
 
     // 객체 생성 통일
     public static Post createPost(String subject, String content, Category category,
-            SiteUser author, JobPosting jobposting) {
+        SiteUser author, JobPosting jobposting) {
         boolean isRecruitment = "모집 게시판".equals(category.getName());
 
         return Post.builder()
-                .subject(subject)
-                .content(content)
-                .categoryId(category)
-                .jobId(jobposting)
-                .author(author)
-                .recruitmentStatus(isRecruitment ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
-                .build();
+            .subject(subject)
+            .content(content)
+            .categoryId(category)
+            .jobId(jobposting)
+            .author(author)
+            .recruitmentStatus(isRecruitment ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+            .build();
     }
 
     public static Post createPost(PostRequestDto dto, Category category,
-            SiteUser author, JobPosting jobPosting) {
+        SiteUser author, JobPosting jobPosting) {
         return Post.builder()
-                .subject(dto.getSubject())
-                .content(dto.getContent())
-                .categoryId(category)
-                .author(author)
-                .jobId(jobPosting)
-                .recruitmentStatus(
-                        jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
-                .build();
+            .subject(dto.getSubject())
+            .content(dto.getContent())
+            .categoryId(category)
+            .author(author)
+            .jobId(jobPosting)
+            .recruitmentStatus(
+                jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+            .build();
     }
 
     // 게시글 수정

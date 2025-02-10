@@ -76,10 +76,10 @@ public class SecurityConfig {
 			"/oauth2/authorization/kakao",
 			"/api/v1/chat/**",
 			"/ws/**",
-			"/oauth2/authorization/kakao",
-			"/api/v1/posts", // 게시글 전체 조회에는 로그인 하지 않은 유저도 이용 가능해야 함
-			"/api/v1/recruitment-user",
-			"/api/v1/recruitment-author"
+			"/api/v1/recruitment"
+			"/api/v1/posts",// 게시글 전체 조회에는 로그인 하지 않은 유저도 이용 가능해야 함
+			"/api/v1/category",
+			"/api/v1/adm/login"
 		));
 	}
 
@@ -113,13 +113,17 @@ public class SecurityConfig {
 
 				// 나머지 특정 권한이 필요한 URL들
 				authorizeRequests
-					.requestMatchers(HttpMethod.POST, "/api/v1/posts").hasRole("USER")
+					.requestMatchers(HttpMethod.POST, "/api/v1/posts", "/api/v1/voter").hasAnyRole("USER", "ADMIN")
+					.requestMatchers(HttpMethod.GET, "/api/v1/job-posting/{id}").hasAnyRole("USER", "ADMIN")
 					.requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
+					.requestMatchers(HttpMethod.PUT, "/api/v1/category/**").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.PATCH, "/api/v1/category/**").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.POST, "/api/v1/like").hasRole("USER")
-					.requestMatchers(HttpMethod.POST, "/api/v1/recruitment-user/**").hasRole("USER")
-					.requestMatchers(HttpMethod.DELETE, "/api/v1/recruitment-user/**").hasRole("USER")
-					.requestMatchers(HttpMethod.PATCH, "/api/v1/recruitment-author/**").hasRole("USER")
+					.requestMatchers(HttpMethod.POST, "/api/v1/recruitment/**").hasRole("USER")
+					.requestMatchers(HttpMethod.DELETE, "/api/v1/recruitment/**").hasRole("USER")
+					.requestMatchers(HttpMethod.PATCH, "/api/v1/recruitment/**").hasRole("USER")
+					.requestMatchers(HttpMethod.DELETE, "/api/v1/category/**").hasRole("ADMIN")
+					.requestMatchers(HttpMethod.POST, "/api/v1/voter").hasRole("USER")
 					.anyRequest().authenticated();
 			})
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

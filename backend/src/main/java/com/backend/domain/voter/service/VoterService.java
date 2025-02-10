@@ -1,0 +1,92 @@
+package com.backend.domain.voter.service;
+
+import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.jobposting.repository.JobPostingRepository;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.voter.domain.VoterType;
+import com.backend.domain.voter.dto.VoterCreateResponse;
+import com.backend.domain.voter.entity.Voter;
+import com.backend.domain.voter.repository.VoterRepository;
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+/**
+ * VoterService
+ * <p>관심 서비스 입니다.</p>
+ *
+ * @author Kim Dong O
+ */
+@Service
+@RequiredArgsConstructor
+public class VoterService {
+
+	private final VoterRepository likeRepository;
+	private final JobPostingRepository jobPostingRepository;
+
+	/**
+	 * 관심 저장 메서드 입니다.
+	 *
+	 * @param siteUser 로그인 유저
+	 * @param targetId 관심 타겟 ID
+	 * @param voterType {@link VoterType} 관심 타입
+	 * @return {@link VoterCreateResponse}
+	 * @throws GlobalException 이미 관심 저장이 되어 있을 때 또는 지원하지 않는 LikeType 일 때 발생
+	 */
+	public VoterCreateResponse save(SiteUser siteUser, Long targetId, VoterType voterType) {
+		existsCheck(siteUser.getId(), targetId, voterType);
+
+		switch (voterType) {
+			case JOB_POSTING -> {
+
+				JobPosting jobPosting = JobPosting.builder()
+					.id(targetId)
+					.build();
+
+				Voter saveVoter = Voter.builder()
+					.siteUser(siteUser)
+					.jobPosting(jobPosting)
+					.voterType(voterType)
+					.build();
+
+				likeRepository.save(saveVoter).getId();
+			}
+			case POST -> {
+				//TODO Post 추가시 로직 구현 예정
+			}
+			default -> throw new GlobalException(GlobalErrorCode.NOT_SUPPORT_TYPE);
+		}
+
+		return VoterCreateResponse.builder()
+			.targetId(targetId)
+			.voterType(voterType)
+			.build();
+	}
+
+	/**
+	 * 특정 targetId에 좋아요를 눌렀는지 체크합니다.
+	 * <p>
+	 * 주어진 targetId에 좋아요를 눌렀는지 체크합니다.
+	 * <br> 존재하지 않을 경우 예외를 발생시킵니다.
+	 * </p>
+	 *
+	 * @param siteUserId siteUserId
+	 * @param targetId   targetId
+	 * @param voterType   검사할 타입
+	 * @throws GlobalException 데이터가 존재하지 않을 경우 발생
+	 */
+	private void existsCheck(Long siteUserId, Long targetId, VoterType voterType) {
+		boolean result = false;
+
+		switch (voterType) {
+			case JOB_POSTING ->
+				result = likeRepository.existsByJobPostingId(siteUserId, targetId, voterType);
+			case POST -> result = false; //TODO 추후 변경 예정
+		}
+
+		if (result) {
+			throw new GlobalException(GlobalErrorCode.ALREADY_VOTER);
+		}
+	}
+}
