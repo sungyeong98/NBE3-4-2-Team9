@@ -45,9 +45,12 @@ public enum GlobalErrorCode {
     INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3002, "카테고리 이름이 유효하지 않습니다."),
     NAME_MISMATCH(HttpStatus.BAD_REQUEST, 3004, "카테고리 이름이 일치하지 않습니다."),
 
-	  // 관심 에러 코드 7001 ~
-	  ALREADY_VOTER(HttpStatus.BAD_REQUEST, 7001, "이미 관심을 추가하였습니다."),
-	  NOT_SUPPORT_TYPE(HttpStatus.BAD_REQUEST, 7002, "지원하지 않는 관심 타입 입니다."),
+    // 댓글 도메인 에러 코드
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 4001, "댓글이 존재하지않습니다."),
+
+	// 관심 에러 코드 7001 ~
+	ALREADY_VOTER(HttpStatus.BAD_REQUEST, 7001, "이미 관심을 추가하였습니다."),
+	NOT_SUPPORT_TYPE(HttpStatus.BAD_REQUEST, 7002, "지원하지 않는 관심 타입 입니다."),
 
     // 웹 소켓 에러 코드
     EXCEPTION_IN_WEBSOCKET(HttpStatus.UNAUTHORIZED, 6001, "웹 소켓 연결 중에 예외가 발생하였습니다."),
