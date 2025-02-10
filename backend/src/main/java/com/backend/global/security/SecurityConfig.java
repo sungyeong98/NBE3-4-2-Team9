@@ -76,7 +76,7 @@ public class SecurityConfig {
 			"/oauth2/authorization/kakao",
 			"/api/v1/chat/**",
 			"/ws/**",
-			"/api/v1/recruitment"
+			"/api/v1/recruitment",
 			"/api/v1/posts",// 게시글 전체 조회에는 로그인 하지 않은 유저도 이용 가능해야 함
 			"/api/v1/category",
 			"/api/v1/adm/login"
