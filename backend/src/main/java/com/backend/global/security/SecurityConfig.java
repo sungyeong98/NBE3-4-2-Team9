@@ -117,6 +117,9 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.PATCH, "/api/v1/category/**").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.POST, "/api/v1/like").hasRole("USER")
+					.requestMatchers(HttpMethod.POST, "/api/v1/recruitment-user/**").hasRole("USER")
+					.requestMatchers(HttpMethod.DELETE, "/api/v1/recruitment-user/**").hasRole("USER")
+					.requestMatchers(HttpMethod.PATCH, "/api/v1/recruitment-author/**").hasRole("USER")
 					.anyRequest().authenticated();
 			})
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
