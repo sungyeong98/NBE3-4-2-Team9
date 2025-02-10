@@ -110,8 +110,10 @@ public class SecurityConfig {
 
 				// 나머지 특정 권한이 필요한 URL들
 				authorizeRequests
-					.requestMatchers(HttpMethod.POST, "/api/v1/posts", "/api/v1/voter").hasAnyRole("USER", "ADMIN")
-					.requestMatchers(HttpMethod.GET, "/api/v1/job-posting/{id}").hasAnyRole("USER", "ADMIN")
+					.requestMatchers(HttpMethod.POST, "/api/v1/posts", "/api/v1/voter")
+					.hasAnyRole("USER", "ADMIN")
+					.requestMatchers(HttpMethod.GET, "/api/v1/job-posting/{id}",
+						"/api/v1/job-posting/voter").hasAnyRole("USER", "ADMIN")
 					.requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.PUT, "/api/v1/category/**").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.PATCH, "/api/v1/category/**").hasRole("ADMIN")
