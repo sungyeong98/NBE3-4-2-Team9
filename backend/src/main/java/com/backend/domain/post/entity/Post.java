@@ -1,12 +1,14 @@
 package com.backend.domain.post.entity;
 
+import java.time.ZonedDateTime;
+
 import com.backend.domain.category.entity.Category;
-import com.backend.domain.comment.entity.Comment;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.post.dto.PostRequestDto;
+import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.baseentity.BaseEntity;
-import jakarta.persistence.CascadeType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,11 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -78,30 +76,44 @@ public class Post extends BaseEntity {
 
     // 객체 생성 통일
     public static Post createPost(String subject, String content, Category category,
-            SiteUser author, JobPosting jobposting) {
+        SiteUser author, JobPosting jobposting) {
         boolean isRecruitment = "모집 게시판".equals(category.getName());
 
         return Post.builder()
-                .subject(subject)
-                .content(content)
-                .categoryId(category)
-                .jobId(jobposting)
-                .author(author)
-                .recruitmentStatus(isRecruitment ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+            .subject(subject)
+            .content(content)
+            .categoryId(category)
+            .jobId(jobposting)
+            .author(author)
+            .recruitmentStatus(isRecruitment ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+            .build();
+    }
+
+    public PostResponseDto toDto(Long currentUserId) {
+        return PostResponseDto.builder()
+                .id(this.postId)
+                .subject(this.subject)
+                .content(this.content)
+                .categoryId(this.categoryId.getId())
+                .jobPostingId(this.jobId != null ? this.jobId.getId() : null)
+                .isAuthor(currentUserId != null && this.author.getId().equals(currentUserId))
+                .authorName(this.author.getName())
+                .authorImg(this.author.getProfileImg())
+                .createdAt(this.getCreatedAt())
                 .build();
     }
 
     public static Post createPost(PostRequestDto dto, Category category,
-            SiteUser author, JobPosting jobPosting) {
+        SiteUser author, JobPosting jobPosting) {
         return Post.builder()
-                .subject(dto.getSubject())
-                .content(dto.getContent())
-                .categoryId(category)
-                .author(author)
-                .jobId(jobPosting)
-                .recruitmentStatus(
-                        jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
-                .build();
+            .subject(dto.getSubject())
+            .content(dto.getContent())
+            .categoryId(category)
+            .author(author)
+            .jobId(jobPosting)
+            .recruitmentStatus(
+                jobPosting != null ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+            .build();
     }
 
     // 게시글 수정

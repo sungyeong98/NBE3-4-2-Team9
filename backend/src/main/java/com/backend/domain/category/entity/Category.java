@@ -33,6 +33,7 @@ public class Category extends BaseEntity {
     private String name;
 
     // Category 삭제시 Post도 다 삭제
+    @Builder.Default
     @OneToMany(mappedBy = "categoryId", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
@@ -41,10 +42,12 @@ public class Category extends BaseEntity {
     // 예상 결과와 실제 결과를 비교할 때 사용
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         Category category = (Category) o;
         return Objects.equals(id, category.id) && Objects.equals(name, category.name);
     }

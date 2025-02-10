@@ -1,15 +1,15 @@
 package com.backend.domain.post.dto;
 
-import com.backend.domain.post.entity.Post;
 import java.time.ZonedDateTime;
+
+import com.backend.domain.post.entity.Post;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class PostResponseDto {
 
@@ -18,7 +18,7 @@ public class PostResponseDto {
     private String content;
     private Long categoryId;
     private Long jobPostingId;
-    private Long authorId;
+    private boolean isAuthor;
     private String authorName;
     private String authorImg;
     private ZonedDateTime createdAt;
@@ -32,7 +32,6 @@ public class PostResponseDto {
                 .categoryId(post.getCategoryId().getId())
                 .jobPostingId(post.getJobId() != null ? post.getJobId().getId() : null)
                 .createdAt(post.getCreatedAt())
-                .authorId(post.getAuthor().getId())
                 .authorName(post.getAuthor().getName())
                 .authorImg(post.getAuthor().getProfileImg())
                 .build();
