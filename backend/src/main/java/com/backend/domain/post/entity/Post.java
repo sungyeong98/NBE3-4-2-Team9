@@ -55,10 +55,12 @@ public class Post extends BaseEntity {
 
     // 모집 게시판에만 필요한 부분
     private ZonedDateTime recruitmentClosingDate; // 모집 기간
-    private Long numOfApplicants; // 모집 인원
+
+    private int numOfApplicants; // 모집 인원
+
+    private int currentUserCount; // 현재 인원
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true) // 모집 게시판 아니면 Null 가능
     private RecruitmentStatus recruitmentStatus; // 모집 상태
 
     // 채용 ID -> JopPosting table에 채용ID랑 이어짐
@@ -123,4 +125,14 @@ public class Post extends BaseEntity {
         // 기존 게시글 내용과 다를 때
         this.content = content;
     }
+
+    public void plusPostUser(){
+        this.currentUserCount++;
+    }
+
+    // 게시글 상태 변경
+    public void updateRecruitmentStatus(RecruitmentStatus recruitmentStatus) {
+        this.recruitmentStatus = recruitmentStatus;
+    }
+
 }

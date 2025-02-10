@@ -1,5 +1,8 @@
 package com.backend.domain.post.service;
 
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +19,6 @@ import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.PostRepository;
-
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
@@ -58,6 +60,11 @@ public class PostService {
         Post post = Post.builder().subject(requestDto.getSubject()).content(requestDto.getContent())
                 .categoryId(category).jobId(jobPosting)
                 .recruitmentStatus(jobPosting != null ? RecruitmentStatus.OPEN : null).author(user)
+                .recruitmentClosingDate(
+                    ZonedDateTime.now().plusDays(7).with(LocalTime.MIDNIGHT)
+                ) // 모집 종료일 현재 날짜 기준으로 일주일 이후 자정으로 설정
+                .numOfApplicants(6) // 모집 인원수 6명으로 설정
+                .currentUserCount(0) // 현재 인원 수 0명으로 설정
                 .build();
 
         // DB 저장

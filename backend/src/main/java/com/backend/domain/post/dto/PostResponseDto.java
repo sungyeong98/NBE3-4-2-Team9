@@ -21,6 +21,9 @@ public class PostResponseDto {
     private boolean isAuthor;
     private String authorName;
     private String authorImg;
+    private ZonedDateTime recruitmentClosingDate;
+    private int numOfApplicants;
+    private int currentUserCount;
     private ZonedDateTime createdAt;
 
     // Entity -> DTO 변환(Builder 활용)
@@ -34,6 +37,9 @@ public class PostResponseDto {
                 .createdAt(post.getCreatedAt())
                 .authorName(post.getAuthor().getName())
                 .authorImg(post.getAuthor().getProfileImg())
+                .recruitmentClosingDate(post.getRecruitmentClosingDate()) // 종료 시간 추가
+                .numOfApplicants(post.getNumOfApplicants()) // 모집 인원 추가
+                .currentUserCount(post.getCurrentUserCount()) // 현재 인원 추가
                 .build();
 
     }
