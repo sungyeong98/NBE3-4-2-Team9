@@ -1,8 +1,9 @@
 package com.backend.global.exception;
 
+import org.springframework.http.HttpStatus;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 /**
  * GlobalErrorCode
@@ -29,7 +30,9 @@ public enum GlobalErrorCode {
     // 게시글 도메인 에러 코드
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "카테고리가 존재하지 않습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, 1002, "게시글이 존재하지 않습니다."),
-    NOT_AUTHOR(HttpStatus.FORBIDDEN, 1003, "게시글 작성자가 아닙니다."),
+    POST_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, 1003, "게시글 삭제 권한이 없습니다."),
+    POST_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, 1004, "게시글 업데이트 권한이 없습니다."),
+    NOT_AUTHOR(HttpStatus.FORBIDDEN, 1005, "게시글 작성자가 아닙니다."),
 
     // 모집 관련 에러 코드
     RECRUITMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 8001, "모집 지원 내역이 존재하지 않습니다."),

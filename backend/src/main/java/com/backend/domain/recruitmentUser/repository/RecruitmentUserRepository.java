@@ -74,27 +74,4 @@ public interface RecruitmentUserRepository extends JpaRepository<RecruitmentUser
         Pageable pageable
     );
 
-    /**
-     * 특정 모집 지원 상태를 post ID로 조회
-     * - 단순 상태 값 조회이므로 Fetch Join이 필요하지 않음
-     *
-     * @param postId 모집 게시글 ID
-     * @return 모집 지원 상태 (존재하지 않을 경우 null 반환)
-     */
-    @Query("SELECT ru.status FROM RecruitmentUser ru WHERE ru.post.postId = :postId")
-    RecruitmentUserStatus findStatusByPostId(@Param("postId") Long postId);
-
-    /**
-     * 특정 모집 게시글 및 사용자 ID에 대한 모집 지원 상태 조회
-     *
-     * @param postId 모집 게시글 ID
-     * @param userId 사용자 ID
-     * @return 모집 지원 상태 (존재하지 않을 경우 빈 Optional 반환)
-     */
-    @Query("SELECT ru.status FROM RecruitmentUser ru " +
-        "WHERE ru.post.postId = :postId AND ru.siteUser.id = :userId")
-    Optional<RecruitmentUserStatus> findStatusByPostIdAndUserId(
-        @Param("postId") Long postId,
-        @Param("userId") Long userId
-    );
 }

@@ -1,6 +1,5 @@
 package com.backend.domain.recruitmentUser.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.domain.post.dto.PostResponseDto;
+import com.backend.domain.recruitmentUser.dto.response.RecruitmentPostResponse;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
 import com.backend.domain.recruitmentUser.service.RecruitmentUserService;
 import com.backend.global.response.GenericResponse;
@@ -82,7 +81,7 @@ public class ApiV1RecruitmentUserController {
      * @return 모집 승인된 게시글 목록 (Page<PostResponseDto>)
      */
     @GetMapping("/posts")
-    public GenericResponse<Page<PostResponseDto>> getAcceptedPosts(
+    public GenericResponse<RecruitmentPostResponse> getAcceptedPosts(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "ACCEPTED") RecruitmentUserStatus status,
             @RequestParam(defaultValue = "0") int pageNum,
@@ -91,7 +90,7 @@ public class ApiV1RecruitmentUserController {
         Pageable pageable = PageRequest.of(pageNum, pageSize,
                 Sort.by(Sort.Direction.ASC, "createdAt"));
 
-        Page<PostResponseDto> acceptedPosts = recruitmentUserService.getAcceptedPosts(
+        RecruitmentPostResponse acceptedPosts = recruitmentUserService.getAcceptedPosts(
                 userDetails.getSiteUser(),
                 status,
                 pageable

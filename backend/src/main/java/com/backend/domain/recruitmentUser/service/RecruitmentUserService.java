@@ -5,10 +5,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.recruitmentUser.dto.response.RecruitmentPostResponse;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
 import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
@@ -90,25 +90,19 @@ public class RecruitmentUserService {
      * @param pageable 페이징 정보
      * @return 사용자가 특정 상태로 참여한 모집 게시글 목록 (Page<PostResponseDto>)
      */
-    public Page<PostResponseDto> getAcceptedPosts(
+    public RecruitmentPostResponse getAcceptedPosts(
             SiteUser siteUser,
             RecruitmentUserStatus status,
             Pageable pageable) {
 
-        // 사용자가 특정 상태로 참여한 모집 게시글을 조회
-        return recruitmentUserRepository.findAllBySiteUser_IdAndStatus(
-                        siteUser.getId(),
-                        status,
-                        pageable)
-        .map(recruitmentUser -> {
+            // RecruitmentUser 목록을 페이징하여 조회 (특정 사용자와 상태에 맞는 모집 지원자들)
+            Page<RecruitmentUser> recruitmentUsers = recruitmentUserRepository
+                .findAllBySiteUser_IdAndStatus(siteUser.getId(), status, pageable);
 
-            // 모집 사용자 엔티티에서 게시글을 가져오고, 게시글 상태를 포함하여 변환
-            Post post = recruitmentUser.getPost();
-            RecruitmentUserStatus userStatus = recruitmentUser.getStatus();
+            // RecruitmentUser에서 Post만 추출하여 Page<Post>로 변환
+            Page<Post> posts = recruitmentUsers.map(RecruitmentUser::getPost);
 
-            // PostResponseDto 생성 시 상태도 함께 포함
-            return PostResponseDto.fromEntity(post, userStatus);
-        });
+            return RecruitmentPostResponse.from(status, posts);
     }
 
     // ==============================
