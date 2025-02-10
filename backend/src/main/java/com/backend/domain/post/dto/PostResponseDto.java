@@ -1,6 +1,5 @@
 package com.backend.domain.post.dto;
 
-import com.backend.domain.post.entity.Post;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,19 +22,4 @@ public class PostResponseDto {
     private String authorImg;
     private ZonedDateTime createdAt;
 
-    // Entity -> DTO 변환(Builder 활용)
-    public static PostResponseDto fromEntity(Post post) {
-        return PostResponseDto.builder()
-                .id(post.getPostId())
-                .subject(post.getSubject())
-                .content(post.getContent())
-                .categoryId(post.getCategoryId().getId())
-                .jobPostingId(post.getJobId() != null ? post.getJobId().getId() : null)
-                .createdAt(post.getCreatedAt())
-                .authorId(post.getAuthor().getId())
-                .authorName(post.getAuthor().getName())
-                .authorImg(post.getAuthor().getProfileImg())
-                .build();
-
-    }
 }

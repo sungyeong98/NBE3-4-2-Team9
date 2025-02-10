@@ -63,7 +63,7 @@ public class ApiV1PostController {
     public GenericResponse<PostResponseDto> getPostById(@PathVariable("id") Long id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        if(customUserDetails == null){
+        if (customUserDetails == null) {
             throw new GlobalException(GlobalErrorCode.UNAUTHENTICATION_USER);
         }
         PostResponseDto post = postService.getPostById(id);

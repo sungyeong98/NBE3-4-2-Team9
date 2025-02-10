@@ -3,6 +3,7 @@ package com.backend.domain.post.entity;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.post.dto.PostRequestDto;
+import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.Column;
@@ -83,6 +84,20 @@ public class Post extends BaseEntity {
                 .jobId(jobposting)
                 .author(author)
                 .recruitmentStatus(isRecruitment ? RecruitmentStatus.OPEN : null) // 모집 게시판이면 OPEN
+                .build();
+    }
+
+    public PostResponseDto toDto() {
+        return PostResponseDto.builder()
+                .id(this.postId)
+                .subject(this.subject)
+                .content(this.content)
+                .categoryId(this.categoryId.getId())
+                .jobPostingId(this.jobId != null ? this.jobId.getId() : null)
+                .authorId(this.author.getId())
+                .authorName(this.author.getName())
+                .authorImg(this.author.getProfileImg())
+                .createdAt(this.getCreatedAt())
                 .build();
     }
 
