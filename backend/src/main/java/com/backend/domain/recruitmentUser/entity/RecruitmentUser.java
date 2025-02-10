@@ -47,7 +47,8 @@ public class RecruitmentUser extends BaseEntity {
 
     // 모집 게시판 작성자 모집 수락 메서드
     public void accept() {
-        this.status = RecruitmentUserStatus.ACCEPTED;
+        this.post.plusPostUser(); // 현재 모집 인원 수 1명 추가
+        this.status = RecruitmentUserStatus.ACCEPTED; // 모집 상태 완료로 변경
     }
 
     public void reject() {
