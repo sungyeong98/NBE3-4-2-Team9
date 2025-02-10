@@ -87,14 +87,14 @@ public class Post extends BaseEntity {
                 .build();
     }
 
-    public PostResponseDto toDto() {
+    public PostResponseDto toDto(Long currentUserId) {
         return PostResponseDto.builder()
                 .id(this.postId)
                 .subject(this.subject)
                 .content(this.content)
                 .categoryId(this.categoryId.getId())
                 .jobPostingId(this.jobId != null ? this.jobId.getId() : null)
-                .authorId(this.author.getId())
+                .isAuthor(currentUserId != null && this.author.getId().equals(currentUserId))
                 .authorName(this.author.getName())
                 .authorImg(this.author.getProfileImg())
                 .createdAt(this.getCreatedAt())

@@ -59,13 +59,13 @@ public class PostService {
 
         // DB 저장
         Post savedPost = postRepository.save(post);
-        return savedPost.toDto();
+        return savedPost.toDto(user.getId());
     }
 
     // 게시글 전체 조회 (postType → categoryId 변경)
     @Transactional(readOnly = true)
     public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort, int page,
-            int size) {
+            int size, Long currentUserId) {
         Pageable pageable;
 
         // 정렬 방식 설정 (viewCount 또는 createdAt)
@@ -88,15 +88,15 @@ public class PostService {
             posts = postRepository.findByKeyword(keyword, pageable);
         }
 
-        // Entity -> DTO 변환 후 반환
-        return posts.map(Post::toDto);
+        return posts.map(post -> post.toDto(currentUserId));
+
     }
 
     //  게시글 상세 조회
-    public PostResponseDto getPostById(Long id) {
+    public PostResponseDto getPostById(Long id, Long currentUserId) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-        return post.toDto();
+        return post.toDto(currentUserId);
     }
 
     // 게시글 삭제
@@ -105,14 +105,13 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
-        log.info("삭제 요청한 사용자 ID: " + userId);
-        log.info("게시글 작성자 ID: " + post.getAuthor().getId());
+        log.info("삭제 요청한 사용자 ID: {}", userId);
+        log.info("게시글 작성자 ID: {}", post.getAuthor().getId());
 
         if (!post.getAuthor().getId().equals(userId)) {
             throw new GlobalException(GlobalErrorCode.POST_DELETE_FORBIDDEN);
         }
         postRepository.delete(post);
-        log.info("게시글 삭제 완료! (postId={})", id);
     }
 
     // 게시글 수정
@@ -129,7 +128,7 @@ public class PostService {
         }
         // 게시글
         post.updatePost(requestDto.getSubject(), requestDto.getContent());
-        return post.toDto(); // 게시글 저장
+        return post.toDto(userId); // 게시글 저장
 
     }
 
