@@ -62,7 +62,7 @@ public class CommentService {
             isAuthor = false;
         }
 
-        comment.setContent(dto.getContent());
+        comment.ChangeContent(dto.getContent());
         commentRepository.save(comment);
 
         return CommentModifyResponseDto.convertEntity(comment, isAuthor);
