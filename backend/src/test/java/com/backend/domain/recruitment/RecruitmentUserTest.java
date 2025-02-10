@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Sql(scripts = {"/sql/init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = {"/sql/initRecruitmentUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @Sql(scripts = {"/sql/delete.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RecruitmentUserTest {
@@ -66,6 +68,7 @@ public class RecruitmentUserTest {
 
     @Test
     @DisplayName("모집 신청 테스트")
+    @Order(1)
     void applyForRecruitmentTest() throws Exception {
         Long postId = 3L;
 
@@ -93,6 +96,7 @@ public class RecruitmentUserTest {
 
     @Test
     @DisplayName("모집 신청 상태별 게시판 페이징 조회 테스트")
+    @Order(2)
     void getRecruitmentStatusTest() throws Exception {
 
         mockMvc.perform(get("/api/v1/recruitment/posts")

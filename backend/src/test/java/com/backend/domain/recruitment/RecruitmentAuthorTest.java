@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Sql(scripts = {"/sql/init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = {"/sql/initRecruitmentUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @Sql(scripts = {"/sql/delete.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RecruitmentAuthorTest {
@@ -76,7 +77,7 @@ public class RecruitmentAuthorTest {
 
         // When & Then: 게시글 3의 작성자(토큰: accessToken1, user1)로 지원자 2의 승인을 요청
         mockMvc.perform(patch("/api/v1/recruitment/{postId}/accept", postId)
-                        .header("Authorization", "Bearer " + accessToken1)
+                        .header("Authorization", "Bearer " + accessToken2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
