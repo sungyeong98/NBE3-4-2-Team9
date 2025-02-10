@@ -8,7 +8,6 @@ import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.PostRepository;
-
 import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
@@ -32,7 +31,6 @@ public class PostService {
     private final JobPostingRepository jobPostingRepository;
 
 
-
     //  게시글 생성
     @Transactional
     public PostResponseDto createPost(PostRequestDto requestDto, SiteUser user) {
@@ -54,25 +52,20 @@ public class PostService {
         }
 
         // DTO -> Entity 변환
-        Post post = Post.builder()
-                .subject(requestDto.getSubject())
-                .content(requestDto.getContent())
-                .categoryId(category)
-                .jobId(jobPosting)
-                .recruitmentStatus(jobPosting != null ? RecruitmentStatus.OPEN : null)
-                .author(user)
+        Post post = Post.builder().subject(requestDto.getSubject()).content(requestDto.getContent())
+                .categoryId(category).jobId(jobPosting)
+                .recruitmentStatus(jobPosting != null ? RecruitmentStatus.OPEN : null).author(user)
                 .build();
 
         // DB 저장
         Post savedPost = postRepository.save(post);
-
-        return PostResponseDto.fromEntity(savedPost);
+        return savedPost.toDto(user.getId());
     }
 
     // 게시글 전체 조회 (postType → categoryId 변경)
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort,
-            int page, int size) {
+    public Page<PostResponseDto> getAllPosts(Long categoryId, String keyword, String sort, int page,
+            int size, Long currentUserId) {
         Pageable pageable;
 
         // 정렬 방식 설정 (viewCount 또는 createdAt)
@@ -95,31 +88,33 @@ public class PostService {
             posts = postRepository.findByKeyword(keyword, pageable);
         }
 
-        // Entity -> DTO 변환 후 반환
-        return posts.map(PostResponseDto::fromEntity);
+        return posts.map(post -> post.toDto(currentUserId));
+
     }
 
-    //  게시글 상세 조회 (유지)
-    public PostResponseDto getPostById(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() ->
-                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-        return PostResponseDto.fromEntity(post);
+    //  게시글 상세 조회
+    public PostResponseDto getPostById(Long id, Long currentUserId) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+        return post.toDto(currentUserId);
     }
 
     // 게시글 삭제
     @Transactional
     public void deletePost(Long id, long userId) {
+      
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
         Post post = postRepository.findById(id).orElseThrow(
             () -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
-        log.info("삭제 요청한 사용자 ID: " + userId);
-        log.info("게시글 작성자 ID: " + post.getAuthor().getId());
+        log.info("삭제 요청한 사용자 ID: {}", userId);
+        log.info("게시글 작성자 ID: {}", post.getAuthor().getId());
 
         if (!post.getAuthor().getId().equals(userId)) {
             throw new GlobalException(GlobalErrorCode.POST_DELETE_FORBIDDEN);
         }
         postRepository.delete(post);
-        log.info("게시글 삭제 완료! (postId={})", id);
     }
 
     // 게시글 수정
@@ -127,8 +122,8 @@ public class PostService {
     public PostResponseDto updatePost(Long id, PostRequestDto requestDto, long userId) {
 
         // 게시글 조회
-        Post post = postRepository.findById(id).orElseThrow(() ->
-                new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
         // 작성자 검증
         if (!post.getAuthor().getId().equals(userId)) {
@@ -136,8 +131,8 @@ public class PostService {
         }
         // 게시글
         post.updatePost(requestDto.getSubject(), requestDto.getContent());
+        return post.toDto(userId); // 게시글 저장
 
-        return PostResponseDto.fromEntity(post); // 게시글 저장
     }
 
 }
