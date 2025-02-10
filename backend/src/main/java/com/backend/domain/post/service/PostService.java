@@ -99,7 +99,7 @@ public class PostService {
         return posts.map(PostResponseDto::fromEntity);
     }
 
-    //  게시글 상세 조회 (유지)
+    //  게시글 상세 조회
     public PostResponseDto getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
@@ -136,8 +136,8 @@ public class PostService {
         }
         // 게시글
         post.updatePost(requestDto.getSubject(), requestDto.getContent());
-
         return PostResponseDto.fromEntity(post); // 게시글 저장
+
     }
 
 }

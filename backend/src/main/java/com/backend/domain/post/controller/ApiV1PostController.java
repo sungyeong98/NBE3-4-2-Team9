@@ -3,12 +3,15 @@ package com.backend.domain.post.controller;
 import com.backend.domain.post.dto.PostRequestDto;
 import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.service.PostService;
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,12 +57,16 @@ public class ApiV1PostController {
         return GenericResponse.of(true, HttpStatus.OK.value(), posts);
     }
 
-    // 특정 게시글 조회 (DTO 적용)
+    // 특정 게시글 조회
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
-    public GenericResponse<PostResponseDto> getPostById(@PathVariable("id") Long id) {
+    public GenericResponse<PostResponseDto> getPostById(@PathVariable("id") Long id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
+        if(customUserDetails == null){
+            throw new GlobalException(GlobalErrorCode.UNAUTHENTICATION_USER);
+        }
         PostResponseDto post = postService.getPostById(id);
-
         return GenericResponse.of(true, HttpStatus.OK.value(), post);
     }
 
