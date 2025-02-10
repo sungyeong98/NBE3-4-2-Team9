@@ -1,5 +1,8 @@
 package com.backend.domain.recruitmentUser.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,8 @@ import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
+import com.backend.global.mail.service.MailService;
+import com.backend.global.mail.util.TemplateName;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecruitmentAuthorService {
 
+	private final MailService mailService;
 	private final RecruitmentUserRepository recruitmentUserRepository;
 	private final PostRepository postRepository;
 
@@ -51,7 +57,11 @@ public class RecruitmentAuthorService {
 		validateRecruitmentNotClosed(post);
 		validateRecruitmentUserStatus(recruitmentUser);
 
+		// 인원 증가, 모집 승인
 		recruitmentUser.accept();
+
+		// 모집 완료시 종료 상태로 수정
+		updateRecruitmentStatus(post);
 	}
 
 	/**
@@ -175,14 +185,22 @@ public class RecruitmentAuthorService {
 
 	/**
 	 * 모집 상태 업데이트 현재 모집된 인원과 모집 가능 인원을 비교하여 모집 마감 여부를 결정합니다.
-	 * TODO: 모집 인원이 충족될 경우 모집 상태를 CLOSED로 변경하는 로직 추가 필요
 	 *
 	 * @param post 모집 게시글
 	 */
 	@Transactional
 	void updateRecruitmentStatus(Post post) {
-		//        if (post.getNumOfApplicants() <= post.getCurrentUser()) {
-		//            post.updateRecruitmentStatus(RecruitmentStatus.CLOSED);
-		//        }
+		// 현재 인원이 모집 인원과 같은지 테스트
+		if (post.getNumOfApplicants() <= post.getCurrentUserCount()) {
+			post.updateRecruitmentStatus(RecruitmentStatus.CLOSED);
+		}
+
+		// 모집 상태 CLosed된 게시글에서 ACCEPTED 상태의 유저 이메일 리스트 반환
+		List<String> emailList = recruitmentUserRepository.findAcceptedByClosed(post.getPostId())
+			.stream()
+			.map(ru -> ru.getSiteUser().getEmail())
+			.collect(Collectors.toList());
+
+		mailService.sendDeliveryStartEmail(emailList, TemplateName.RECRUITMENT_CHAT, post.getPostId());
 	}
 }

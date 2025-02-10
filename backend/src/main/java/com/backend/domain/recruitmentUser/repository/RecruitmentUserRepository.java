@@ -1,5 +1,6 @@
 package com.backend.domain.recruitmentUser.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -73,5 +74,19 @@ public interface RecruitmentUserRepository extends JpaRepository<RecruitmentUser
         @Param("status") RecruitmentUserStatus status,
         Pageable pageable
     );
+
+
+    /**
+     * 특정 게시글에서 모집이 종료(CLOSED)된 상태에서 승인된(ACCEPTED) 모집 지원자 목록 조회
+     *
+     * @param postId 게시글 ID
+     * @return 모집 종료(CLOSED)된 게시글에서 승인된 모집 지원자 목록
+     */
+    @Query("SELECT ru FROM RecruitmentUser ru " +
+        "JOIN FETCH ru.post p " +
+        "WHERE p.postId = :postId " +
+        "AND p.recruitmentStatus = com.backend.domain.post.entity.RecruitmentStatus.CLOSED " +
+        "AND ru.status = com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus.ACCEPTED")
+    List<RecruitmentUser> findAcceptedByClosed(@Param("postId") Long postId);
 
 }
