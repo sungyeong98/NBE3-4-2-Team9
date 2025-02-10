@@ -19,6 +19,10 @@ export default function PostDetail() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isAuthor, setIsAuthor] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSubject, setEditedSubject] = useState('');
+  const [editedContent, setEditedContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -62,6 +66,13 @@ export default function PostDetail() {
     fetchData();
   }, [params.id]);
 
+  useEffect(() => {
+    if (post) {
+      setEditedSubject(post.subject);
+      setEditedContent(post.content);
+    }
+  }, [post]);
+
   const handleDelete = async () => {
     if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
       return;
@@ -84,6 +95,44 @@ export default function PostDetail() {
       }
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditedSubject(post?.subject || '');
+    setEditedContent(post?.content || '');
+  };
+
+  const handleUpdate = async () => {
+    if (!post || !editedSubject.trim() || !editedContent.trim()) return;
+
+    try {
+      setIsSubmitting(true);
+      const response = await privateApi.put(`/api/v1/posts/${post.id}`, {
+        subject: editedSubject,
+        content: editedContent,
+        categoryId: post.categoryId
+      });
+
+      if (response.data.success) {
+        setPost({
+          ...post,
+          subject: editedSubject,
+          content: editedContent
+        });
+        setIsEditing(false);
+        alert('게시글이 수정되었습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to update post:', error);
+      alert('게시글 수정에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -170,7 +219,41 @@ export default function PostDetail() {
             </div>
 
             <div className="prose max-w-none text-gray-800 leading-relaxed mb-8">
-              {post.content}
+              {isEditing ? (
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={editedSubject}
+                    onChange={(e) => setEditedSubject(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <textarea
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="w-full h-64 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <button
+                      onClick={handleUpdate}
+                      disabled={isSubmitting}
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                      {isSubmitting ? '저장 중...' : '저장'}
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h1 className="text-2xl font-bold mb-4">{post.subject}</h1>
+                  <div className="whitespace-pre-wrap">{post.content}</div>
+                </>
+              )}
             </div>
 
             <div className="flex items-center justify-between pt-6 border-t">
@@ -191,7 +274,7 @@ export default function PostDetail() {
               <div className="flex items-center gap-2">
                 <button 
                   className="px-4 py-2 text-sm text-gray-600 hover:text-gray-600 transition-colors"
-                  onClick={() => alert('수정 기능은 준비 중입니다.')}
+                  onClick={handleEdit}
                 >
                   수정
                 </button>
