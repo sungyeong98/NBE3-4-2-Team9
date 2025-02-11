@@ -189,11 +189,21 @@ public class RecruitmentAuthorService {
 	 * @param post 모집 게시글
 	 */
 	@Transactional
-	void updateRecruitmentStatus(Post post) {
+    public void updateRecruitmentStatus(Post post) {
+		// Status가 null인 경우 OPEN으로 기본 값 설정
+		if (post.getRecruitmentStatus() == null) {
+			post.updateRecruitmentStatus(RecruitmentStatus.OPEN);
+		}
+
 		// 현재 인원이 모집 인원과 같은지 테스트
 		if (post.getNumOfApplicants() <= post.getCurrentUserCount()) {
 			post.updateRecruitmentStatus(RecruitmentStatus.CLOSED);
+		// 같지 않으면 OPEN
+		} else {
+			post.updateRecruitmentStatus(RecruitmentStatus.OPEN);
 		}
+
+		postRepository.save(post);
 
 		// 모집 상태 CLosed된 게시글에서 ACCEPTED 상태의 유저 이메일 리스트 반환
 		List<String> emailList = recruitmentUserRepository.findAcceptedByClosed(post.getPostId())
