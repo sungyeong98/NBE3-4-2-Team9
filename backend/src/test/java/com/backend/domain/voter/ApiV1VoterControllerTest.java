@@ -209,7 +209,7 @@ public class ApiV1VoterControllerTest {
 
 		//when
 		ResultActions resultActions = mockMvc
-			.perform(delete("/api/v1/voter/{targetId}?voterType=job_posting", 4L)
+			.perform(delete("/api/v1/voter/{targetId}?voterType=job_posting", 1L)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + accessToken1));
 
