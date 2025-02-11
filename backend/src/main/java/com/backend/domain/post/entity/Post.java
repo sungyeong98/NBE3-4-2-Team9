@@ -4,6 +4,7 @@ import com.backend.domain.category.entity.Category;
 import com.backend.domain.comment.entity.Comment;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.voter.entity.Voter;
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -72,8 +74,13 @@ public class Post extends BaseEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private SiteUser author;
 
+	@Builder.Default
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
-	private List<Comment> commentList;
+	private List<Comment> commentList = new ArrayList<>();
+
+	@Builder.Default
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
+	private List<Voter> voterList = new ArrayList<>();
 
 	// createDate: 생성일자, BaseEntity 상속
 	// modifyDate: 수정일자, BaseEntity 상속

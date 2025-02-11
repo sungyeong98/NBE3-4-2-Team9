@@ -18,7 +18,7 @@ public class PostConverter {
 			.author(siteUser)
 			.subject(freePostRequest.getSubject())
 			.content(freePostRequest.getContent())
-			.categoryId(category)
+			.category(category)
 			.build();
 	}
 
@@ -43,7 +43,7 @@ public class PostConverter {
             .id(post.getPostId())
             .subject(post.getSubject()) // 게시글 제목
             .content(post.getContent()) // 게시글 내용
-            .categoryId(post.getCategoryId().getId()) // 카테고리 ID
+            .categoryId(post.getCategory().getId()) // 카테고리 ID
             .jobPostingId(post.getJobPosting().getId()) // 채용 ID
             .isAuthor(isAuthor) // 현재 사용자가 작성자인지 여부
             .authorName(post.getAuthor().getName()) // 작성자 이름

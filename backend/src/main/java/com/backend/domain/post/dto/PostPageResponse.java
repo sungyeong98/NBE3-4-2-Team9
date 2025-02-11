@@ -12,6 +12,7 @@ public record PostPageResponse(
 	String authorName,
 	String authorProfileImage,
 	Long commentCount,
+	Long voterCount,
 	ZonedDateTime createdAt) {
 
 	@QueryProjection

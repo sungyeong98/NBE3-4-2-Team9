@@ -27,21 +27,18 @@ public interface VoterRepository {
 	 */
 	boolean existsByJobPostingId(Long siteUserId, Long jobPostingId, VoterType voterType);
 
-/*
-	*/
+
 /**
 	 * @param siteUserId siteUserId
 	 * @param postId     jobPostingId
 	 * @param voterType  voterType {@link VoterType}
 	 * @return {@link Boolean} 데이터 존재할 시 true, 존재하지 않을 때 false
 	 * @implSpec Voter exists 메서드 입니다.
-	 *//*
+	 */
 
 	boolean existsByPostId(Long siteUserId, Long postId, VoterType voterType);
-*/
-
 
 	void deleteByJobPostingId(Long jobPostingId);
 
-//	void deleteByPostId(Long postId);
+	void deleteByPostId(Long postId);
 }

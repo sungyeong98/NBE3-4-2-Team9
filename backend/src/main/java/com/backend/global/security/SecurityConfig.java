@@ -118,17 +118,28 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.POST, "/api/v1/category").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.PUT, "/api/v1/category/**").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.PATCH, "/api/v1/category/**").hasRole("ADMIN")
+					.requestMatchers(HttpMethod.DELETE, "/api/v1/category/**").hasRole("ADMIN")
 
 					//유저, 어드민 사용 가능
-					.requestMatchers(HttpMethod.GET, "/api/v1/job-posting/{id}",
-						"/api/v1/job-posting/voter").hasAnyRole("USER", "ADMIN")
-					.requestMatchers(HttpMethod.DELETE, "/api/v1/recruitment/**",
-						"/api/v1/voter/*").hasAnyRole("USER", "ADMIN")
-					.requestMatchers(HttpMethod.PATCH, "/api/v1/recruitment/**")
+					.requestMatchers(HttpMethod.GET,
+						"/api/v1/job-posting/{id}", "/api/v1/job-posting/voter",
+						"/api/v1/free/posts/{postId}", "/api/v1/recruitment/posts/{postId}")
 					.hasAnyRole("USER", "ADMIN")
-					.requestMatchers(HttpMethod.DELETE, "/api/v1/category/**").hasRole("ADMIN")
-					.requestMatchers(HttpMethod.POST, "/api/v1/voter", "/api/v1/recruitment/**",
-						"/api/v1/voter", "/api/v1/voter", "/api/v1/free/posts", "/api/v1/recruitment/posts")
+
+					.requestMatchers(HttpMethod.DELETE,
+						"/api/v1/recruitment/**", "/api/v1/voter/*",
+						"/api/v1/free/posts/{postId}", "/api/v1/recruitment/posts/{postId}")
+					.hasAnyRole("USER", "ADMIN")
+
+					.requestMatchers(HttpMethod.PATCH,
+						"/api/v1/recruitment/**", "/api/v1/free/posts/{postId}",
+						"/api/v1/recruitment/posts/{postId}")
+					.hasAnyRole("USER", "ADMIN")
+
+					.requestMatchers(HttpMethod.POST,
+						"/api/v1/voter", "/api/v1/recruitment/**",
+						"/api/v1/voter", "/api/v1/voter",
+						"/api/v1/free/posts", "/api/v1/recruitment/posts")
 					.hasAnyRole("USER", "ADMIN")
 					.anyRequest().authenticated();
 			})

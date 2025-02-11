@@ -2,6 +2,7 @@ package com.backend.domain.post.repository;
 
 import static com.backend.domain.comment.entity.QComment.comment;
 import static com.backend.domain.post.entity.QPost.post;
+import static com.backend.domain.voter.entity.QVoter.voter;
 
 import com.backend.domain.post.dto.PostPageResponse;
 import com.backend.domain.post.dto.QPostPageResponse;
@@ -35,12 +36,16 @@ public class PostQueryRepository {
 	public Page<PostPageResponse> findAll(PostSearchCondition postSearchCondition,
 		Pageable pageable) {
 		List<PostPageResponse> content = queryFactory
-			.selectDistinct(new QPostPageResponse(post.postId, post.subject, post.category.name,
-				post.author.name, post.author.profileImg, comment.countDistinct(), post.createdAt))
+			.selectDistinct(new QPostPageResponse(
+				post.postId, post.subject, post.category.name,
+				post.author.name, post.author.profileImg,
+				comment.countDistinct(), voter.countDistinct(), post.createdAt)
+			)
 			.from(post)
 			.leftJoin(post.category)
 			.leftJoin(post.author)
 			.leftJoin(post.commentList, comment)
+			.leftJoin(post.voterList, voter)
 			.where(
 				getCategoryIdEq(postSearchCondition.categoryId()),
 				getSubjectContains(postSearchCondition.kw())
@@ -74,6 +79,7 @@ public class PostQueryRepository {
 		// 정렬 필드를 매핑
 		Map<String, ComparableExpressionBase<?>> fieldMap = Map.of(
 			"commentCount", post.commentList.size(),
+			"voter", post.voterList.size(),
 			"createdAt", post.createdAt
 		);
 
