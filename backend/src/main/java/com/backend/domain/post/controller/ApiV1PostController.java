@@ -1,14 +1,5 @@
 package com.backend.domain.post.controller;
 
-import com.backend.domain.post.dto.PostRequestDto;
-import com.backend.domain.post.dto.PostResponseDto;
-import com.backend.domain.post.service.PostService;
-import com.backend.global.exception.GlobalErrorCode;
-import com.backend.global.exception.GlobalException;
-import com.backend.global.response.GenericResponse;
-import com.backend.global.security.custom.CustomUserDetails;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +12,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.backend.domain.post.dto.PostRequestDto;
+import com.backend.domain.post.dto.PostResponseDto;
+import com.backend.domain.post.service.PostService;
+import com.backend.global.exception.GlobalErrorCode;
+import com.backend.global.exception.GlobalException;
+import com.backend.global.response.GenericResponse;
+import com.backend.global.security.custom.CustomUserDetails;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/api/v1/posts")
 @RestController
@@ -85,7 +87,7 @@ public class ApiV1PostController {
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
-    public GenericResponse<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal
+    public GenericResponse<Void> deletePost(@PathVariable("id") Long id, @AuthenticationPrincipal
     CustomUserDetails user) {
         postService.deletePost(id, user.getSiteUser().getId());
         return GenericResponse.of(true, HttpStatus.OK.value());
