@@ -34,9 +34,11 @@ export default function AdminLogin() {
 
         const cleanToken = token.replace('Bearer ', '');
         
-        // 쿠키에 토큰 저장
+        console.log('Admin login data:', data.data); // 관리자 데이터 확인
+        
         document.cookie = `adminToken=${cleanToken}; path=/`;
         localStorage.setItem('adminToken', cleanToken);
+        localStorage.setItem('isAdmin', 'true');
         
         dispatch(setCredentials({
           user: data.data,

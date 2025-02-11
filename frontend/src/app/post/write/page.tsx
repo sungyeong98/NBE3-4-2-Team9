@@ -13,7 +13,7 @@ import { getCategories } from '@/api/category';
 
 export default function WritePost() {
   const router = useRouter();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, isAdmin } = useSelector((state: RootState) => state.auth);
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -61,7 +61,7 @@ export default function WritePost() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!user) {
+    if (!user && !isAdmin) {
       alert('로그인이 필요합니다.');
       router.push('/login');
       return;
@@ -75,12 +75,12 @@ export default function WritePost() {
     try {
       setIsSubmitting(true);
       
-      // PostRequestDto에 맞게 데이터 구성
       const postData = {
         subject: subject.trim(),
         content: content.trim(),
         categoryId: parseInt(categoryId),
-        jobPostingId: null  // 일반 게시글의 경우 null
+        jobPostingId: null,
+        authorId: user.id
       };
 
       const response = await privateApi.post('/api/v1/posts', postData);
