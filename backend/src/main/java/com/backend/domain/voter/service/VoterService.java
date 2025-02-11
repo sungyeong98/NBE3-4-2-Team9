@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * VoterService
- * <p>관심 서비스 입니다.</p>
+ * <p>추천 서비스 입니다.</p>
  *
  * @author Kim Dong O
  */
@@ -30,10 +30,10 @@ public class VoterService {
 	 * 추천 저장 메서드 입니다.
 	 *
 	 * @param siteUser  로그인 유저
-	 * @param targetId  관심 타겟 ID
-	 * @param voterType {@link VoterType} 관심 타입
+	 * @param targetId  추천 타겟 ID
+	 * @param voterType {@link VoterType} 추천 타입
 	 * @return {@link VoterCreateResponse}
-	 * @throws GlobalException 이미 관심 저장이 되어 있을 때 또는 지원하지 않는 LikeType 일 때 발생
+	 * @throws GlobalException 이미 추천 저장이 되어 있을 때 또는 지원하지 않는 VoterType 일 때 발생
 	 */
 	public VoterCreateResponse save(SiteUser siteUser, Long targetId, VoterType voterType) {
 		boolean result = existsCheck(siteUser.getId(), targetId, voterType);
@@ -70,9 +70,9 @@ public class VoterService {
 	}
 
 	/**
-	 * 특정 targetId에 좋아요를 눌렀는지 체크합니다.
+	 * 특정 targetId에 추천을 눌렀는지 체크합니다.
 	 * <p>
-	 * 주어진 targetId에 좋아요를 눌렀는지 체크합니다.
+	 * 주어진 targetId에 추천을 눌렀는지 체크합니다.
 	 * <br> 존재하지 않을 경우 예외를 발생시킵니다.
 	 * </p>
 	 *
