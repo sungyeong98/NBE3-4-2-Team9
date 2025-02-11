@@ -75,11 +75,15 @@ public class SecurityConfig {
 			"/login/oauth2/code/kakao",
 			"/oauth2/authorization/kakao",
 			"/api/v1/chat/**",
-			"/ws/**",
 			"/api/v1/recruitment",
 			"/api/v1/posts",// 게시글 전체 조회에는 로그인 하지 않은 유저도 이용 가능해야 함
 			"/api/v1/category",
+			"/ws/**",
 			"/api/v1/adm/login"
+		));
+
+		PUBLIC_URLS.put(HttpMethod.POST, Arrays.asList(
+			"api/v1/adm/login"
 		));
 	}
 
@@ -113,6 +117,8 @@ public class SecurityConfig {
 
 				// 나머지 특정 권한이 필요한 URL들
 				authorizeRequests
+					.requestMatchers("/h2-console/**", "/ws/**").permitAll()
+					.requestMatchers("/api/v1/adm/login").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/v1/posts", "/api/v1/voter")
 					.hasAnyRole("USER", "ADMIN")
 					.requestMatchers(HttpMethod.GET, "/api/v1/job-posting/{id}",
@@ -163,14 +169,14 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public org.springframework.web.cors.UrlBasedCorsConfigurationSource corsConfigurationSource() {
+	public UrlBasedCorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		// 허용할 HTTP 메서드 설정
 		configuration.setAllowedMethods(
 			Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		// CORS 설정
-		configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+		configuration.setAllowedOrigins(List.of("*"));
 		// 자격 증명 허용 설정
 		configuration.setAllowCredentials(true);
 		// 허용할 헤더 설정

@@ -28,7 +28,7 @@ public class ApiV1ChatMessageController {
 
 	@GetMapping()
 	public String home() {
-		return "chat";
+		return "index";
 	}
 
 	@MessageMapping("/msg/{postId}")
@@ -38,7 +38,40 @@ public class ApiV1ChatMessageController {
 		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes,
 		@Payload ChatRequest chatRequest
 	) {
-
+		// 메시지를 저장하고 응답을 반환
 		return chatService.save(chatRequest, postId, sessionAttributes);
 	}
+
+	// TODO 채팅 입장, 퇴장 메세지 구현 필요
+	// @MessageMapping("/join/{postId}")
+	// @SendTo("/topic/{postId}")
+	// public ChatResponse handleJoin(
+	// 	@DestinationVariable Long postId,
+	// 	@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+	// ) {
+	// 	String username = (String) sessionAttributes.get("username");
+	// 	Long userId = (Long) sessionAttributes.get("userId");
+	//
+	// 	ChatRequest chatRequest = new ChatRequest(
+	// 		MessageType.JOIN, userId, username + " 님이 입장했습니다."
+	// 	);
+	//
+	// 	return chatService.save(chatRequest, postId, sessionAttributes);
+	// }
+	//
+	// @MessageMapping("/leave/{postId}")
+	// @SendTo("/topic/{postId}")
+	// public ChatResponse handleLeave(
+	// 	@DestinationVariable Long postId,
+	// 	@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+	// ) {
+	// 	String username = (String) sessionAttributes.get("username");
+	// 	Long userId = (Long) sessionAttributes.get("userId");
+	//
+	// 	ChatRequest chatRequest = new ChatRequest(
+	// 		MessageType.LEAVE, userId, username + " 님이 떠났습니다."
+	// 	);
+	//
+	// 	return chatService.save(chatRequest, postId, sessionAttributes);
+	// }
 }
