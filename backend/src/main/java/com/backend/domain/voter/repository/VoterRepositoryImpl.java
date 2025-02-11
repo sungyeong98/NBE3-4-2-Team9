@@ -22,4 +22,21 @@ public class VoterRepositoryImpl implements VoterRepository {
 			jobPostingId,
 			voterType);
 	}
+
+	/*@Override
+	public boolean existsByPostId(Long siteUserId, Long postId, VoterType voterType) {
+		return voterJpaRepository.existsByAndSiteUserIdAndPostIdAndVoterType(siteUserId,
+			postId,
+			voterType);
+	}*/
+
+	@Override
+	public void deleteByJobPostingId(Long jobPostingId) {
+		voterJpaRepository.deleteByJobPostingId(jobPostingId);
+	}
+
+	/*@Override
+	public void deleteByPostId(Long postId) {
+		voterJpaRepository.deleteByPostId(postId);
+	}*/
 }
