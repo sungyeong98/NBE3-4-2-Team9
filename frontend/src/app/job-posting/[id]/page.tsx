@@ -83,7 +83,7 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
   return (
     <div className="max-w-4xl mx-auto p-8">
       <Link 
-        href="/"
+        href="/job-posting"
         className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6"
       >
         ← 목록으로 돌아가기
