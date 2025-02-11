@@ -3,6 +3,7 @@ package com.backend.domain.user.entity;
 import com.backend.domain.comment.entity.Comment;
 import com.backend.domain.jobskill.entity.JobSkill;
 import com.backend.domain.post.entity.Post;
+import com.backend.domain.voter.entity.Voter;
 import com.backend.global.baseentity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -62,6 +63,10 @@ public class SiteUser extends BaseEntity {
     @OneToMany(mappedBy = "siteUser", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Comment> comments = new ArrayList<>(); // 사용자가 작성한 댓글
+
+    @OneToMany(mappedBy = "siteUser", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Voter> voters = new ArrayList<>();
 
     public void modifyProfile(String introduction, String job) {
         if (introduction != null) this.introduction = introduction;

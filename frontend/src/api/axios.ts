@@ -30,13 +30,8 @@ privateApi.interceptors.request.use(
     const adminToken = localStorage.getItem('adminToken');
     const userToken = localStorage.getItem('accessToken') || localStorage.getItem('token');
 
-    // 관리자 전용 엔드포인트 체크
-    const isAdminEndpoint = adminEndpoints.some(endpoint => 
-      config.url?.includes(endpoint)
-    );
-
-    // 관리자 전용 엔드포인트거나 관리자로 로그인한 경우 adminToken 사용
-    if ((isAdminEndpoint || isAdmin) && adminToken) {
+    // 관리자로 로그인한 경우 무조건 adminToken 사용
+    if (isAdmin && adminToken) {
       config.headers['Authorization'] = `Bearer ${adminToken}`;
     } 
     // 그 외의 경우 userToken 사용
@@ -45,7 +40,9 @@ privateApi.interceptors.request.use(
     }
     
     console.log('Request URL:', config.url);
-    console.log('Is admin endpoint:', isAdminEndpoint);
+    console.log('Is admin endpoint:', adminEndpoints.some(endpoint => 
+      config.url?.includes(endpoint)
+    ));
     console.log('Is admin:', isAdmin);
     console.log('Token used:', config.headers['Authorization']);
     
