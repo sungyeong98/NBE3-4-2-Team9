@@ -1,6 +1,7 @@
 package com.backend.domain.post.repository;
 
 import com.backend.domain.post.dto.PostPageResponse;
+import com.backend.domain.post.dto.PostResponse;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.util.PostSearchCondition;
 import java.util.Optional;
@@ -40,7 +41,17 @@ public interface PostRepository {
 	 *
 	 * @param postSearchCondition 검색 조건 객체 {@link PostSearchCondition}
 	 * @param pageable pageable
-	 * @return
+	 * @implSpec 게시글 전체 동적 조회 메서드 입니다.
+	 * @return {@link Page<PostPageResponse>}
 	 */
 	Page<PostPageResponse> findAll(PostSearchCondition postSearchCondition, Pageable pageable);
+
+	/**
+	 *
+	 * @param postId 조회할 게시글 ID
+	 * @param siteUserId 로그인한 사용자 ID
+	 * @implSpec 게시글 상세 조회 메서드 입니다.
+	 * @return {@link Optional<PostResponse>}
+	 */
+	Optional<PostResponse> findPostResponseById(Long postId, Long siteUserId);
 }

@@ -33,12 +33,9 @@ public class FreePostService {
 	 */
 	@Transactional(readOnly = true)
 	public PostResponse findById(Long postId, SiteUser siteUser) {
-		Post findPost = postRepository.findByIdFetch(postId)
+
+		return postRepository.findPostResponseById(postId, siteUser.getId())
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-
-		boolean isAuthor = findPost.getAuthor().getId().equals(siteUser.getId());
-
-		return PostConverter.toPostResponse(findPost, isAuthor);
 	}
 
 	/**
@@ -66,9 +63,9 @@ public class FreePostService {
 	/**
 	 * 게시글 수정 메서드 입니다.
 	 *
-	 * @param postId 수정할 게시글 ID
+	 * @param postId          수정할 게시글 ID
 	 * @param freePostRequest 수정할 데이터를 담은 DTO
-	 * @param siteUser 로그인한 사용자
+	 * @param siteUser        로그인한 사용자
 	 * @return {@link PostResponse}
 	 * @throws GlobalException
 	 */
@@ -92,7 +89,7 @@ public class FreePostService {
 	/**
 	 * 게시글 삭제 메서드 입니다.
 	 *
-	 * @param postId 삭제할 게시글 ID
+	 * @param postId   삭제할 게시글 ID
 	 * @param siteUser 로그인한 사용자
 	 */
 	@Transactional

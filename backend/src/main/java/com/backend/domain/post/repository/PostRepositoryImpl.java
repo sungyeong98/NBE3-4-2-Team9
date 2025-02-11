@@ -1,6 +1,7 @@
 package com.backend.domain.post.repository;
 
 import com.backend.domain.post.dto.PostPageResponse;
+import com.backend.domain.post.dto.PostResponse;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.util.PostSearchCondition;
 import java.util.Optional;
@@ -42,5 +43,10 @@ public class PostRepositoryImpl implements PostRepository {
 		Pageable pageable) {
 
 		return postQueryRepository.findAll(postSearchCondition, pageable);
+	}
+
+	@Override
+	public Optional<PostResponse> findPostResponseById(Long postId, Long siteUserId) {
+		return postQueryRepository.findPostResponseById(postId, siteUserId);
 	}
 }

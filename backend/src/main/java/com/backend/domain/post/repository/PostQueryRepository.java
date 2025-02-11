@@ -5,7 +5,9 @@ import static com.backend.domain.post.entity.QPost.post;
 import static com.backend.domain.voter.entity.QVoter.voter;
 
 import com.backend.domain.post.dto.PostPageResponse;
+import com.backend.domain.post.dto.PostResponse;
 import com.backend.domain.post.dto.QPostPageResponse;
+import com.backend.domain.post.dto.QPostResponse;
 import com.backend.domain.post.util.PostSearchCondition;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -15,6 +17,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,6 +65,23 @@ public class PostQueryRepository {
 			);
 
 		return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+	}
+
+	public Optional<PostResponse> findPostResponseById(Long postId, Long siteUserId) {
+		PostResponse postResponse = queryFactory.selectDistinct(
+				new QPostResponse(post.postId, post.subject, post.content, post.category.id,
+					post.jobPosting.id, post.author.id.eq(siteUserId), post.author.name,
+					post.author.profileImg,
+					voter.countDistinct(), voter.siteUser.id.eq(siteUserId), post.createdAt,
+					post.numOfApplicants, post.recruitmentStatus))
+			.from(post)
+			.leftJoin(post.category)
+			.leftJoin(post.author)
+			.leftJoin(post.voterList, voter)
+			.where(post.postId.eq(postId))
+			.fetchOne();
+
+		return Optional.ofNullable(postResponse);
 	}
 
 	/**

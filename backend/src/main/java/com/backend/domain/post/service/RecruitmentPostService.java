@@ -43,12 +43,8 @@ public class RecruitmentPostService {
 	 */
 	@Transactional(readOnly = true)
 	public PostResponse findById(Long postId, SiteUser siteUser) {
-		Post findPost = postRepository.findByIdFetch(postId)
+		return postRepository.findPostResponseById(postId, siteUser.getId())
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
-
-		boolean isAuthor = findPost.getAuthor().getId().equals(siteUser.getId());
-
-		return PostConverter.toPostResponse(findPost, isAuthor);
 	}
 
 	/**
