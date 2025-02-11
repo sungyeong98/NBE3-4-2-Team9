@@ -1,8 +1,5 @@
 package com.backend.domain.post.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.backend.domain.category.domain.CategoryName;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
@@ -17,8 +14,9 @@ import com.backend.domain.post.repository.PostRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * RecruitmentPostService 모집 게시글을 담당하는 서비스 클래스입니다.
@@ -124,7 +122,7 @@ public class RecruitmentPostService {
 	 */
 	private static void validateAuthor(SiteUser siteUser, Post findPost) {
 		if (findPost.getAuthor() != siteUser) {
-			throw new GlobalException(GlobalErrorCode.NOT_AUTHOR); // 작성자가 아닐 경우 예외 발생
+			throw new GlobalException(GlobalErrorCode.POST_NOT_AUTHOR); // 작성자가 아닐 경우 예외 발생
 		}
 	}
 
