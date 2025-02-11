@@ -12,6 +12,13 @@ public interface PostRepository {
 	 */
 	Optional<Post> findById(Long postId);
 
+		/**
+	 * @param postId 게시글 Id
+	 * @return {@link Optional<Post>}
+	 * @implSpec 게시글 ID로 단건 조회 메서드 입니다. (fetch join 사용)
+	 */
+	Optional<Post> findByIdFetch(Long postId);
+
 	/**
 	 * @param post 게시글 엔티티
 	 * @return {@link Post}

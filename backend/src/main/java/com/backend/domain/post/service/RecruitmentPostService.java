@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * RecruitmentPostService 모집 게시글을 담당하는 서비스 클래스입니다.
- * 모집 게시글 생성
- * 모집 게시글 수정
- * 모집 게시글 삭제
+ * RecruitmentPostService 모집 게시글을 담당하는 서비스 클래스입니다. 모집 게시글 생성 모집 게시글 수정 모집 게시글 삭제
  *
  * @author Hyeonsuk
  */
@@ -39,6 +36,22 @@ public class RecruitmentPostService {
 	// ==============================
 
 	/**
+	 * @param postId   조회할 게시글 아이디
+	 * @param siteUser 로그인한 사용자
+	 * @return {@link PostResponse}
+	 * @throws GlobalException 게시글이 존재하지 않을 때 예외 발생
+	 */
+	@Transactional(readOnly = true)
+	public PostResponse findById(Long postId, SiteUser siteUser) {
+		Post findPost = postRepository.findByIdFetch(postId)
+			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
+
+		boolean isAuthor = findPost.getAuthor().getId().equals(siteUser.getId());
+
+		return PostConverter.toPostResponse(findPost, isAuthor);
+	}
+
+	/**
 	 * 모집 게시글을 생성합니다.
 	 *
 	 * @param recruitmentPostRequest 모집 게시글 관련 정보가 담긴 DTO
@@ -47,12 +60,14 @@ public class RecruitmentPostService {
 	 * @throws GlobalException 카테고리 또는 채용 공고가 존재하지 않을 경우 예외 발생
 	 */
 	@Transactional
-	public PostCreateResponse save(RecruitmentPostRequest recruitmentPostRequest, SiteUser siteUser) {
+	public PostCreateResponse save(RecruitmentPostRequest recruitmentPostRequest,
+		SiteUser siteUser) {
 
 		Category category = categoryRepository.findByName(CategoryName.RECRUITMENT.getValue())
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
 
-		JobPosting jobPosting = jobPostingRepository.findById(recruitmentPostRequest.getJobPostingId())
+		JobPosting jobPosting = jobPostingRepository.findById(
+				recruitmentPostRequest.getJobPostingId())
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.JOB_POSTING_NOT_FOUND));
 
 		Post post = PostConverter.createPost(
@@ -64,20 +79,22 @@ public class RecruitmentPostService {
 
 		Post savePost = postRepository.save(post);
 
-		return PostConverter.toPostCreateResponse(savePost.getPostId(), savePost.getCategory().getId());
+		return PostConverter.toPostCreateResponse(savePost.getPostId(),
+			savePost.getCategory().getId());
 	}
 
 	/**
 	 * 모집 게시글을 수정합니다.
 	 *
-	 * @param postId                  수정할 게시글의 ID
-	 * @param recruitmentPostRequest   수정할 정보가 담긴 DTO
-	 * @param siteUser                현재 게시글을 수정하는 사용자
+	 * @param postId                 수정할 게시글의 ID
+	 * @param recruitmentPostRequest 수정할 정보가 담긴 DTO
+	 * @param siteUser               현재 게시글을 수정하는 사용자
 	 * @return 수정된 게시글 정보를 담은 DTO
 	 * @throws GlobalException 게시글이 존재하지 않거나, 작성자가 아닐 경우 예외 발생
 	 */
 	@Transactional
-	public PostResponse update(Long postId, RecruitmentPostRequest recruitmentPostRequest, SiteUser siteUser) {
+	public PostResponse update(Long postId, RecruitmentPostRequest recruitmentPostRequest,
+		SiteUser siteUser) {
 
 		Post findPost = getPost(postId);
 
@@ -95,8 +112,8 @@ public class RecruitmentPostService {
 	/**
 	 * 모집 게시글을 삭제합니다.
 	 *
-	 * @param postId    삭제할 게시글의 ID
-	 * @param siteUser  현재 게시글을 삭제하는 사용자
+	 * @param postId   삭제할 게시글의 ID
+	 * @param siteUser 현재 게시글을 삭제하는 사용자
 	 * @throws GlobalException 게시글이 존재하지 않거나, 작성자가 아닐 경우 예외 발생
 	 */
 	@Transactional
@@ -138,7 +155,7 @@ public class RecruitmentPostService {
 	 * @throws GlobalException 게시글이 존재하지 않을 경우 예외 발생
 	 */
 	private Post getPost(Long postId) {
-		return postRepository.findById(postId)
+		return postRepository.findByIdFetch(postId)
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 	}
 
