@@ -45,8 +45,9 @@ public enum GlobalErrorCode {
 	INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3002, "카테고리 이름이 유효하지 않습니다."),
 	NAME_MISMATCH(HttpStatus.BAD_REQUEST, 3004, "카테고리 이름이 일치하지 않습니다."),
 
-	// 댓글 도메인 에러 코드
-	COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 4001, "댓글이 존재하지않습니다."),
+    // 댓글 도메인 에러 코드
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 4001, "댓글이 존재하지않습니다."),
+    COMMENT_NOT_AUTHOR(HttpStatus.FORBIDDEN, 4002, "댓글 작성자가 아닙니다."),
 
 	// 추천 에러 코드 7001 ~
 	VOTER_ALREADY(HttpStatus.BAD_REQUEST, 7001, "이미 추천을 추가하였습니다."),

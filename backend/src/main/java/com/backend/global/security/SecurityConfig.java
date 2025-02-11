@@ -128,7 +128,8 @@ public class SecurityConfig {
 
 					.requestMatchers(HttpMethod.DELETE,
 						"/api/v1/recruitment/**", "/api/v1/voter/*",
-						"/api/v1/free/posts/{postId}", "/api/v1/recruitment/posts/{postId}")
+						"/api/v1/free/posts/{postId}", "/api/v1/recruitment/posts/{postId}",
+						"/api/v1/posts/{postId}/comments/{id}")
 					.hasAnyRole("USER", "ADMIN")
 
 					.requestMatchers(HttpMethod.PATCH,
