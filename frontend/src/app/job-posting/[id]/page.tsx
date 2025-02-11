@@ -7,7 +7,7 @@ import { BriefcaseIcon, BuildingOfficeIcon, CalendarIcon, AcademicCapIcon } from
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { privateApi } from '@/api/axios';
-import { HeartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartOutlineIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 export default function JobPostingDetail({ params }: { params: { id: string } }) {
@@ -22,7 +22,7 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
         const response = await privateApi.get(`/api/v1/job-posting/${params.id}`);
         if (response.data.success) {
           setPosting(response.data.data);
-          setIsVoted(response.data.data.isVoted);
+          setIsVoted(response.data.data.isVoter);
         }
       } catch (error) {
         console.error('Failed to fetch job posting:', error);
@@ -47,6 +47,11 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
 
       if (response.data.success) {
         setIsVoted(!isVoted);
+        setPosting(prev => prev ? {
+          ...prev,
+          voterCount: isVoted ? prev.voterCount - 1 : prev.voterCount + 1,
+          isVoter: !isVoted
+        } : null);
       }
     } catch (error: any) {
       alert(error.response?.data?.message || '관심 공고 등록에 실패했습니다.');
@@ -89,14 +94,18 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
           <h1 className="text-3xl font-bold mb-4">{posting.subject}</h1>
           <button
             onClick={handleVote}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+              isVoted 
+                ? 'text-red-500 hover:bg-red-50' 
+                : 'text-gray-400 hover:text-red-500 hover:bg-gray-100'
+            }`}
           >
             {isVoted ? (
-              <HeartSolidIcon className="w-6 h-6 text-red-500" />
+              <HeartSolidIcon className="w-6 h-6" />
             ) : (
-              <HeartIcon className="w-6 h-6 text-gray-400" />
+              <HeartOutlineIcon className="w-6 h-6" />
             )}
-            <span>{isVoted ? '관심 공고' : '관심 등록'}</span>
+            <span className="font-medium">{posting.voterCount}</span>
           </button>
         </div>
         
