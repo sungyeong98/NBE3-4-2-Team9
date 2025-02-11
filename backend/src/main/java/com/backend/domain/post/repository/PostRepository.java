@@ -1,7 +1,11 @@
 package com.backend.domain.post.repository;
 
+import com.backend.domain.post.dto.PostPageResponse;
 import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.util.PostSearchCondition;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PostRepository {
 
@@ -32,4 +36,11 @@ public interface PostRepository {
 	 */
 	void deleteById(Long postId);
 
+	/**
+	 *
+	 * @param postSearchCondition 검색 조건 객체 {@link PostSearchCondition}
+	 * @param pageable pageable
+	 * @return
+	 */
+	Page<PostPageResponse> findAll(PostSearchCondition postSearchCondition, Pageable pageable);
 }
