@@ -128,7 +128,8 @@ public class SecurityConfig {
 					.hasAnyRole("USER", "ADMIN")
 					.requestMatchers(HttpMethod.DELETE, "/api/v1/category/**").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.POST, "/api/v1/voter", "/api/v1/recruitment/**",
-						"/api/v1/posts", "/api/v1/voter").hasAnyRole("USER", "ADMIN")
+						"/api/v1/voter", "/api/v1/voter", "/api/v1/free/posts", "/api/v1/recruitment/posts")
+					.hasAnyRole("USER", "ADMIN")
 					.anyRequest().authenticated();
 			})
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
