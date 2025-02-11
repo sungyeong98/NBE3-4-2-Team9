@@ -1,12 +1,5 @@
 package com.backend.domain.post.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.domain.jobposting.entity.JobPosting;
@@ -105,6 +98,7 @@ public class PostService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long id, long userId) {
+
         Post post = postRepository.findById(id).orElseThrow(
             () -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
@@ -130,7 +124,12 @@ public class PostService {
             throw new GlobalException(GlobalErrorCode.POST_UPDATE_FORBIDDEN);
         }
         // 게시글
-        post.updatePost(requestDto.getSubject(), requestDto.getContent());
+        post.updatePost(
+                requestDto.getSubject(),
+                requestDto.getContent(),
+                requestDto.getRecruitmentClosingDate(),
+                requestDto.getNumOfApplicants()
+        );
         return post.toDto(userId); // 게시글 저장
 
     }

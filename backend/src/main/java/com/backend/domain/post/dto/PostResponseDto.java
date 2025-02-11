@@ -23,6 +23,11 @@ public class PostResponseDto {
     private String authorImg;
     private ZonedDateTime createdAt;
 
+    // 모집 게시판 전용 필드
+    private ZonedDateTime recruitmentClosingDate;
+    private Integer numOfApplicants;
+    private String recruitmentStatus; // Enum -> String
+
     // Entity -> DTO 변환(Builder 활용)
     public static PostResponseDto fromEntity(Post post) {
         return PostResponseDto.builder()

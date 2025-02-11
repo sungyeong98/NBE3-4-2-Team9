@@ -1,5 +1,7 @@
 package com.backend.global.exception;
 
+import org.springframework.http.HttpStatus;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,7 @@ public enum GlobalErrorCode {
 	INVALID_POST(HttpStatus.BAD_REQUEST, 8003, "모집 신청한 게시글과 일치하지 않습니다."),
 	RECRUITMENT_CLOSED(HttpStatus.BAD_REQUEST, 8004, "모집이 마감되었습니다."),
 	INVALID_RECRUITMENT_STATUS(HttpStatus.BAD_REQUEST, 8005, "이미 처리된 지원자 입니다."),
+    INVALID_BOARD_TYPE(HttpStatus.BAD_REQUEST, 1005, "게시판 타입을 잘못 선택했습니다."),
 
 	// 카테고리 도메인 에러 코드
 	DUPLICATED_CATEGORY_NAME(HttpStatus.BAD_REQUEST, 3001, "카테고리 이름이 이미 존재합니다."),
