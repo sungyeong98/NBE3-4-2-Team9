@@ -1,4 +1,12 @@
+/*
 package com.backend.domain.post.service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
@@ -9,11 +17,9 @@ import com.backend.domain.post.dto.PostResponseDto;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.PostRepository;
-
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -135,4 +141,4 @@ public class PostService {
     }
 
 }
-
+*/
