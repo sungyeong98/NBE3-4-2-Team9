@@ -241,4 +241,28 @@ public class ApiV1VoterControllerTest {
 			.andExpect(jsonPath("$.success").value(false))
 			.andDo(print());
 	}
+
+	@DisplayName("채용 공고 추천 삭제시 데이터가 존재하지 않을 때 실패 테스트")
+	@Test
+	void delete_voter_job_posting_not_found_fail() throws Exception {
+		//given
+		VoterCreateRequest givenRequest = VoterCreateRequest.builder()
+			.voterType(VoterType.JOB_POSTING)
+			.targetId(1L)
+			.build();
+
+		//when
+		ResultActions resultActions = mockMvc
+			.perform(delete("/api/v1/voter/{targetId}?voterType=job_posting", 999L)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer " + accessToken1));
+
+		//then
+		resultActions
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.code").value(GlobalErrorCode.VOTER_NOT_FOUND.getCode()))
+			.andExpect(jsonPath("$.message").value(GlobalErrorCode.VOTER_NOT_FOUND.getMessage()))
+			.andExpect(jsonPath("$.success").value(false))
+			.andDo(print());
+	}
 }
