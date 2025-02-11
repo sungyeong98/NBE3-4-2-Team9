@@ -3,6 +3,7 @@ package com.backend.domain.voter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -211,9 +212,33 @@ public class ApiV1VoterControllerTest {
 			.perform(delete("/api/v1/voter/{targetId}?voterType=job_posting", 4L)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer " + accessToken1));
-		//then
 
+		//then
 		resultActions
 			.andExpect(status().isOk());
+	}
+
+	@DisplayName("채용 공고 추천 삭제시 지원하지 않는 타입일 때 실패 테스트")
+	@Test
+	void delete_voter_job_posting_not_support_fail() throws Exception {
+		//given
+		VoterCreateRequest givenRequest = VoterCreateRequest.builder()
+			.voterType(VoterType.JOB_POSTING)
+			.targetId(1L)
+			.build();
+
+		//when
+		ResultActions resultActions = mockMvc
+			.perform(delete("/api/v1/voter/{targetId}?voterType=test", 4L)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer " + accessToken1));
+
+		//then
+		resultActions
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.code").value(GlobalErrorCode.NOT_SUPPORT_TYPE.getCode()))
+			.andExpect(jsonPath("$.message").value(GlobalErrorCode.NOT_SUPPORT_TYPE.getMessage()))
+			.andExpect(jsonPath("$.success").value(false))
+			.andDo(print());
 	}
 }
