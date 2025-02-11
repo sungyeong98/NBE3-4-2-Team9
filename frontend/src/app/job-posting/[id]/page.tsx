@@ -7,10 +7,13 @@ import { BriefcaseIcon, BuildingOfficeIcon, CalendarIcon, AcademicCapIcon } from
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { privateApi } from '@/api/axios';
+import { HeartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 export default function JobPostingDetail({ params }: { params: { id: string } }) {
   const [posting, setPosting] = useState<JobPostingPageResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isVoted, setIsVoted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,6 +22,7 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
         const response = await privateApi.get(`/api/v1/job-posting/${params.id}`);
         if (response.data.success) {
           setPosting(response.data.data);
+          setIsVoted(response.data.data.isVoted);
         }
       } catch (error) {
         console.error('Failed to fetch job posting:', error);
@@ -33,6 +37,21 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
       fetchJobPosting();
     }
   }, [params.id]);
+
+  const handleVote = async () => {
+    try {
+      const response = await privateApi.post('/api/v1/voter', {
+        targetId: params.id,
+        voterType: 'JOB_POSTING'
+      });
+
+      if (response.data.success) {
+        setIsVoted(!isVoted);
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || '관심 공고 등록에 실패했습니다.');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -66,7 +85,20 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
       </Link>
 
       <div className="bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold mb-4">{posting.subject}</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold mb-4">{posting.subject}</h1>
+          <button
+            onClick={handleVote}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100"
+          >
+            {isVoted ? (
+              <HeartSolidIcon className="w-6 h-6 text-red-500" />
+            ) : (
+              <HeartIcon className="w-6 h-6 text-gray-400" />
+            )}
+            <span>{isVoted ? '관심 공고' : '관심 등록'}</span>
+          </button>
+        </div>
         
         <div className="flex items-center text-gray-600 mb-6">
           <BuildingOfficeIcon className="h-5 w-5 mr-2" />

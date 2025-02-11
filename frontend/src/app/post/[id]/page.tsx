@@ -13,6 +13,8 @@ import privateApi from '@/api/axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { RecruitmentButton } from '@/components/recruitment/RecruitmentButton';
+import { ThumbUpIcon } from '@heroicons/react/24/outline';
+import { ThumbUpIcon as ThumbUpSolidIcon } from '@heroicons/react/24/solid';
 
 interface Comment {
   id: number;
@@ -39,6 +41,8 @@ export default function PostDetail() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [isVoted, setIsVoted] = useState(false);
+  const [voteCount, setVoteCount] = useState(0);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -183,6 +187,11 @@ export default function PostDetail() {
     } finally {
       setIsSubmittingComment(false);
     }
+  };
+
+  const handleVote = async () => {
+    // 추후 구현 예정
+    console.log('추천 기능 준비 중입니다.');
   };
 
   if (isLoading) {
