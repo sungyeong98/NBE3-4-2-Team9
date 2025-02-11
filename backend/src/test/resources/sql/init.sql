@@ -7,6 +7,10 @@ values (CURRENT_DATE, CURRENT_DATE, 'testEmail1@naver.com', 'test', 'test', 'tes
         'testPassword', 'testImg', 'ROLE_USER'),
        (CURRENT_DATE, CURRENT_DATE, 'testEmail3@naver.com', 'test', 'test', 'testId3', 'testName3',
         'testPassword', 'testImg', 'ROLE_USER'),
+        (CURRENT_DATE, CURRENT_DATE, 'ho_gok@naver.com', 'test', 'test', 'testId4', '현곤',
+        'testPassword', 'testImg', 'ROLE_USER'),
+        (CURRENT_DATE, CURRENT_DATE, 'vkdnjdjxor@naver.com', 'test', 'test', 'testId3', '현석',
+        'testPassword', 'testImg', 'ROLE_USER'),
        (CURRENT_DATE, CURRENT_DATE, 'admin@naver.com', 'test', 'test', 'testId4', 'testName4',
         'testPassword', 'testImg', 'ROLE_ADMIN');
 
@@ -58,9 +62,9 @@ VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', 6, 0 ,CURRENT_DATE + 1, null
         null, 2),
        (CURRENT_DATE, CURRENT_DATE, '테스트 내용4', 6, 0, CURRENT_DATE + 1, null, '테스트 제목4', 2,
         null, 2),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', 6, 0, CURRENT_DATE + 1, null, '테스트 제목5', 2,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', 6, 4, CURRENT_DATE + 1, null, '테스트 제목5', 2,
         null, 3),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', 6, 0, CURRENT_DATE + 1, null, '테스트 제목6', 2,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', 1, 1, CURRENT_DATE + 1, null, '테스트 제목6', 2,
         null, 3);
 
 -- JobSkill 데이터 생성
