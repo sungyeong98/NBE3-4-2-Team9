@@ -1,5 +1,6 @@
 package com.backend.domain.post.dto;
 
+import com.backend.domain.post.entity.RecruitmentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.time.ZonedDateTime;
@@ -30,7 +31,7 @@ public class PostResponse {
 	private Integer numOfApplicants;
 
 	@JsonInclude(value = Include.NON_NULL)
-	private String recruitmentStatus; // Enum -> String
+	private RecruitmentStatus recruitmentStatus; // Enum -> String
 
     // Entity -> DTO 변환(Builder 활용)
     public static PostResponseDto fromEntity(Post post) {
