@@ -18,14 +18,14 @@ public class VoterRepositoryImpl implements VoterRepository {
 
 	@Override
 	public boolean existsByJobPostingId(Long siteUserId, Long jobPostingId, VoterType voterType) {
-		return voterJpaRepository.existsByAndSiteUserIdAndJobPostingIdAndVoterType(siteUserId,
+		return voterJpaRepository.existsBySiteUserIdAndJobPostingIdAndVoterType(siteUserId,
 			jobPostingId,
 			voterType);
 	}
 
 	@Override
 	public boolean existsByPostId(Long siteUserId, Long postId, VoterType voterType) {
-		return voterJpaRepository.existsByAndSiteUserIdAndPostIdAndVoterType(siteUserId,
+		return voterJpaRepository.existsBySiteUserIdAndPostPostIdAndVoterType(siteUserId,
 			postId,
 			voterType);
 	}
@@ -37,6 +37,6 @@ public class VoterRepositoryImpl implements VoterRepository {
 
 	@Override
 	public void deleteByPostId(Long postId) {
-		voterJpaRepository.deleteByPostId(postId);
+		voterJpaRepository.deleteByPostPostId(postId);
 	}
 }
