@@ -122,7 +122,7 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
           target="_blank"
           className="inline-block w-full text-center bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200"
         >
-          지원하기
+          모집글 작성하기
         </a>
       </div>
     </div>
