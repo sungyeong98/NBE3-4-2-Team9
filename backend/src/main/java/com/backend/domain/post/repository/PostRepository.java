@@ -1,36 +1,57 @@
 package com.backend.domain.post.repository;
 
+import com.backend.domain.post.dto.PostPageResponse;
+import com.backend.domain.post.dto.PostResponse;
 import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.util.PostSearchCondition;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
+public interface PostRepository {
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+	/**
+	 * @param postId 게시글 Id
+	 * @return {@link Optional<Post>}
+	 * @implSpec 게시글 ID로 단건 조회 메서드 입니다.
+	 */
+	Optional<Post> findById(Long postId);
 
-    // 카테고리와 제목, 내용에서 검색어 포함 여부를 처리하는 쿼리
-    @Query("SELECT p FROM Post p WHERE " +
-            "(:categoryId IS NULL OR p.categoryId.id = :categoryId) AND " +
-            "(:keyword IS NULL OR p.subject LIKE %:keyword% OR p.content LIKE %:keyword%)")
-    Page<Post> findByCategoryAndKeyword(@Param("categoryId") Long categoryId,
-            @Param("keyword") String keyword,
-            Pageable pageable);
+		/**
+	 * @param postId 게시글 Id
+	 * @return {@link Optional<Post>}
+	 * @implSpec 게시글 ID로 단건 조회 메서드 입니다. (fetch join 사용)
+	 */
+	Optional<Post> findByIdFetch(Long postId);
 
-    // 제목 또는 내용에서 검색어만 검색하는 쿼리
-    @Query("SELECT p FROM Post p WHERE " +
-            "(:keyword IS NULL OR p.subject LIKE %:keyword% OR p.content LIKE %:keyword%)")
-    Page<Post> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+	/**
+	 * @param post 게시글 엔티티
+	 * @return {@link Post}
+	 * @implSpec 게시글 저장 메서드 입니다.
+	 */
+	Post save(Post post);
 
+	/**
+	 * @param postId 게시글 Id
+	 * @implSpec 게시글 삭제 메서드 입니다.
+	 */
+	void deleteById(Long postId);
 
-    // 전체 게시글 조건 없이 조회
-    @Query("SELECT p FROM Post p WHERE (:categoryId IS NULL OR p.categoryId.id = :categoryId)")
-    Page<Post> findAllByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+	/**
+	 *
+	 * @param postSearchCondition 검색 조건 객체 {@link PostSearchCondition}
+	 * @param pageable pageable
+	 * @implSpec 게시글 전체 동적 조회 메서드 입니다.
+	 * @return {@link Page<PostPageResponse>}
+	 */
+	Page<PostPageResponse> findAll(PostSearchCondition postSearchCondition, Pageable pageable);
 
-    // 제목으로 조회
-    Optional<Post> findBySubject(String subject);
-
+	/**
+	 *
+	 * @param postId 조회할 게시글 ID
+	 * @param siteUserId 로그인한 사용자 ID
+	 * @implSpec 게시글 상세 조회 메서드 입니다.
+	 * @return {@link Optional<PostResponse>}
+	 */
+	Optional<PostResponse> findPostResponseById(Long postId, Long siteUserId);
 }
-

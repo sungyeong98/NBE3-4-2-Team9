@@ -1,10 +1,5 @@
 package com.backend.domain.recruitmentUser.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.PostRepository;
@@ -15,8 +10,11 @@ import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 모집 관리 서비스 (작성자가 모집 지원자를 관리)
@@ -165,11 +163,11 @@ public class RecruitmentAuthorService {
 	 * @throws GlobalException 게시글이 존재하지 않거나 작성자가 아닐 경우 예외 발생
 	 */
 	private Post validateAuthorAndGetPost(SiteUser author, Long postId) {
-		Post post = postRepository.findById(postId)
+		Post post = postRepository.findByIdFetch(postId)
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
 		if (!post.getAuthor().getId().equals(author.getId())) {
-			throw new GlobalException(GlobalErrorCode.NOT_AUTHOR);
+			throw new GlobalException(GlobalErrorCode.POST_NOT_AUTHOR);
 		}
 
 		return post;

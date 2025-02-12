@@ -1,6 +1,7 @@
 package com.backend.domain.voter.entity;
 
 import com.backend.domain.jobposting.entity.JobPosting;
+import com.backend.domain.post.entity.Post;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.voter.domain.VoterType;
 import jakarta.persistence.Column;
@@ -36,6 +37,11 @@ public class Voter {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "job_posting_id")
 	private JobPosting jobPosting;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "post_id")
+	private Post post;
+
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "site_user_id")

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.post.repository.PostJpaRepository;
 import com.backend.domain.recruitmentUser.dto.response.RecruitmentPostResponse;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class RecruitmentUserService {
 
     private final RecruitmentUserRepository recruitmentUserRepository;
-    private final PostRepository postRepository;
+    private final PostJpaRepository postRepository;
 
     // ==============================
     //  1. 비즈니스 로직

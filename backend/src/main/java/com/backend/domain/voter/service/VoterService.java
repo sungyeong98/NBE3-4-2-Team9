@@ -2,6 +2,7 @@ package com.backend.domain.voter.service;
 
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
+import com.backend.domain.post.entity.Post;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.voter.domain.VoterType;
 import com.backend.domain.voter.dto.VoterCreateResponse;
@@ -55,10 +56,20 @@ public class VoterService {
 					.voterType(voterType)
 					.build();
 
-				voterRepository.save(saveVoter).getId();
+				voterRepository.save(saveVoter);
 			}
 			case POST -> {
-				//TODO Post 추가시 로직 구현 예정
+				Post post = Post.builder()
+					.postId(targetId)
+					.build();
+
+				Voter saveVoter = Voter.builder()
+					.siteUser(siteUser)
+					.post(post)
+					.voterType(voterType)
+					.build();
+
+				voterRepository.save(saveVoter);
 			}
 			default -> throw new GlobalException(GlobalErrorCode.NOT_SUPPORT_TYPE);
 		}
@@ -87,8 +98,8 @@ public class VoterService {
 		switch (voterType) {
 			case JOB_POSTING -> result = voterRepository.
 				existsByJobPostingId(siteUserId, targetId, voterType);
-			/*case POST -> result = voterRepository
-				.existsByPostId(siteUserId, targetId, voterType); //TODO 추후 변경 예정*/
+			case POST -> result = voterRepository
+				.existsByPostId(siteUserId, targetId, voterType);
 		}
 
 		return result;
@@ -117,7 +128,7 @@ public class VoterService {
 
 		switch (voterType) {
 			case JOB_POSTING -> voterRepository.deleteByJobPostingId(targetId);
-//			case POST -> voterRepository.deleteByPostId(targetId);
+			case POST -> voterRepository.deleteByPostId(targetId);
 		}
 
 	}
