@@ -72,10 +72,10 @@ public class PostQueryRepository {
 	public Optional<PostResponse> findPostResponseById(Long postId, Long siteUserId) {
 		PostResponse postResponse = queryFactory.selectDistinct(
 				new QPostResponse(post.postId, post.subject, post.content, post.category.id,
-					post.jobPosting.id, post.author.id.eq(siteUserId), post.author.name,
+					post.author.id.eq(siteUserId), post.author.name,
 					post.author.profileImg,
 					voter.countDistinct(), voter.siteUser.id.eq(siteUserId), post.createdAt,
-					post.numOfApplicants, post.recruitmentStatus))
+					post.jobPosting.id, post.numOfApplicants, post.recruitmentStatus))
 			.from(post)
 			.leftJoin(post.category)
 			.leftJoin(post.author)
