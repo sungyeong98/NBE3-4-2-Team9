@@ -49,6 +49,8 @@ public class PostQueryRepository {
 			.leftJoin(post.author)
 			.leftJoin(post.commentList, comment)
 			.leftJoin(post.voterList, voter)
+			.groupBy(post.postId, post.subject, post.category.name,
+				post.author.name, post.author.profileImg, post.createdAt)
 			.where(
 				getCategoryIdEq(postSearchCondition.categoryId()),
 				getSubjectContains(postSearchCondition.kw())
@@ -78,6 +80,9 @@ public class PostQueryRepository {
 			.leftJoin(post.category)
 			.leftJoin(post.author)
 			.leftJoin(post.voterList, voter)
+			.groupBy(post.postId, post.subject, post.content, post.category.id, post.author.id,
+				post.author.name, post.author.profileImg, voter.siteUser.id, post.createdAt,
+				post.numOfApplicants, post.recruitmentStatus)
 			.where(post.postId.eq(postId))
 			.fetchOne();
 

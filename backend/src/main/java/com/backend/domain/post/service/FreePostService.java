@@ -13,11 +13,13 @@ import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FreePostService {
 
 	private final PostRepository postRepository;
@@ -48,6 +50,7 @@ public class FreePostService {
 	 */
 	@Transactional
 	public PostCreateResponse save(FreePostRequest freePostRequest, SiteUser siteUser) {
+		log.info("free={}", freePostRequest);
 
 		Category findCategory = categoryRepository.findByName(CategoryName.FREE.getValue())
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));
@@ -75,7 +78,7 @@ public class FreePostService {
 		Post target = postRepository.findByIdFetch(postId)
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
-		if (target.getAuthor().getId().equals(siteUser.getId())) {
+		if (!target.getAuthor().getId().equals(siteUser.getId())) {
 			throw new GlobalException(GlobalErrorCode.POST_NOT_AUTHOR);
 		}
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,7 +38,7 @@ public class ApiV1FreePostController {
 
 	@PostMapping
 	public GenericResponse<PostCreateResponse> save(
-		@Valid FreePostRequest freePostRequest,
+		@RequestBody @Valid FreePostRequest freePostRequest,
 		@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
 		PostCreateResponse postCreateResponse = freePostService.save(freePostRequest,
@@ -49,7 +50,7 @@ public class ApiV1FreePostController {
 	@PatchMapping("/{postId}")
 	public GenericResponse<PostResponse> update(
 		@PathVariable("postId") Long postId,
-		@Valid FreePostRequest freePostRequest,
+		@RequestBody @Valid FreePostRequest freePostRequest,
 		@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
 		PostResponse postResponse = freePostService.update(postId, freePostRequest,

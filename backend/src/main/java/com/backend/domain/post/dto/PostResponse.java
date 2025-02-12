@@ -13,7 +13,6 @@ public record PostResponse(
 	String subject,
 	String content,
 	Long categoryId,
-	Long jobPostingId,
 	boolean isAuthor,
 	String authorName,
 	String authorImg,
@@ -22,6 +21,9 @@ public record PostResponse(
 	ZonedDateTime createdAt,
 
 	// 모집 게시판 전용 필드
+	@JsonInclude(value = Include.NON_NULL)
+	Long jobPostingId,
+
 	@JsonInclude(value = Include.NON_NULL)
 	Integer numOfApplicants,
 

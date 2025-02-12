@@ -15,6 +15,7 @@ import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecruitmentPostService {
 
 	private final PostRepository postRepository;
@@ -58,6 +60,8 @@ public class RecruitmentPostService {
 	@Transactional
 	public PostCreateResponse save(RecruitmentPostRequest recruitmentPostRequest,
 		SiteUser siteUser) {
+
+		log.info("recruitment={}", recruitmentPostRequest);
 
 		Category category = categoryRepository.findByName(CategoryName.RECRUITMENT.getValue())
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.CATEGORY_NOT_FOUND));

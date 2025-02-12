@@ -8,6 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface PostJpaRepository extends JpaRepository<Post, Long> {
 
-	@Query("select p from Post p join fetch p.author join fetch p.jobPosting where p.postId = :postId")
+	@Query("select p from Post p left join fetch p.author left join fetch p.jobPosting where p.postId = :postId")
 	Optional<Post> findByIdFetch(@Param("postId") Long postId);
 }
