@@ -1,10 +1,12 @@
 package com.backend.domain.post.dto;
 
+import java.time.ZonedDateTime;
+
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.querydsl.core.annotations.QueryProjection;
-import java.time.ZonedDateTime;
+
 import lombok.Builder;
 
 @Builder
@@ -28,7 +30,10 @@ public record PostResponse(
 	Integer numOfApplicants,
 
 	@JsonInclude(value = Include.NON_NULL)
-	RecruitmentStatus recruitmentStatus
+	RecruitmentStatus recruitmentStatus,
+
+	@JsonInclude(value = Include.NON_NULL)
+	Integer currentAcceptedCount
 ) {
 
 	@QueryProjection

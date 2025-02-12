@@ -1,5 +1,13 @@
 package com.backend.domain.recruitmentUser.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.PostRepository;
@@ -10,11 +18,10 @@ import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
+import com.backend.global.mail.service.MailService;
+import com.backend.global.mail.util.TemplateName;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 모집 관리 서비스 (작성자가 모집 지원자를 관리)
@@ -26,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RecruitmentAuthorService {
 
+	private final MailService mailService;
 	private final RecruitmentUserRepository recruitmentUserRepository;
 	private final PostRepository postRepository;
 
@@ -49,7 +57,11 @@ public class RecruitmentAuthorService {
 		validateRecruitmentNotClosed(post);
 		validateRecruitmentUserStatus(recruitmentUser);
 
+		// 인원 증가, 모집 승인
 		recruitmentUser.accept();
+
+		// 모집 완료시 종료 상태로 수정
+		updateRecruitmentStatus(post);
 	}
 
 	/**
@@ -113,6 +125,8 @@ public class RecruitmentAuthorService {
 		return RecruitmentUserPageResponse.from(postId, acceptedUsers);
 	}
 
+
+
 	// ==============================
 	//  3. 검증 메서드
 	// ==============================
@@ -125,6 +139,7 @@ public class RecruitmentAuthorService {
 	 * @return 모집 신청 내역 엔티티
 	 * @throws GlobalException 모집 신청 내역이 존재하지 않을 경우 예외 발생
 	 */
+
 	private RecruitmentUser getRecruitmentUser(Long userId, Long postId) {
 		return recruitmentUserRepository.findByPost_PostIdAndSiteUser_Id(postId, userId)
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.RECRUITMENT_NOT_FOUND));
@@ -175,14 +190,29 @@ public class RecruitmentAuthorService {
 
 	/**
 	 * 모집 상태 업데이트 현재 모집된 인원과 모집 가능 인원을 비교하여 모집 마감 여부를 결정합니다.
-	 * TODO: 모집 인원이 충족될 경우 모집 상태를 CLOSED로 변경하는 로직 추가 필요
 	 *
 	 * @param post 모집 게시글
 	 */
 	@Transactional
-	void updateRecruitmentStatus(Post post) {
-		//        if (post.getNumOfApplicants() <= post.getCurrentUser()) {
-		//            post.updateRecruitmentStatus(RecruitmentStatus.CLOSED);
-		//        }
+	public void updateRecruitmentStatus(Post post) {
+		// Status가 null인 경우 OPEN으로 기본 값 설정
+		if (post.getRecruitmentStatus() == null) {
+			post.updateRecruitmentStatus(RecruitmentStatus.OPEN);
+		}
+
+		// 현재 인원이 모집 인원과 같은지 테스트
+		if (post.getNumOfApplicants() <= recruitmentUserRepository.countAcceptedByPostId(post.getPostId())) {
+			post.updateRecruitmentStatus(RecruitmentStatus.CLOSED);
+		}
+
+		postRepository.save(post);
+
+		// 모집 상태 Closed 된 게시글에서 ACCEPTED 상태의 유저 이메일 리스트 반환
+		List<String> emailList = recruitmentUserRepository.findAcceptedByClosed(post.getPostId())
+			.stream()
+			.map(ru -> ru.getSiteUser().getEmail())
+			.collect(Collectors.toList());
+
+		mailService.sendDeliveryStartEmail(emailList, TemplateName.RECRUITMENT_CHAT, post.getPostId());
 	}
 }

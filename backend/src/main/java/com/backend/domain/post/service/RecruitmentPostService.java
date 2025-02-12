@@ -1,5 +1,8 @@
 package com.backend.domain.post.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.backend.domain.category.domain.CategoryName;
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.category.repository.CategoryRepository;
@@ -11,13 +14,13 @@ import com.backend.domain.post.dto.PostResponse;
 import com.backend.domain.post.dto.RecruitmentPostRequest;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * RecruitmentPostService 모집 게시글을 담당하는 서비스 클래스입니다. 모집 게시글 생성 모집 게시글 수정 모집 게시글 삭제
@@ -32,6 +35,7 @@ public class RecruitmentPostService {
 	private final PostRepository postRepository;
 	private final CategoryRepository categoryRepository;
 	private final JobPostingRepository jobPostingRepository;
+	private final RecruitmentUserRepository recruitmentUserRepository;
 
 	// ==============================
 	//  1. 비즈니스 로직
@@ -106,7 +110,7 @@ public class RecruitmentPostService {
 			recruitmentPostRequest.getNumOfApplicants()
 		);
 
-		return PostConverter.toPostResponse(findPost, true);
+		return PostConverter.toPostResponse(findPost, true, getCurrentAcceptedCount(postId));
 	}
 
 	/**
@@ -159,4 +163,13 @@ public class RecruitmentPostService {
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 	}
 
+	/**
+	 * 게시글을 조회합니다.
+	 *
+	 * @param postId 모집 게시글 ID
+	 * @return 조회된 게시글에서 승인된 회원수 호출
+	 */
+	private int getCurrentAcceptedCount(Long postId) {
+		return recruitmentUserRepository.countAcceptedByPostId(postId);
+	}
 }
