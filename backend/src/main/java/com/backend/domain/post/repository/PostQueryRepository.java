@@ -1,20 +1,11 @@
 package com.backend.domain.post.repository;
 
-import static com.backend.domain.comment.entity.QComment.*;
-import static com.backend.domain.post.entity.QPost.*;
-import static com.backend.domain.recruitmentUser.entity.QRecruitmentUser.*;
-import static com.backend.domain.voter.entity.QVoter.*;
+import static com.backend.domain.comment.entity.QComment.comment;
+import static com.backend.domain.post.entity.QPost.post;
+import static com.backend.domain.recruitmentUser.entity.QRecruitmentUser.recruitmentUser;
+import static com.backend.domain.voter.entity.QVoter.voter;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
+import com.backend.domain.category.domain.CategoryName;
 import com.backend.domain.post.dto.PostPageResponse;
 import com.backend.domain.post.dto.PostResponse;
 import com.backend.domain.post.dto.QPostPageResponse;
@@ -27,8 +18,15 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 /**
  * 게시글 조회 리포지토리 입니다.
@@ -90,6 +88,7 @@ public class PostQueryRepository {
 			.on(recruitmentUser.siteUser.id.eq(userId).and(recruitmentUser.status.eq(status)))
 			.groupBy(post.postId, post.subject, post.category.name,
 				post.author.name, post.author.profileImg, post.createdAt)
+			.where(post.category.name.eq(CategoryName.RECRUITMENT.getValue()))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();

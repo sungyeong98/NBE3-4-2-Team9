@@ -175,7 +175,7 @@ export default function UserProfile({ params }: { params: { id: string } }) {
                 {profile.posts.slice(0, 3).map((post) => (
                   <Link 
                     key={post.postId} 
-                    href={`/posts/${post.postId}`} 
+                    href={`/post/${post.postId}`}
                     className="flex justify-between items-center py-3 hover:bg-gray-50 px-2 rounded transition-colors"
                   >
                     <div className="flex-1">
