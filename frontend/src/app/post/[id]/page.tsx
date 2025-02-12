@@ -23,7 +23,7 @@ interface Comment {
   modifiedAt: string;
   profileImageUrl: string | null;
   authorName: string;
-  isAuthor: boolean;
+  author: boolean;
 }
 
 export default function PostDetail() {
@@ -146,6 +146,7 @@ export default function PostDetail() {
       });
       if (response.data.success) {
         const newComments = response.data.data.content;
+        console.log('댓글 목록:', newComments); // 디버깅용 로그
         setComments(pageNum === 0 ? newComments : prev => [...prev, ...newComments]);
         setHasMore(!response.data.data.last);
       }
@@ -410,7 +411,7 @@ export default function PostDetail() {
               ) : (
                 <div>
                   <p className="text-gray-700">{comment.content}</p>
-                  {comment.isAuthor && (
+                  {comment.author && (
                     <div className="flex justify-end space-x-2 mt-2">
                       <button
                         onClick={() => {
