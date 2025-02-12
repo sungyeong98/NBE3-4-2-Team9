@@ -158,13 +158,12 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
           </div>
         </div>
 
-        <a
-          href={posting.url}
-          target="_blank"
+        <Link
+          href={`/post/recruitment/write?jobPostingId=${params.id}`}
           className="inline-block w-full text-center bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200"
         >
           모집글 작성하기
-        </a>
+        </Link>
       </div>
     </div>
   );

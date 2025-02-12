@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { PostResponse } from '@/types/post/PostResponse';
-import { getPosts } from '@/api/post';
+import { useSearchParams } from 'next/navigation';
+import { PostPageResponse } from '@/types/post';
+import { Category } from '@/types/category';
+import privateApi from '@/api/axios';
 import Link from 'next/link';
 import { formatDate } from '@/utils/dateUtils';
 import { 
@@ -11,55 +13,53 @@ import {
   FunnelIcon,
   ChatBubbleLeftIcon 
 } from '@heroicons/react/24/outline';
-import { Category } from '@/types/post/Category';
-import { getCategories } from '@/api/category';
 
 export default function PostList() {
-  const [posts, setPosts] = useState<PostResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [posts, setPosts] = useState<PostPageResponse[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [currentCategory, setCurrentCategory] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('latest');
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await getPosts({ 
-          page: currentPage, 
+  const fetchPosts = async () => {
+    try {
+      const response = await privateApi.get('/api/v1/posts', {
+        params: {
+          categoryId: currentCategory,
+          page: currentPage,
           size: 10,
           sort: sortBy,
-          categoryId: selectedCategory !== 'all' ? selectedCategory : undefined,
           keyword: searchTerm
-        });
-        if (response.success) {
-          setPosts(response.data.content);
-          setTotalPages(response.data.totalPages);
         }
-      } catch (error) {
-        console.error('Failed to fetch posts:', error);
-      } finally {
-        setIsLoading(false);
+      });
+      if (response.data.success) {
+        setPosts(response.data.data.content);
+        setTotalPages(response.data.data.totalPages);
       }
-    };
+    } catch (error) {
+      console.error('게시글 로딩 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchPosts();
-  }, [currentPage, sortBy, selectedCategory, searchTerm]);
+  const fetchCategories = async () => {
+    try {
+      const response = await privateApi.get('/api/v1/category');
+      setCategories(response.data.data);
+    } catch (error) {
+      console.error('카테고리 로딩 실패:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await getCategories();
-        if (response.success) {
-          setCategories(response.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      }
-    };
+    fetchPosts();
+  }, [currentPage, sortBy, currentCategory, searchTerm]);
 
+  useEffect(() => {
     fetchCategories();
   }, []);
 
@@ -80,9 +80,9 @@ export default function PostList() {
             {/* 카테고리 필터 */}
             <div className="flex gap-2 overflow-x-auto pb-2 lg:pb-0">
               <button
-                onClick={() => setSelectedCategory('all')}
+                onClick={() => setCurrentCategory(null)}
                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
-                  ${selectedCategory === 'all' 
+                  ${currentCategory === null 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
@@ -91,9 +91,9 @@ export default function PostList() {
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
+                  onClick={() => setCurrentCategory(category.id)}
                   className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
-                    ${selectedCategory === category.id 
+                    ${currentCategory === category.id 
                       ? 'bg-blue-600 text-white' 
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                 >
@@ -141,77 +141,58 @@ export default function PostList() {
 
         {/* 게시글 목록 */}
         <div className="space-y-4">
-          {isLoading ? (
-            [...Array(6)].map((_, index) => (
-              <div
-                key={`skeleton-${index}`}
-                className="bg-white p-6 rounded-xl shadow-md animate-pulse"
-              >
-                <div className="flex gap-2 mb-4">
-                  <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
-                  <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
+          {Array.isArray(posts) && posts.map((post) => (
+            <Link
+              key={post.postId}
+              href={`/post/${post.postId}`}
+              className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+            >
+              <div className="p-6">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <span className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">
+                    {categories.find(cat => cat.id === String(post.categoryId))?.name}
+                  </span>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
+                      {post.authorProfileImage ? (
+                        <img 
+                          src={post.authorProfileImage} 
+                          alt={post.authorName}
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-xs text-gray-500">익명</span>
+                        </div>
+                      )}
+                      <span>{post.authorName}</span>
+                    </div>
+                    <span>•</span>
+                    <span>{formatDate(post.createdAt)}</span>
+                  </div>
                 </div>
-                <div className="h-7 bg-gray-200 rounded w-3/4 mb-4"></div>
-                <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-full"></div>
-                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                
+                <h2 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors line-clamp-1">
+                  {post.subject}
+                </h2>
+                
+                <p className="text-gray-600 mb-4 line-clamp-2">
+                  {post.content}
+                </p>
+                
+                <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <ChatBubbleLeftIcon className="h-5 w-5" />
+                    <span>{post.commentCount}개의 댓글</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FunnelIcon className="h-5 w-5" />
+                    <span>{post.voterCount}명의 추천</span>
+                  </div>
                 </div>
               </div>
-            ))
-          ) : (
-            posts.map((post) => (
-              <Link
-                key={`post-${post.id}`}
-                href={`/post/${post.id}`}
-                className="block bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
-              >
-                <div className="p-6">
-                  <div className="flex flex-wrap items-center gap-3 mb-3">
-                    <span className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">
-                      {categories.find(cat => cat.id === String(post.categoryId))?.name}
-                    </span>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <div className="flex items-center gap-2">
-                        {post.authorImg ? (
-                          <img 
-                            src={post.authorImg} 
-                            alt={post.authorName}
-                            className="w-6 h-6 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-xs text-gray-500">익명</span>
-                          </div>
-                        )}
-                        <span>{post.authorName}</span>
-                      </div>
-                      <span>•</span>
-                      <span>{formatDate(post.createdAt)}</span>
-                    </div>
-                  </div>
-                  
-                  <h2 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors line-clamp-1">
-                    {post.subject}
-                  </h2>
-                  
-                  <p className="text-gray-600 mb-4 line-clamp-2">
-                    {post.content}
-                  </p>
-                  
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
-                      <ChatBubbleLeftIcon className="h-5 w-5" />
-                      <span>댓글 0</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FunnelIcon className="h-5 w-5" />
-                      <span>조회 0</span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))
-          )}
+            </Link>
+          ))}
         </div>
 
         {/* 게시글 없을 때 */}
