@@ -52,7 +52,7 @@ public class StompHandler implements ChannelInterceptor {
 
 			setValue(accessor, "username", user.getName());
 
-			log.info("{}", user.getProfileImg());
+			log.info("프로필값: {}", user.getProfileImg());
 
 			if (user.getProfileImg() != null) {
 				setValue(accessor, "profileImgUrl", user.getProfileImg());

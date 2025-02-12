@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.backend.domain.chat.dto.request.ChatRequest;
 import com.backend.domain.chat.dto.response.ChatResponse;
+import com.backend.domain.chat.entity.MessageType;
 import com.backend.domain.chat.service.ChatService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,35 +44,37 @@ public class ApiV1ChatMessageController {
 	}
 
 	// TODO 채팅 입장, 퇴장 메세지 구현 필요
-	// @MessageMapping("/join/{postId}")
-	// @SendTo("/topic/{postId}")
-	// public ChatResponse handleJoin(
-	// 	@DestinationVariable Long postId,
-	// 	@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
-	// ) {
-	// 	String username = (String) sessionAttributes.get("username");
-	// 	Long userId = (Long) sessionAttributes.get("userId");
-	//
-	// 	ChatRequest chatRequest = new ChatRequest(
-	// 		MessageType.JOIN, userId, username + " 님이 입장했습니다."
-	// 	);
-	//
-	// 	return chatService.save(chatRequest, postId, sessionAttributes);
-	// }
-	//
-	// @MessageMapping("/leave/{postId}")
-	// @SendTo("/topic/{postId}")
-	// public ChatResponse handleLeave(
-	// 	@DestinationVariable Long postId,
-	// 	@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
-	// ) {
-	// 	String username = (String) sessionAttributes.get("username");
-	// 	Long userId = (Long) sessionAttributes.get("userId");
-	//
-	// 	ChatRequest chatRequest = new ChatRequest(
-	// 		MessageType.LEAVE, userId, username + " 님이 떠났습니다."
-	// 	);
-	//
-	// 	return chatService.save(chatRequest, postId, sessionAttributes);
-	// }
+	@MessageMapping("/join/{postId}")
+	@SendTo("/topic/{postId}")
+	public ChatResponse handleJoin(
+		@DestinationVariable Long postId,
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+	) {
+		String username = (String) sessionAttributes.get("username");
+		Long userId = (Long) sessionAttributes.get("userId");
+
+		ChatRequest chatRequest = new ChatRequest(
+			MessageType.JOIN, userId, username + " 님이 입장했습니다."
+		);
+
+		log.info("join controller");
+		return chatService.save(chatRequest, postId, sessionAttributes);
+	}
+
+	@MessageMapping("/leave/{postId}")
+	@SendTo("/topic/{postId}")
+	public ChatResponse handleLeave(
+		@DestinationVariable Long postId,
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+	) {
+		String username = (String) sessionAttributes.get("username");
+		Long userId = (Long) sessionAttributes.get("userId");
+
+		ChatRequest chatRequest = new ChatRequest(
+			MessageType.LEAVE, userId, username + " 님이 떠났습니다."
+		);
+
+		log.info("leave controller");
+		return chatService.save(chatRequest, postId, sessionAttributes);
+	}
 }

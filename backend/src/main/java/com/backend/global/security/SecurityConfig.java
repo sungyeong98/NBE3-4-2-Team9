@@ -176,7 +176,7 @@ public class SecurityConfig {
 		configuration.setAllowedMethods(
 			Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		// CORS 설정
-		configuration.setAllowedOrigins(List.of("*"));
+		configuration.setAllowedOrigins(List.of("localhost:3000/", "localhost:8080/"));
 		// 자격 증명 허용 설정
 		configuration.setAllowCredentials(true);
 		// 허용할 헤더 설정
