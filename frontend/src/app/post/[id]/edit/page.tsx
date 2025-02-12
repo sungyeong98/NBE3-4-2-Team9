@@ -106,20 +106,23 @@ export default function EditPost() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <div className="mb-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-6 flex items-center justify-between">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-600 hover:text-blue-600"
+          className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors"
         >
-          <ArrowLeftIcon className="h-5 w-5" />
-          돌아가기
+          <ArrowLeftIcon className="h-5 w-5 mr-2" />
+          뒤로가기
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl font-bold mb-6">게시글 수정</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-6 border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-900">게시글 수정</h1>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
             <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
               제목
@@ -142,24 +145,25 @@ export default function EditPost() {
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg h-64 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={15}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
           </div>
 
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               취소
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              수정하기
+              수정완료
             </button>
           </div>
         </form>

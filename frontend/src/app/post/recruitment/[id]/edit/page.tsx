@@ -124,70 +124,86 @@ export default function EditRecruitmentPost() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-6 flex items-center justify-between">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+          className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors"
         >
           <ArrowLeftIcon className="h-5 w-5 mr-2" />
           뒤로가기
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-            제목
-          </label>
-          <input
-            type="text"
-            id="subject"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-6 border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-900">모집글 수정</h1>
         </div>
 
-        <div>
-          <label htmlFor="numOfApplicants" className="block text-sm font-medium text-gray-700 mb-2">
-            모집 인원
-          </label>
-          <input
-            type="number"
-            id="numOfApplicants"
-            value={numOfApplicants}
-            onChange={(e) => setNumOfApplicants(Math.max(1, parseInt(e.target.value)))}
-            min="1"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <div>
+            <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+              제목
+            </label>
+            <input
+              type="text"
+              id="subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
 
-        <div>
-          <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-            내용
-          </label>
-          <textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={10}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="numOfApplicants" className="block text-sm font-medium text-gray-700 mb-2">
+              모집 인원
+            </label>
+            <div className="relative w-full max-w-xs">
+              <input
+                type="number"
+                id="numOfApplicants"
+                value={numOfApplicants}
+                onChange={(e) => setNumOfApplicants(Math.max(1, parseInt(e.target.value)))}
+                min="1"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                required
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">명</span>
+            </div>
+          </div>
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            수정하기
-          </button>
-        </div>
-      </form>
+          <div>
+            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+              내용
+            </label>
+            <textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={15}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              수정완료
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 } 

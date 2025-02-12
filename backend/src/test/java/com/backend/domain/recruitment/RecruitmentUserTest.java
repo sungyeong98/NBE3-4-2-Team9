@@ -115,9 +115,9 @@ public class RecruitmentUserTest {
             .andExpect(jsonPath("$.data.status").value("ACCEPTED")) // 상태가 ACCEPTED인지 확인
             .andExpect(jsonPath("$.data.postPageResponses.content").isArray())  // content가 배열인지 확인
             .andExpect(jsonPath("$.data.postPageResponses.content").isNotEmpty())  // content가 비어 있지 않음을 확인
-            .andExpect(jsonPath("$.data.postPageResponses.content[0].postId").value(1))  // 첫 번째 포스트 ID 확인
-            .andExpect(jsonPath("$.data.postPageResponses.content[0].subject").value("testSubject"))  // 첫 번째 포스트 제목 확인
-            .andExpect(jsonPath("$.data.postPageResponses.content[0].authorName").value("testName1"))  // 첫 번째 포스트 작성자 이름 확인
+            .andExpect(jsonPath("$.data.postPageResponses.content[0].postId").value(4))  // 첫 번째 포스트 ID 확인
+            .andExpect(jsonPath("$.data.postPageResponses.content[0].subject").value("테스트 제목4"))  // 첫 번째 포스트 제목 확인
+            .andExpect(jsonPath("$.data.postPageResponses.content[0].authorName").value("testName2"))  // 첫 번째 포스트 작성자 이름 확인
             .andExpect(jsonPath("$.data.postPageResponses.pageable.pageNumber").value(0))  // 페이지 번호 확인
             .andExpect(jsonPath("$.data.postPageResponses.pageable.pageSize").value(10))  // 페이지 사이즈 확인
             .andDo(print());

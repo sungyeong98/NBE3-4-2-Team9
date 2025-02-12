@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { RootState } from '@/store/store';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ChatBubbleLeftIcon, UserGroupIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import privateApi from '@/api/axios';
+import { UserGroupIcon, ClipboardDocumentListIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 
 interface UserProfile {
   id: number;
@@ -22,23 +23,49 @@ interface UserProfile {
     postId: number;
     subject: string;
     createdAt: string;
-    categoryName: string;
   }>;
   comments?: Array<{
     commentId: number;
-    postId: number;
-    postSubject: string;
     content: string;
+    postId: number;
     createdAt: string;
   }>;
+}
+
+interface RecruitmentUserResponse {
+  recruitmentUserList: {
+    content: Array<{
+      userId: number;
+      userProfile: {
+        name: string;
+        job?: string;
+        jobSkills?: Array<{ name: string }>;
+      };
+      status: 'APPLIED' | 'ACCEPTED' | 'REJECTED';
+      createdAt: string;
+    }>;
+    last: boolean;
+  };
+}
+
+interface RecruitmentPostResponse {
+  posts: {
+    content: Array<{
+      postId: number;
+      subject: string;
+      status: string;
+      createdAt: string;
+    }>;
+    last: boolean;
+  };
 }
 
 export default function UserProfile({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { isAuthenticated, token, user } = useSelector((state: RootState) => state.auth);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [myPosts, setMyPosts] = useState([]); // 추후 API 연동 시 사용
+  const [myRecruitments, setMyRecruitments] = useState<RecruitmentUserResponse['recruitmentUserList']['content']>([]);
+  const [acceptedPosts, setAcceptedPosts] = useState<RecruitmentPostResponse['posts']['content']>([]);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -46,42 +73,38 @@ export default function UserProfile({ params }: { params: { id: string } }) {
       return;
     }
 
-    // 관리자는 admin/profile로 리다이렉트
-    if (user.email?.includes('admin')) {
-      router.push('/admin/profile');
-      return;
-    }
+    const fetchData = async () => {
+      try {
+        // 프로필 정보 조회 (작성한 모집글 포함)
+        const profileResponse = await privateApi.get(`/api/v1/users/${params.id}`);
+        if (profileResponse.data.success) {
+          setProfile(profileResponse.data.data);
+        }
 
-    // 일반 유저는 id 검증
-    if (Number(user.id) !== Number(params.id)) {
-      router.push('/');
-      return;
-    }
+        // 내 프로젝트 지원자 목록 조회
+        const recruitmentResponse = await privateApi.get<{ data: RecruitmentUserResponse }>(`/api/v1/recruitment/${params.id}/applied-users`);
+        if (recruitmentResponse.data.success) {
+          setMyRecruitments(recruitmentResponse.data.data.recruitmentUserList.content);
+        }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${params.id}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        // 내가 지원한 프로젝트 중 승인된 목록 조회
+        const acceptedResponse = await privateApi.get('/api/v1/recruitment/accepted-posts', {
+          params: {
+            status: 'ACCEPTED',
+            pageNum: 0,
+            pageSize: 10
+          }
+        });
+        if (acceptedResponse.data.success) {
+          setAcceptedPosts(acceptedResponse.data.data.posts.content);
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
       }
-    })
-    .then(async res => {
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Failed to fetch profile');
-      }
-      setProfile(data.data);
-    })
-    .catch(error => {
-      console.error('Failed to fetch profile:', error);
-      router.push('/');
-    });
-  }, [isAuthenticated, user, params.id, router, token]);
+    };
 
-  const handleLogout = () => {
-    // 로그아웃 로직 구현
-  };
+    fetchData();
+  }, [isAuthenticated, user, params.id, router]);
 
   if (!profile) {
     return <div>Loading...</div>;
@@ -151,119 +174,76 @@ export default function UserProfile({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        {/* 오른쪽 메인 컨텐츠: 게시글, 댓글, 모집 정보 */}
+        {/* 오른쪽 메인 컨텐츠 */}
         <div className="lg:col-span-2 space-y-6">
-          {/* 내가 작성한 게시글 섹션 */}
+          {/* 내가 작성한 게시글 목록 */}
           <div className="bg-white shadow-md rounded-xl p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <ChatBubbleLeftIcon className="h-6 w-6 text-blue-600" />
-                내가 작성한 게시글
-              </h3>
-              {profile.posts && profile.posts.length > 3 && (
-                <Link 
-                  href={`/users/${profile.id}/posts`}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  전체보기 ({profile.posts.length}개)
-                </Link>
-              )}
-            </div>
-            
-            {profile.posts && profile.posts.length > 0 ? (
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <UserGroupIcon className="h-6 w-6 text-blue-600" />
+              내가 작성한 게시글
+            </h3>
+            {profile?.posts && profile.posts.length > 0 ? (
               <div className="divide-y divide-gray-100">
-                {profile.posts.slice(0, 3).map((post) => (
-                  <Link 
-                    key={post.postId} 
-                    href={`/posts/${post.postId}`} 
-                    className="flex justify-between items-center py-3 hover:bg-gray-50 px-2 rounded transition-colors"
-                  >
-                    <div className="flex-1">
-                      <h4 className="text-gray-900 font-medium">{post.subject}</h4>
-                      <p className="text-sm text-gray-500 mt-1">{post.categoryName}</p>
-                    </div>
-                    <span className="text-sm text-gray-400 ml-4">
-                      {new Date(post.createdAt).toLocaleDateString('ko-KR')}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <p className="text-gray-500">아직 작성한 게시글이 없습니다</p>
-              </div>
-            )}
-          </div>
-
-          {/* 내가 작성한 댓글 섹션 */}
-          <div className="bg-white shadow-md rounded-xl p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <ChatBubbleLeftIcon className="h-6 w-6 text-blue-600" />
-                내가 작성한 댓글
-              </h3>
-              {profile.comments && profile.comments.length > 3 && (
-                <Link 
-                  href={`/users/${profile.id}/comments`}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  전체보기 ({profile.comments.length}개)
-                </Link>
-              )}
-            </div>
-            
-            {profile.comments && profile.comments.length > 0 ? (
-              <div className="divide-y divide-gray-100">
-                {profile.comments.slice(0, 3).map((comment) => (
-                  <Link 
-                    key={comment.commentId} 
-                    href={`/posts/${comment.postId}`}
-                    className="block py-3 hover:bg-gray-50 px-2 rounded transition-colors"
+                {profile.posts.map((post) => (
+                  <Link
+                    key={post.postId}
+                    href={`/post/${post.postId}`}
+                    className="block py-4 hover:bg-gray-50 rounded transition-colors"
                   >
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">게시글: {comment.postSubject}</span>
-                      <span className="text-sm text-gray-400">
-                        {new Date(comment.createdAt).toLocaleDateString('ko-KR')}
+                      <div>
+                        <p className="font-medium">{post.subject}</p>
+                        <p className="text-sm text-gray-500">
+                          작성일: {new Date(post.createdAt).toLocaleDateString('ko-KR')}
+                        </p>
+                      </div>
+                      <span className="text-sm text-blue-600">
+                        자세히 보기 →
                       </span>
                     </div>
-                    <p className="text-gray-900 mt-2 line-clamp-1">{comment.content}</p>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-6">
-                <p className="text-gray-500">아직 작성한 댓글이 없습니다</p>
+              <div className="text-center py-8">
+                <p className="text-gray-500">작성한 게시글이 없습니다</p>
               </div>
             )}
           </div>
 
-          {/* 모집자 명단과 모집 신청 리스트 섹션들 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white shadow-md rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <UserGroupIcon className="h-6 w-6 text-blue-600" />
-                모집자 명단
-              </h3>
-              <div className="text-center py-8">
-                <div className="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <UserGroupIcon className="h-8 w-8 text-gray-400" />
-                </div>
-                <p className="text-gray-500">아직 모집 중인 프로젝트가 없습니다</p>
+          {/* 승인된 프로젝트 목록 */}
+          <div className="bg-white shadow-md rounded-xl p-6">
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <ClipboardDocumentListIcon className="h-6 w-6 text-blue-600" />
+              참여 확정된 프로젝트
+            </h3>
+            {acceptedPosts.length > 0 ? (
+              <div className="divide-y divide-gray-100">
+                {acceptedPosts.map((post) => (
+                  <Link
+                    key={post.postId}
+                    href={`/post/${post.postId}`}
+                    className="block py-4 hover:bg-gray-50 rounded transition-colors"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medium">{post.subject}</p>
+                        <p className="text-sm text-gray-500">
+                          승인일: {new Date(post.createdAt).toLocaleDateString('ko-KR')}
+                        </p>
+                      </div>
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                        참여 확정
+                      </span>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </div>
-
-            <div className="bg-white shadow-md rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <ClipboardDocumentListIcon className="h-6 w-6 text-blue-600" />
-                모집 신청 리스트
-              </h3>
+            ) : (
               <div className="text-center py-8">
-                <div className="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <ClipboardDocumentListIcon className="h-8 w-8 text-gray-400" />
-                </div>
-                <p className="text-gray-500">아직 신청한 프로젝트가 없습니다</p>
+                <p className="text-gray-500">참여 확정된 프로젝트가 없습니다</p>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
