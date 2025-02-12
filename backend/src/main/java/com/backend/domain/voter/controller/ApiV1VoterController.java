@@ -46,7 +46,7 @@ public class ApiV1VoterController {
 	@DeleteMapping("/{targetId}")
 	public GenericResponse<Void> delete(
 		@PathVariable("targetId") Long targetId,
-		@RequestParam String voterType,
+		@RequestParam("voterType") String voterType,
 		@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
 		VoterType voterTypeEnum = VoterType.from(voterType);

@@ -123,7 +123,8 @@ public class SecurityConfig {
 					//유저, 어드민 사용 가능
 					.requestMatchers(HttpMethod.GET,
 						"/api/v1/job-posting/{id}", "/api/v1/job-posting/voter",
-						"/api/v1/free/posts/{postId}", "/api/v1/recruitment/posts/{postId}")
+						"/api/v1/free/posts/{postId}", "/api/v1/recruitment/posts/{postId}",
+							"/api/v1/posts/{postId}/comments")
 					.hasAnyRole("USER", "ADMIN")
 
 					.requestMatchers(HttpMethod.DELETE,
@@ -134,13 +135,12 @@ public class SecurityConfig {
 
 					.requestMatchers(HttpMethod.PATCH,
 						"/api/v1/recruitment/**", "/api/v1/free/posts/{postId}",
-						"/api/v1/recruitment/posts/{postId}")
+						"/api/v1/recruitment/posts/{postId}", "/api/v1/posts/{postId}/comments/{id}")
 					.hasAnyRole("USER", "ADMIN")
 
 					.requestMatchers(HttpMethod.POST,
 						"/api/v1/voter", "/api/v1/recruitment/**",
-						"/api/v1/voter", "/api/v1/voter",
-						"/api/v1/free/posts", "/api/v1/recruitment/posts")
+						"/api/v1/free/posts", "/api/v1/recruitment/posts", "/api/v1/posts/{postId}/comments")
 					.hasAnyRole("USER", "ADMIN")
 					.anyRequest().authenticated();
 			})
