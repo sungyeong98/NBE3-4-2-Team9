@@ -234,9 +234,9 @@ export default function Home() {
                       </div>
                       <div className="flex items-center justify-between text-sm text-gray-500">
                         <div className="flex items-center gap-2">
-                          {post.authorImg ? (
+                          {post.authorProfileImage ? (
                             <img 
-                              src={post.authorImg} 
+                              src={post.authorProfileImage} 
                               alt={post.authorName}
                               className="w-6 h-6 rounded-full object-cover"
                             />

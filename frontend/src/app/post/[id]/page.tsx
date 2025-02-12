@@ -163,10 +163,10 @@ export default function PostDetail() {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-4">
-              {post.authorProfileImage ? (
+              {post.authorImg ? (
                 <img
-                  src={post.authorProfileImage}
-                  alt="프로필"
+                  src={post.authorImg}
+                  alt={post.authorName}
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (

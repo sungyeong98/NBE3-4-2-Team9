@@ -11,7 +11,8 @@ import {
   PencilIcon, 
   MagnifyingGlassIcon,
   FunnelIcon,
-  ChatBubbleLeftIcon 
+  ChatBubbleLeftIcon,
+  HeartIcon
 } from '@heroicons/react/24/outline';
 
 export default function PostList() {
@@ -148,28 +149,35 @@ export default function PostList() {
               className="block bg-white rounded-lg shadow hover:shadow-md transition-shadow"
             >
               <div className="p-6">
-                <div className="flex flex-wrap items-center gap-3 mb-3">
-                  <span className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">
-                    {categories.find(cat => cat.id === String(post.categoryId))?.name}
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
-                      {post.authorProfileImage ? (
-                        <img 
-                          src={post.authorProfileImage} 
-                          alt={post.authorName}
-                          className="w-6 h-6 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-xs text-gray-500">익명</span>
-                        </div>
-                      )}
-                      <span>{post.authorName}</span>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    {/* 프로필 이미지 표시 */}
+                    {post.authorProfileImage ? (
+                      <img
+                        src={post.authorProfileImage}
+                        alt={post.authorName}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <span className="text-gray-500 text-sm">{post.authorName?.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div>
+                      <span className="font-medium text-gray-900">{post.authorName}</span>
+                      <span className="mx-2 text-gray-300">•</span>
+                      <span className="text-gray-500 text-sm">{formatDate(post.createdAt)}</span>
                     </div>
-                    <span>•</span>
-                    <span>{formatDate(post.createdAt)}</span>
                   </div>
+                  {post.type === 'RECRUITMENT' && (
+                    <span className={`px-3 py-1 text-sm rounded-full ${
+                      post.recruitmentStatus === 'CLOSED'
+                        ? 'bg-red-50 text-red-600'
+                        : 'bg-green-50 text-green-600'
+                    }`}>
+                      {post.recruitmentStatus === 'CLOSED' ? '모집 마감' : '모집 중'}
+                    </span>
+                  )}
                 </div>
                 
                 <h2 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors line-clamp-1">
@@ -180,14 +188,14 @@ export default function PostList() {
                   {post.content}
                 </p>
                 
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <div className="flex items-center gap-2">
-                    <ChatBubbleLeftIcon className="h-5 w-5" />
-                    <span>{post.commentCount}개의 댓글</span>
+                <div className="flex items-center text-sm text-gray-500 space-x-4">
+                  <div className="flex items-center space-x-1">
+                    <HeartIcon className="h-4 w-4" />
+                    <span>{post.voterCount || 0}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <FunnelIcon className="h-5 w-5" />
-                    <span>{post.voterCount}명의 추천</span>
+                  <div className="flex items-center space-x-1">
+                    <ChatBubbleLeftIcon className="h-4 w-4" />
+                    <span>{post.commentCount || 0}</span>
                   </div>
                 </div>
               </div>
