@@ -1,23 +1,10 @@
 package com.backend.domain.recruitment;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.backend.domain.post.entity.Post;
-import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostRepository;
-import com.backend.domain.recruitmentUser.dto.request.AuthorRequest;
-import com.backend.domain.user.entity.SiteUser;
-import com.backend.domain.user.repository.UserRepository;
-import com.backend.global.security.custom.CustomUserDetails;
-import com.backend.standard.util.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -31,6 +18,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.entity.RecruitmentStatus;
+import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.recruitmentUser.dto.request.AuthorRequest;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.repository.UserRepository;
+import com.backend.global.security.custom.CustomUserDetails;
+import com.backend.standard.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -110,21 +107,23 @@ public class RecruitmentUserTest {
     @Order(2)
     void getRecruitmentStatusTest() throws Exception {
 
-        mockMvc.perform(get("/api/v1/recruitment/posts")
+        mockMvc.perform(get("/api/v1/recruitment/accepted-posts")
                 .header("Authorization", "Bearer " + accessToken2)
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.status").value("ACCEPTED")) // 상태가 ACCEPTED인지 확인
-            .andExpect(jsonPath("$.data.postResponseDtoList.content").isArray())  // content가 배열인지 확인
-            .andExpect(jsonPath("$.data.postResponseDtoList.content").isNotEmpty())  // content가 비어 있지 않음을 확인
-            .andExpect(jsonPath("$.data.postResponseDtoList.content[0].id").value(1))  // 첫 번째 포스트 ID 확인
-            .andExpect(jsonPath("$.data.postResponseDtoList.content[0].subject").value("testSubject"))  // 첫 번째 포스트 제목 확인
-            .andExpect(jsonPath("$.data.postResponseDtoList.content[0].content").value("testContent1"))  // 첫 번째 포스트 내용 확인
-            .andExpect(jsonPath("$.data.postResponseDtoList.pageable.pageNumber").value(0))  // 페이지 번호 확인
-            .andExpect(jsonPath("$.data.postResponseDtoList.pageable.pageSize").value(10))  // 페이지 사이즈 확인
+            .andExpect(jsonPath("$.data.postPageResponses.content").isArray())  // content가 배열인지 확인
+            .andExpect(jsonPath("$.data.postPageResponses.content").isNotEmpty())  // content가 비어 있지 않음을 확인
+            .andExpect(jsonPath("$.data.postPageResponses.content[0].postId").value(1))  // 첫 번째 포스트 ID 확인
+            .andExpect(jsonPath("$.data.postPageResponses.content[0].subject").value("testSubject"))  // 첫 번째 포스트 제목 확인
+            .andExpect(jsonPath("$.data.postPageResponses.content[0].authorName").value("testName1"))  // 첫 번째 포스트 작성자 이름 확인
+            .andExpect(jsonPath("$.data.postPageResponses.pageable.pageNumber").value(0))  // 페이지 번호 확인
+            .andExpect(jsonPath("$.data.postPageResponses.pageable.pageSize").value(10))  // 페이지 사이즈 확인
             .andDo(print());
     }
+
+
 
     @Test
     @DisplayName("모집 지원 승인 후 모집 상태가 CLOSED로 변경되는지 테스트")

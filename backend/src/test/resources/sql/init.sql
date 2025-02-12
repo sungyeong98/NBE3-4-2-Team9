@@ -52,19 +52,19 @@ values (1, CURRENT_DATE + 1, 'testLink', 'testCompany', 2, 3, 1, '경력 1~3년'
         CURRENT_DATE, 0, '학력 무관', 99, '면접 후 결정', '테스트 제목12', 'testUrl', 12);
 
 -- Post 데이터 생성
-INSERT INTO post (created_at, modified_at, content, num_of_applicants, current_user_count, recruitment_closing_date,
+INSERT INTO post (created_at, modified_at, content, num_of_applicants, recruitment_closing_date,
                   recruitment_status, subject, category_id, job_id, user_id)
-VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', 6, 0 ,CURRENT_DATE + 1, null, 'testSubject', 1,
+VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', 3, CURRENT_DATE + 1, null, 'testSubject', 1,
         null, 1),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용2', 6, 0, CURRENT_DATE + 1, null, '테스트 제목2', 1,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용2', 3, CURRENT_DATE + 1, null, '테스트 제목2', 1,
         null, 1),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용3', 6, 0, CURRENT_DATE + 1, null, '테스트 제목3', 1,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용3', 3, CURRENT_DATE + 1, null, '테스트 제목3', 1,
         null, 2),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용4', 6, 0, CURRENT_DATE + 1, null, '테스트 제목4', 2,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용4', 3, CURRENT_DATE + 1, null, '테스트 제목4', 2,
         null, 2),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', 6, 4, CURRENT_DATE + 1, null, '테스트 제목5', 2,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', 2, CURRENT_DATE + 1, null, '테스트 제목5', 2,
         null, 3),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', 1, 1, CURRENT_DATE + 1, null, '테스트 제목6', 2,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', 1, CURRENT_DATE + 1, null, '테스트 제목6', 2,
         null, 3);
 
 -- JobSkill 데이터 생성
@@ -99,8 +99,8 @@ VALUES (1, 1),
        (3, 2),
        (3, 3);
 
-INSERT INTO voter (job_posting_id, site_user_id)
-VALUES (1, 1),
-       (2, 1),
-       (3, 1),
-       (1, 2);
+INSERT INTO voter (job_posting_id, site_user_id, voter_type)
+VALUES (1, 1, 'JOB_POSTING'),
+       (2, 1, 'JOB_POSTING'),
+       (3, 1, 'JOB_POSTING'),
+       (1, 2, 'JOB_POSTING');

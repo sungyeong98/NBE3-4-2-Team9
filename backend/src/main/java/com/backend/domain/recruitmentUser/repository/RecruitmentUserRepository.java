@@ -89,4 +89,14 @@ public interface RecruitmentUserRepository extends JpaRepository<RecruitmentUser
         "AND ru.status = com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus.ACCEPTED")
     List<RecruitmentUser> findAcceptedByClosed(@Param("postId") Long postId);
 
+    /**
+     * 특정 게시글에 대해 승인된(ACCEPTED) 모집 지원자 수 조회
+     *
+     * @param postId 게시글 ID
+     * @return 승인된 모집 지원자 수
+     */
+    @Query("SELECT COUNT(ru) FROM RecruitmentUser ru " +
+        "WHERE ru.post.postId = :postId AND ru.status = com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus.ACCEPTED")
+    int countAcceptedByPostId(@Param("postId") Long postId);
+
 }

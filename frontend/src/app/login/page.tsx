@@ -21,6 +21,7 @@ export default function Login() {
         const user = JSON.parse(decodeURIComponent(userInfo));
         dispatch(setCredentials({ user, token: accessToken }));
         localStorage.setItem('accessToken', accessToken);
+        localStorage.removeItem('isAdmin');
         router.push('/');
       } catch (error) {
         console.error('Failed to parse user info:', error);

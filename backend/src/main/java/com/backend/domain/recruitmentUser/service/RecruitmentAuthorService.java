@@ -95,6 +95,7 @@ public class RecruitmentAuthorService {
 	 * @return 지원자 목록 (DTO 변환)
 	 * @throws GlobalException 작성자가 아닐 경우 예외 발생
 	 */
+	@Transactional(readOnly = true)
 	public RecruitmentUserPageResponse getAppliedUserList(SiteUser author, Long postId,
 		Pageable pageable) {
 		Post post = validateAuthorAndGetPost(author, postId);
@@ -113,6 +114,7 @@ public class RecruitmentAuthorService {
 	 * @return 모집된 참여자 목록 (DTO 변환)
 	 * @throws GlobalException 작성자가 아닐 경우 예외 발생
 	 */
+	@Transactional(readOnly = true)
 	public RecruitmentUserPageResponse getAcceptedUserList(SiteUser author, Long postId,
 		Pageable pageable) {
 		Post post = validateAuthorAndGetPost(author, postId);
@@ -122,6 +124,8 @@ public class RecruitmentAuthorService {
 
 		return RecruitmentUserPageResponse.from(postId, acceptedUsers);
 	}
+
+
 
 	// ==============================
 	//  3. 검증 메서드
@@ -135,6 +139,7 @@ public class RecruitmentAuthorService {
 	 * @return 모집 신청 내역 엔티티
 	 * @throws GlobalException 모집 신청 내역이 존재하지 않을 경우 예외 발생
 	 */
+
 	private RecruitmentUser getRecruitmentUser(Long userId, Long postId) {
 		return recruitmentUserRepository.findByPost_PostIdAndSiteUser_Id(postId, userId)
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.RECRUITMENT_NOT_FOUND));
@@ -173,11 +178,11 @@ public class RecruitmentAuthorService {
 	 * @throws GlobalException 게시글이 존재하지 않거나 작성자가 아닐 경우 예외 발생
 	 */
 	private Post validateAuthorAndGetPost(SiteUser author, Long postId) {
-		Post post = postRepository.findById(postId)
+		Post post = postRepository.findByIdFetch(postId)
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 
 		if (!post.getAuthor().getId().equals(author.getId())) {
-			throw new GlobalException(GlobalErrorCode.NOT_AUTHOR);
+			throw new GlobalException(GlobalErrorCode.POST_NOT_AUTHOR);
 		}
 
 		return post;
@@ -189,23 +194,20 @@ public class RecruitmentAuthorService {
 	 * @param post 모집 게시글
 	 */
 	@Transactional
-    public void updateRecruitmentStatus(Post post) {
+	public void updateRecruitmentStatus(Post post) {
 		// Status가 null인 경우 OPEN으로 기본 값 설정
 		if (post.getRecruitmentStatus() == null) {
 			post.updateRecruitmentStatus(RecruitmentStatus.OPEN);
 		}
 
 		// 현재 인원이 모집 인원과 같은지 테스트
-		if (post.getNumOfApplicants() <= post.getCurrentUserCount()) {
+		if (post.getNumOfApplicants() <= recruitmentUserRepository.countAcceptedByPostId(post.getPostId())) {
 			post.updateRecruitmentStatus(RecruitmentStatus.CLOSED);
-		// 같지 않으면 OPEN
-		} else {
-			post.updateRecruitmentStatus(RecruitmentStatus.OPEN);
 		}
 
 		postRepository.save(post);
 
-		// 모집 상태 CLosed된 게시글에서 ACCEPTED 상태의 유저 이메일 리스트 반환
+		// 모집 상태 Closed 된 게시글에서 ACCEPTED 상태의 유저 이메일 리스트 반환
 		List<String> emailList = recruitmentUserRepository.findAcceptedByClosed(post.getPostId())
 			.stream()
 			.map(ru -> ru.getSiteUser().getEmail())

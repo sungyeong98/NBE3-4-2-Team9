@@ -1,18 +1,7 @@
 package com.backend.domain.recruitment;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.backend.domain.post.entity.Post;
-import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostRepository;
-import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
-import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
-import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
-import com.backend.domain.recruitmentUser.service.RecruitmentAuthorService;
-import com.backend.domain.user.entity.SiteUser;
-import com.backend.domain.user.repository.UserRepository;
-import com.backend.global.mail.service.MailService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -21,6 +10,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+
+import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.entity.RecruitmentStatus;
+import com.backend.domain.post.repository.PostJpaRepository;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
+import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
+import com.backend.domain.recruitmentUser.service.RecruitmentAuthorService;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.repository.UserRepository;
+import com.backend.global.mail.service.MailService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,7 +35,7 @@ public class RecruitmentMailTest {
     private RecruitmentAuthorService recruitmentAuthorService;
 
     @Autowired
-    private PostRepository postRepository;
+    private PostJpaRepository postRepository;
 
     @Autowired
     private RecruitmentUserRepository recruitmentUserRepository;
@@ -58,7 +58,7 @@ public class RecruitmentMailTest {
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));
 
         // ✅ 기존 지원자 수 기록
-        int beforeUserCount = post.getCurrentUserCount();
+        int beforeUserCount = recruitmentUserRepository.countAcceptedByPostId(post.getPostId());
         int maxApplicants = post.getNumOfApplicants();
 
         // 2. 모집 신청자로 사용할 SiteUser를 조회
@@ -79,7 +79,7 @@ public class RecruitmentMailTest {
         recruitmentUserRepository.save(recruitmentUser);
 
         // ✅ 지원자 수 증가 후 검증 (accept() 호출로 증가했는지)
-        assertEquals(beforeUserCount + 1, post.getCurrentUserCount(),
+        assertEquals(beforeUserCount + 1, recruitmentUserRepository.countAcceptedByPostId(post.getPostId()),
                 "✅ 모집 신청 후 currentUserCount가 1 증가해야 합니다.");
 
         // 4. updateRecruitmentStatus 메서드를 호출합니다.
@@ -93,7 +93,7 @@ public class RecruitmentMailTest {
                 "모집 상태가 CLOSED로 업데이트되어야 합니다.");
 
         // ✅ 모집 상태가 CLOSED로 변경되었는지 확인
-        if (updatedPost.getCurrentUserCount() >= maxApplicants) {
+        if (recruitmentUserRepository.countAcceptedByPostId(post.getPostId()) >= maxApplicants) {
             assertEquals(RecruitmentStatus.CLOSED, updatedPost.getRecruitmentStatus(),
                     "✅ 모집이 다 찼을 때 상태가 CLOSED로 변경되어야 합니다.");
         } else {
@@ -115,7 +115,7 @@ public class RecruitmentMailTest {
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));
 
         // ✅ 기존 지원자 수 기록
-        int beforeUserCount = post.getCurrentUserCount();
+        int beforeUserCount = recruitmentUserRepository.countAcceptedByPostId(post.getPostId());
 
         // 2. 모집 신청자로 사용할 SiteUser를 조회 (이메일로 사용자 찾기)
         SiteUser applicant = userRepository.findAll().stream()
@@ -135,11 +135,11 @@ public class RecruitmentMailTest {
         recruitmentUserRepository.save(recruitmentUser);
 
         // 4. 모집 게시글에서 지원자 수가 증가했는지 검증
-        assertEquals(beforeUserCount + 1, post.getCurrentUserCount());
-        System.out.println(beforeUserCount + post.getCurrentUserCount());
+        assertEquals(beforeUserCount + 1, recruitmentUserRepository.countAcceptedByPostId(post.getPostId()));
+        System.out.println(beforeUserCount + recruitmentUserRepository.countAcceptedByPostId(post.getPostId()));
 
         // Count 로그
-        System.out.println("신청한 사람 수 : " + post.getCurrentUserCount());
+        System.out.println("신청한 사람 수 : " + recruitmentUserRepository.countAcceptedByPostId(post.getPostId()));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class RecruitmentMailTest {
         assertEquals(RecruitmentStatus.OPEN, post.getRecruitmentStatus(), "모집 상태는 OPEN이어야 합니다.");
 
         // ✅ 기존 지원자 수 기록
-        int beforeUserCount = post.getCurrentUserCount();
+        int beforeUserCount = recruitmentUserRepository.countAcceptedByPostId(post.getPostId());
         System.out.println("현재 모집 인원: " + beforeUserCount);
 
         // 3. 모집 신청자로 사용할 SiteUser를 조회
@@ -174,7 +174,7 @@ public class RecruitmentMailTest {
         recruitmentUserRepository.save(recruitmentUser);
 
         // 모집 상태 업데이트 전후 current_user_count 확인
-        System.out.println("업데이트 전 모집 인원: " + post.getCurrentUserCount());
+        System.out.println("업데이트 전 모집 인원: " + recruitmentUserRepository.countAcceptedByPostId(post.getPostId()));
 
         // 5. 모집 상태를 업데이트하고 확인
         recruitmentAuthorService.updateRecruitmentStatus(post);
