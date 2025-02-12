@@ -102,7 +102,10 @@ public class RecruitmentPostService {
 
 		Post findPost = getPost(postId);
 
-		validateAuthor(siteUser, findPost);
+		if (!findPost.getAuthor().getId().equals(siteUser.getId())) {
+			throw new GlobalException(GlobalErrorCode.POST_NOT_AUTHOR);
+		}
+//		validateAuthor(siteUser, findPost);
 
 		findPost.updatePost(
 			recruitmentPostRequest.getSubject(),

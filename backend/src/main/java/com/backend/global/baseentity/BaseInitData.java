@@ -1,5 +1,8 @@
 package com.backend.global.baseentity;
 
+import com.backend.domain.category.domain.CategoryName;
+import com.backend.domain.category.entity.Category;
+import com.backend.domain.category.repository.CategoryRepository;
 import com.backend.domain.jobposting.entity.ExperienceLevel;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.entity.JobPostingJobSkill;
@@ -33,12 +36,14 @@ public class BaseInitData {
 	private final JobSkillJpaRepository jobSkillRepository;
 	private final JobPostingRepository jobPostingRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final CategoryRepository categoryRepository;
 
 	@EventListener(ApplicationReadyEvent.class)
 	@Transactional
 	void init() throws InterruptedException {
 		createAdminAndUser();
 //        createJobPosting();
+		createCategory();
 	}
 
 	private void createAdminAndUser() throws InterruptedException {
@@ -118,6 +123,26 @@ public class BaseInitData {
 
             jobPostingRepository.save(jobPosting);
 		}
+	}
+
+	private void createCategory() {
+		if (categoryRepository.findAll().size() > 0) {
+			return;
+		}
+
+		List<Category> categories = new ArrayList<>();
+
+		Category freeBoard = Category.builder()
+				.name(CategoryName.FREE.getValue())
+				.build();
+		categories.add(freeBoard);
+
+		Category recruitmentBoard = Category.builder()
+				.name(CategoryName.RECRUITMENT.getValue())
+				.build();
+		categories.add(recruitmentBoard);
+
+		categoryRepository.saveAll(categories);
 	}
 
 }

@@ -13,6 +13,7 @@ import {
   CalendarIcon
 } from '@heroicons/react/24/outline';
 import privateApi from '@/api/axios';
+import { JobPostingResponse } from '@/types/job-posting/JobPostingResponse';
 
 type JobPosting = {
   id: number;
@@ -50,25 +51,24 @@ type SearchCondition = {
 export default function JobPostingList() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [posts, setPosts] = useState<JobPosting[]>([]);
+  const [posts, setPosts] = useState<JobPostingResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
   const currentTab = searchParams.get('tab') || 'all';
   const currentPage = Number(searchParams.get('page')) || 0;
+  const pageSize = 10;
 
   useEffect(() => {
-    fetchPosts();
-  }, [currentTab, currentPage]);
-
-  const fetchPosts = async () => {
-    try {
-      setIsLoading(true);
-      const searchCondition: SearchCondition = {
-        pageNum: currentPage,
-        pageSize: 9,
-        order: 'DESC',
-        sort: 'openDate'
-      };
+    const fetchJobPostings = async () => {
+      try {
+        setIsLoading(true);
+        const searchCondition: SearchCondition = {
+          pageNum: currentPage,
+          pageSize: pageSize,
+          order: 'DESC',
+          sort: 'openDate'
+        };
 
       const endpoint = currentTab === 'voted' 
         ? '/api/v1/job-posting/voter'
@@ -78,23 +78,108 @@ export default function JobPostingList() {
         params: searchCondition
       });
 
-      if (response.data.success) {
-        setPosts(response.data.data.content);
-        setTotalPages(response.data.data.totalPages);
+        if (response.data.success) {
+          setPosts(response.data.data.content);
+          setTotalPages(response.data.data.totalPages);
+          setTotalElements(response.data.data.totalElements);
+        }
+      } catch (error) {
+        console.error('Failed to fetch job postings:', error);
+        alert('채용공고를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to fetch job postings:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    fetchJobPostings();
+  }, [currentTab, currentPage]);
 
   const handleTabChange = (tab: string) => {
     router.push(`/job-posting?tab=${tab}&page=0`);
   };
 
-  const handlePageChange = (page: number) => {
-    router.push(`/job-posting?tab=${currentTab}&page=${page}`);
+  const handlePageChange = (newPage: number) => {
+    router.push(`/job-posting?tab=${currentTab}&page=${newPage}`);
+    window.scrollTo(0, 0);  // 페이지 변경 시 맨 위로 스크롤
+  };
+
+  // 페이지 번호 계산 함수 수정
+  const getPageNumbers = () => {
+    const MAX_VISIBLE_PAGES = 5; // 한 번에 보여줄 최대 페이지 버튼 수
+    const pages = [];
+    
+    let startPage: number;
+    let endPage: number;
+
+    if (totalPages <= MAX_VISIBLE_PAGES) {
+      // 전체 페이지가 MAX_VISIBLE_PAGES 이하인 경우
+      startPage = 0;
+      endPage = totalPages - 1;
+    } else {
+      // 현재 페이지가 중앙에 오도록 계산
+      const middlePage = Math.floor(MAX_VISIBLE_PAGES / 2);
+      
+      if (currentPage <= middlePage) {
+        // 현재 페이지가 시작 부분에 가까운 경우
+        startPage = 0;
+        endPage = MAX_VISIBLE_PAGES - 1;
+      } else if (currentPage >= totalPages - middlePage - 1) {
+        // 현재 페이지가 끝 부분에 가까운 경우
+        startPage = totalPages - MAX_VISIBLE_PAGES;
+        endPage = totalPages - 1;
+      } else {
+        // 현재 페이지가 중간인 경우
+        startPage = currentPage - middlePage;
+        endPage = currentPage + middlePage;
+      }
+    }
+
+    // 첫 페이지로 이동 버튼 (현재가 첫 페이지가 아닐 때)
+    if (startPage > 0) {
+      pages.push(
+        <button
+          key="first"
+          onClick={() => handlePageChange(0)}
+          className="px-2 py-1 border rounded-lg hover:bg-gray-100"
+        >
+          처음
+        </button>,
+        <span key="ellipsis1" className="px-1">...</span>
+      );
+    }
+
+    // 페이지 번호 버튼
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-3 py-1 border rounded-lg ${
+            currentPage === i 
+              ? 'bg-blue-500 text-white' 
+              : 'hover:bg-gray-100'
+          }`}
+        >
+          {i + 1}
+        </button>
+      );
+    }
+
+    // 마지막 페이지로 이동 버튼 (현재가 마지막 페이지가 아닐 때)
+    if (endPage < totalPages - 1) {
+      pages.push(
+        <span key="ellipsis2" className="px-1">...</span>,
+        <button
+          key="last"
+          onClick={() => handlePageChange(totalPages - 1)}
+          className="px-2 py-1 border rounded-lg hover:bg-gray-100"
+        >
+          마지막
+        </button>
+      );
+    }
+
+    return pages;
   };
 
   return (
@@ -227,23 +312,32 @@ export default function JobPostingList() {
             )}
 
             {/* 페이지네이션 */}
-            {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-8">
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                      currentPage === i
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-50 border'
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
+            <div className="flex justify-center items-center gap-1 mt-8">
+              <button
+                onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
+                disabled={currentPage === 0}
+                className="px-2 py-1 border rounded-lg disabled:opacity-50 hover:bg-gray-100"
+              >
+                이전
+              </button>
+              
+              <div className="flex items-center gap-1 mx-2">
+                {getPageNumbers()}
               </div>
-            )}
+
+              <button
+                onClick={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
+                disabled={currentPage === totalPages - 1}
+                className="px-2 py-1 border rounded-lg disabled:opacity-50 hover:bg-gray-100"
+              >
+                다음
+              </button>
+            </div>
+
+            {/* 페이지 정보 */}
+            <div className="text-center mt-4 text-sm text-gray-600">
+              {totalElements}개 중 {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)}
+            </div>
           </>
         )}
       </div>
