@@ -36,7 +36,7 @@ export default function JobPostingDetail({ params }: { params: { id: string } })
     if (params.id) {
       fetchJobPosting();
     }
-  }, [params.id]);
+  }, [params.id, router]);
 
   const handleVote = async () => {
     try {
