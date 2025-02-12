@@ -1,5 +1,10 @@
 package com.backend.domain.recruitmentUser.controller;
 
+import com.backend.domain.recruitmentUser.dto.response.RecruitmentPostResponse;
+import com.backend.domain.recruitmentUser.service.RecruitmentUserService;
+import com.backend.global.response.GenericResponse;
+import com.backend.global.security.custom.CustomUserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,14 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.backend.domain.recruitmentUser.dto.response.RecruitmentPostResponse;
-import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
-import com.backend.domain.recruitmentUser.service.RecruitmentUserService;
-import com.backend.global.response.GenericResponse;
-import com.backend.global.security.custom.CustomUserDetails;
-
-import lombok.RequiredArgsConstructor;
 
 /**
  * 모집 신청 및 조회를 담당하는 컨트롤러 요청 경로: /api/v1/recruitment-user
@@ -83,7 +80,7 @@ public class ApiV1RecruitmentUserController {
     @GetMapping("/accepted-posts")
     public GenericResponse<RecruitmentPostResponse> getAcceptedPosts(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(defaultValue = "ACCEPTED", name = "status") RecruitmentUserStatus status,
+            @RequestParam(defaultValue = "ACCEPTED", name = "status") String status,
             @RequestParam(defaultValue = "0", name = "pageNum") int pageNum,
             @RequestParam(defaultValue = "10", name = "pageSize") int pageSize) {
 
