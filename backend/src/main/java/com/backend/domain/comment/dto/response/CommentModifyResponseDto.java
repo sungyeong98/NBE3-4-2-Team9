@@ -1,11 +1,12 @@
 package com.backend.domain.comment.dto.response;
 
 import com.backend.domain.comment.entity.Comment;
-import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.ZonedDateTime;
 
 @Builder
 @Getter
@@ -26,12 +27,12 @@ public class CommentModifyResponseDto {
 
     public static CommentModifyResponseDto convertEntity(Comment comment, boolean isAuthor) {
         return CommentModifyResponseDto.builder()
-            .id(comment.getId())
-            .content(comment.getContent())
-            .createdAt(comment.getCreatedAt())
-            .modifiedAt(comment.getModifiedAt())
-            .isAuthor(isAuthor)
-            .build();
+                .id(comment.getId())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .modifiedAt(comment.getModifiedAt())
+                .isAuthor(isAuthor)
+                .build();
     }
 
 }

@@ -40,7 +40,7 @@ public class ApiV1RecruitmentAuthorController {
     @PatchMapping("/{postId}/accept")
     public GenericResponse<Void> approveRecruitment(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             @RequestBody @Valid AuthorRequest request) {
 
         recruitmentAuthorService.recruitmentAccept(userDetails.getSiteUser(), postId,
@@ -59,7 +59,7 @@ public class ApiV1RecruitmentAuthorController {
     @PatchMapping("/{postId}/reject")
     public GenericResponse<Void> rejectRecruitment(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             @RequestBody @Valid AuthorRequest request) {
 
         recruitmentAuthorService.recruitmentReject(
@@ -82,7 +82,7 @@ public class ApiV1RecruitmentAuthorController {
     @GetMapping("/{postId}/applied-users")
     public GenericResponse<RecruitmentUserPageResponse> getAppliedUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             @RequestParam(defaultValue = "0") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize,
@@ -108,7 +108,7 @@ public class ApiV1RecruitmentAuthorController {
     @GetMapping("/{postId}/accepted-users")
     public GenericResponse<RecruitmentUserPageResponse> getAcceptedUsers(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             @RequestParam(defaultValue = "0") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize,
