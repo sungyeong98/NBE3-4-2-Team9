@@ -13,6 +13,7 @@ import { Category } from '@/types/post/Category';
 import { getCategories } from '@/api/category';
 import { JobPosting } from '@/types/jobposting';
 import { privateApi } from '@/api/axios';
+import { PostPageResponse } from '@/types/post/PostPageResponse';
 
 export default function Home() {
   const [posts, setPosts] = useState<PostResponse[]>([]);
@@ -20,6 +21,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
+  const [freePosts, setFreePosts] = useState<PostPageResponse[]>([]);
+  const [recruitmentPosts, setRecruitmentPosts] = useState<PostPageResponse[]>([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -42,7 +45,7 @@ export default function Home() {
         const [postsResponse, jobPostingsResponse] = await Promise.all([
           getPosts({ 
             page: 0, 
-            size: 5,
+            size: 3,
             sort: 'latest'
           }),
           privateApi.get('/api/v1/job-posting', {
@@ -68,6 +71,22 @@ export default function Home() {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await getMainPosts();
+        if (response.success) {
+          setFreePosts(response.data.freePosts || []);
+          setRecruitmentPosts(response.data.recruitmentPosts || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   return (
@@ -169,73 +188,74 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 게시글 섹션 */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <ChatBubbleLeftIcon className="h-6 w-6 text-blue-600" />
-              최신 게시글
-            </h2>
-            <Link 
-              href="/post"
-              className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
-            >
-              더 보기
-              <ArrowRightIcon className="h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {isLoading ? (
-              [...Array(3)].map((_, index) => (
-                <div
-                  key={`post-skeleton-${index}`}
-                  className="bg-white p-6 rounded-lg shadow-lg animate-pulse"
-                >
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                </div>
-              ))
-            ) : (
-              posts.slice(0, 3).map((post) => (
-                <Link 
-                  key={`main-post-${post.id}`}
-                  href={`/post/${post.id}`}
-                  className="block bg-white rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-200 transform hover:-translate-y-1"
-                >
-                  <div className="p-6 flex flex-col h-full justify-between">
-                    <div>
-                      <h2 className="text-lg font-semibold mb-2 line-clamp-2">{post.subject}</h2>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">
-                          {categories.find(cat => cat.id === String(post.categoryId))?.name}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div className="flex items-center gap-2">
-                        {post.authorImg ? (
-                          <img 
-                            src={post.authorImg} 
-                            alt={post.authorName}
-                            className="w-6 h-6 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-xs text-gray-500">익명</span>
-                          </div>
-                        )}
-                        <span>{post.authorName}</span>
-                      </div>
-                      <span>{formatDate(post.createdAt)}</span>
-                    </div>
+        {/* 게시글 섹션 - 채용공고와 동일한 UI로 수정 */}
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <ChatBubbleLeftIcon className="h-6 w-6 text-blue-600" />
+                최신 게시글
+              </h2>
+              <Link 
+                href="/post"
+                className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+              >
+                더 보기
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {isLoading ? (
+                [...Array(3)].map((_, index) => (
+                  <div
+                    key={`post-skeleton-${index}`}
+                    className="bg-white p-6 rounded-lg shadow-lg animate-pulse"
+                  >
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
                   </div>
-                </Link>
-              ))
-            )}
+                ))
+              ) : (
+                posts.slice(0, 3).map((post) => (
+                  <Link 
+                    key={`main-post-${post.id || 'temp-' + Math.random()}`}
+                    href={`/post/${post.postId}`}
+                    className="block bg-white rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-200 transform hover:-translate-y-1"
+                  >
+                    <div className="p-6 flex flex-col h-full justify-between">
+                      <div>
+                        <h2 className="text-lg font-semibold mb-2 line-clamp-2">{post.subject}</h2>
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full">
+                            {categories.find(cat => cat.id === String(post.categoryId))?.name}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div className="flex items-center gap-2">
+                          {post.authorImg ? (
+                            <img 
+                              src={post.authorImg} 
+                              alt={post.authorName}
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-xs text-gray-500">익명</span>
+                            </div>
+                          )}
+                          <span>{post.authorName}</span>
+                        </div>
+                        <span>{formatDate(post.createdAt)}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              )}
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </main>
   );
