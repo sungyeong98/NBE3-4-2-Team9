@@ -9,7 +9,8 @@ import {
   ArrowLeftIcon,
   ChatBubbleLeftIcon,
   HeartIcon,
-  FunnelIcon 
+  FunnelIcon,
+  ArrowRightIcon
 } from '@heroicons/react/24/outline';
 import { formatDate } from '@/utils/dateUtils';
 import Link from 'next/link';
@@ -127,110 +128,112 @@ export default function PostDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-8">
-        {/* 상단 네비게이션 */}
-        <div className="mb-8 flex items-center justify-between">
-          <Link
-            href="/post"
-            className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
-          >
-            <ArrowLeftIcon className="h-5 w-5 mr-2" />
-            게시글 목록으로
-          </Link>
-          {post.isAuthor && (
-            <div className="flex gap-2">
-              <button
-                onClick={handleEdit}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                수정
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-red-600 transition-colors"
-                disabled={isDeleting}
-              >
-                {isDeleting ? '삭제 중...' : '삭제'}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* 게시글 카드 */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          {/* 게시글 타입 및 메타 정보 */}
-          <div className="flex flex-wrap items-center gap-3 mb-6">
-            <span className={`px-3 py-1 text-sm font-medium rounded-full ${
-              isRecruitmentPost()
-                ? 'text-green-600 bg-green-50'
-                : 'text-blue-600 bg-blue-50'
-            }`}>
-              {isRecruitmentPost() ? '모집글' : '자유글'}
-            </span>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <div className="flex items-center gap-2">
-                {post.authorImg ? (
-                  <img 
-                    src={post.authorImg} 
-                    alt={post.authorName}
-                    className="w-6 h-6 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-xs text-gray-500">익명</span>
-                  </div>
-                )}
-                <span>{post.authorName}</span>
-              </div>
-              <span>•</span>
-              <span>{formatDate(post.createdAt)}</span>
-            </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* 상단 네비게이션 */}
+      <div className="mb-6 flex items-center space-x-4">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+        >
+          <ArrowLeftIcon className="h-5 w-5 mr-2" />
+          목록으로
+        </button>
+        {post.isAuthor && (
+          <div className="flex items-center space-x-2 ml-auto">
+            <button
+              onClick={handleEdit}
+              className="px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+            >
+              수정
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+            >
+              {isDeleting ? '삭제 중...' : '삭제'}
+            </button>
           </div>
+        )}
+      </div>
 
-          {/* 제목 */}
-          <h1 className="text-2xl font-bold mb-6">{post.subject}</h1>
-
-          {/* 모집글 추가 정보 */}
-          {isRecruitmentPost() && (
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-              <p className="text-gray-700">모집 인원: {post.numOfApplicants}명</p>
-              {post.jobPostingId && (
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-gray-700">채용공고: {post.jobPostingTitle}</p>
-                  <Link
-                    href={`/job-posting/${post.jobPostingId}`}
-                    className="text-blue-600 hover:text-blue-800 transition-colors text-sm"
-                  >
-                    채용공고 보기 →
-                  </Link>
+      {/* 메인 컨텐츠 */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        {/* 게시글 헤더 */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              {post.authorProfileImage ? (
+                <img
+                  src={post.authorProfileImage}
+                  alt="프로필"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                  <span className="text-gray-500 text-lg">{post.authorName?.charAt(0)}</span>
                 </div>
               )}
-              <p className="text-gray-700 mt-2">
-                상태: {post.recruitmentStatus === 'CLOSED' ? '모집 마감' : '모집 중'}
-              </p>
+              <div>
+                <div className="font-medium text-gray-900">{post.authorName}</div>
+                <div className="text-sm text-gray-500">{formatDate(post.createdAt)}</div>
+              </div>
             </div>
-          )}
-
-          {/* 본문 내용 */}
-          <div className="prose max-w-none mb-8">
-            {post.content}
+            <div className="text-sm text-gray-500">
+              조회 {post.viewCount || 0}
+            </div>
           </div>
+          <h1 className="text-2xl font-bold text-gray-900">{post.subject}</h1>
+        </div>
 
-          {/* 하단 정보 */}
-          <div className="flex items-center gap-4 text-sm text-gray-500 border-t pt-6">
-            <div className="flex items-center gap-2">
+        {/* 모집글 추가 정보 */}
+        {isRecruitmentPost() && (
+          <div className="px-6 py-4 bg-blue-50 border-b border-blue-100">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-blue-800">모집 인원</span>
+                <span className="font-medium text-blue-900">{post.numOfApplicants}명</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-blue-800">모집 상태</span>
+                <span className={`font-medium ${post.recruitmentStatus === 'CLOSED' ? 'text-red-600' : 'text-green-600'}`}>
+                  {post.recruitmentStatus === 'CLOSED' ? '모집 마감' : '모집 중'}
+                </span>
+              </div>
+              {post.jobPostingId && (
+                <div className="pt-2 mt-2 border-t border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-blue-800">연관된 채용공고</span>
+                    <Link
+                      href={`/job-posting/${post.jobPostingId}`}
+                      className="text-blue-600 hover:text-blue-800 font-medium text-sm inline-flex items-center"
+                    >
+                      {post.jobPostingTitle}
+                      <ArrowRightIcon className="h-4 w-4 ml-1" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 본문 내용 */}
+        <div className="p-6 prose max-w-none">
+          {post.content}
+        </div>
+
+        {/* 하단 정보 */}
+        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+          <div className="flex items-center space-x-6 text-sm">
+            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
               <HeartIcon className="h-5 w-5" />
               <span>좋아요 {post.voterCount || 0}</span>
-            </div>
-            <div className="flex items-center gap-2">
+            </button>
+            <button className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors">
               <ChatBubbleLeftIcon className="h-5 w-5" />
-              <span>댓글 0</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <FunnelIcon className="h-5 w-5" />
-              <span>조회 0</span>
-            </div>
+              <span>댓글 {post.commentCount || 0}</span>
+            </button>
           </div>
         </div>
       </div>
