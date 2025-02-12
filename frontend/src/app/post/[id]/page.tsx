@@ -86,8 +86,8 @@ export default function PostDetail() {
 
   const handleEdit = () => {
     if (!post) return;
-    
-    if (isRecruitmentPost()) {
+
+    if (post.type === 'RECRUITMENT') {
       router.push(`/post/recruitment/${params.id}/edit`);
     } else {
       router.push(`/post/${params.id}/edit`);
@@ -195,10 +195,18 @@ export default function PostDetail() {
           {isRecruitmentPost() && (
             <div className="bg-gray-50 p-4 rounded-lg mb-6">
               <p className="text-gray-700">모집 인원: {post.numOfApplicants}명</p>
-              {post.jobPostingTitle && (
-                <p className="text-gray-700">채용공고: {post.jobPostingTitle}</p>
+              {post.jobPostingId && (
+                <div className="flex items-center justify-between mt-2">
+                  <p className="text-gray-700">채용공고: {post.jobPostingTitle}</p>
+                  <Link
+                    href={`/job-posting/${post.jobPostingId}`}
+                    className="text-blue-600 hover:text-blue-800 transition-colors text-sm"
+                  >
+                    채용공고 보기 →
+                  </Link>
+                </div>
               )}
-              <p className="text-gray-700">
+              <p className="text-gray-700 mt-2">
                 상태: {post.recruitmentStatus === 'CLOSED' ? '모집 마감' : '모집 중'}
               </p>
             </div>
