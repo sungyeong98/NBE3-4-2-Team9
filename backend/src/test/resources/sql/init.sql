@@ -7,6 +7,10 @@ values (CURRENT_DATE, CURRENT_DATE, 'testEmail1@naver.com', 'test', 'test', 'tes
         'testPassword', 'testImg', 'ROLE_USER'),
        (CURRENT_DATE, CURRENT_DATE, 'testEmail3@naver.com', 'test', 'test', 'testId3', 'testName3',
         'testPassword', 'testImg', 'ROLE_USER'),
+        (CURRENT_DATE, CURRENT_DATE, 'ho_gok@naver.com', 'test', 'test', 'testId4', '현곤',
+        'testPassword', 'testImg', 'ROLE_USER'),
+        (CURRENT_DATE, CURRENT_DATE, 'vkdnjdjxor@naver.com', 'test', 'test', 'testId3', '현석',
+        'testPassword', 'testImg', 'ROLE_USER'),
        (CURRENT_DATE, CURRENT_DATE, 'admin@naver.com', 'test', 'test', 'testId4', 'testName4',
         'testPassword', 'testImg', 'ROLE_ADMIN');
 
@@ -50,17 +54,17 @@ values (1, CURRENT_DATE + 1, 'testLink', 'testCompany', 2, 3, 1, '경력 1~3년'
 -- Post 데이터 생성
 INSERT INTO post (created_at, modified_at, content, num_of_applicants, recruitment_closing_date,
                   recruitment_status, subject, category_id, job_id, user_id)
-VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', null, CURRENT_DATE + 1, null, 'testSubject', 1,
+VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', 3, CURRENT_DATE + 1, null, 'testSubject', 1,
         null, 1),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용2', null, CURRENT_DATE + 1, null, '테스트 제목2', 1,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용2', 3, CURRENT_DATE + 1, null, '테스트 제목2', 1,
         null, 1),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용3', null, CURRENT_DATE + 1, null, '테스트 제목3', 1,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용3', 3, CURRENT_DATE + 1, null, '테스트 제목3', 1,
         null, 2),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용4', null, CURRENT_DATE + 1, null, '테스트 제목4', 2,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용4', 3, CURRENT_DATE + 1, null, '테스트 제목4', 2,
         null, 2),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', null, CURRENT_DATE + 1, null, '테스트 제목5', 2,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', 2, CURRENT_DATE + 1, null, '테스트 제목5', 2,
         null, 3),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', null, CURRENT_DATE + 1, null, '테스트 제목6', 2,
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', 1, CURRENT_DATE + 1, null, '테스트 제목6', 2,
         null, 3);
 
 -- JobSkill 데이터 생성
@@ -95,8 +99,8 @@ VALUES (1, 1),
        (3, 2),
        (3, 3);
 
-INSERT INTO voter (job_posting_id, site_user_id)
-VALUES (1, 1),
-       (2, 1),
-       (3, 1),
-       (1, 2);
+INSERT INTO voter (job_posting_id, site_user_id, voter_type)
+VALUES (1, 1, 'JOB_POSTING'),
+       (2, 1, 'JOB_POSTING'),
+       (3, 1, 'JOB_POSTING'),
+       (1, 2, 'JOB_POSTING');

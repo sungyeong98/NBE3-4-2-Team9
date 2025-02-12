@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.domain.post.dto.PostPageResponse;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.PostRepository;
@@ -95,14 +96,9 @@ public class RecruitmentUserService {
             RecruitmentUserStatus status,
             Pageable pageable) {
 
-            // RecruitmentUser 목록을 페이징하여 조회 (특정 사용자와 상태에 맞는 모집 지원자들)
-            Page<RecruitmentUser> recruitmentUsers = recruitmentUserRepository
-                .findAllBySiteUser_IdAndStatus(siteUser.getId(), status, pageable);
+        Page<PostPageResponse> posts = postRepository.findRecruitmentAll(siteUser.getId(), status, pageable);
 
-            // RecruitmentUser에서 Post만 추출하여 Page<Post>로 변환
-            Page<Post> posts = recruitmentUsers.map(RecruitmentUser::getPost);
-
-            return RecruitmentPostResponse.from(status, posts);
+        return new RecruitmentPostResponse(status, posts);
     }
 
     // ==============================
@@ -175,7 +171,7 @@ public class RecruitmentUserService {
      * @throws GlobalException 게시글이 존재하지 않을 경우 예외 발생
      */
     private Post getPost(Long postId) {
-        return postRepository.findById(postId)
+        return postRepository.findByIdFetch(postId)
                 .orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
     }
 }

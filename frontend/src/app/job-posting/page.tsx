@@ -1,64 +1,100 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { HeartIcon } from '@heroicons/react/24/solid';
+import { 
+  BuildingOfficeIcon, 
+  AcademicCapIcon,
+  BriefcaseIcon,
+  CurrencyDollarIcon,
+  UserGroupIcon,
+  CalendarIcon
+} from '@heroicons/react/24/outline';
 import privateApi from '@/api/axios';
-import { JobPostingPageResponse, JobPostingPage } from '@/types/jobPosting';
-import { formatDate } from '@/utils/date';
+
+type JobPosting = {
+  id: number;
+  subject: string;
+  openDate: string;
+  closeDate: string;
+  experienceLevel: {
+    code: number;
+    name: string;
+  };
+  requireEducate: {
+    code: number;
+    name: string;
+  };
+  jobPostingStatus: 'ACTIVE' | 'END';
+  salary: {
+    code: number;
+    name: string;
+  };
+  applyCnt: number;
+  isVoter?: boolean;
+};
+
+type SearchCondition = {
+  salaryCode?: number;
+  kw?: string;
+  experienceLevel?: number;
+  requireEducateCode?: number;
+  sort?: string;
+  order?: string;
+  pageNum: number;
+  pageSize: number;
+};
 
 export default function JobPostingList() {
-  const [jobPostings, setJobPostings] = useState<JobPostingPageResponse[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [posts, setPosts] = useState<JobPosting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const PAGE_SIZE = 10;
+  const [totalPages, setTotalPages] = useState(0);
+  const currentTab = searchParams.get('tab') || 'all';
+  const currentPage = Number(searchParams.get('page')) || 0;
 
   useEffect(() => {
-    setJobPostings([]);
-    setPage(0);
-    setHasMore(true);
-    fetchJobPostings(0, true);
-  }, [searchTerm]);
+    fetchPosts();
+  }, [currentTab, currentPage]);
 
-  const fetchJobPostings = async (pageNum: number, reset: boolean = false) => {
+  const fetchPosts = async () => {
     try {
       setIsLoading(true);
-      let url = `/api/v1/job-posting?page=${pageNum}&size=${PAGE_SIZE}`;
-      
-      if (searchTerm) {
-        url += `&keyword=${encodeURIComponent(searchTerm)}`;
-      }
+      const searchCondition: SearchCondition = {
+        pageNum: currentPage,
+        pageSize: 9,
+        order: 'DESC',
+        sort: 'openDate'
+      };
 
-      const response = await privateApi.get<GenericResponse<JobPostingPage>>(url);
+      const endpoint = currentTab === 'voted' 
+        ? '/api/v1/job-posting/voter'
+        : '/api/v1/job-posting';
       
+      const response = await privateApi.get(endpoint, {
+        params: searchCondition
+      });
+
       if (response.data.success) {
-        const newPostings = response.data.data.content;
-        setJobPostings(prev => reset ? newPostings : [...prev, ...newPostings]);
-        setHasMore(!response.data.data.last);
+        setPosts(response.data.data.content);
+        setTotalPages(response.data.data.totalPages);
       }
     } catch (error) {
-      console.error('채용공고 로딩 실패:', error);
+      console.error('Failed to fetch job postings:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const loadMore = () => {
-    if (!isLoading && hasMore) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchJobPostings(nextPage);
-    }
+  const handleTabChange = (tab: string) => {
+    router.push(`/job-posting?tab=${tab}&page=0`);
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setJobPostings([]);
-    setPage(0);
-    setHasMore(true);
-    fetchJobPostings(0, true);
+  const handlePageChange = (page: number) => {
+    router.push(`/job-posting?tab=${currentTab}&page=${page}`);
   };
 
   return (
@@ -66,100 +102,149 @@ export default function JobPostingList() {
       {/* 상단 배너 */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto py-12 px-8">
-          <h1 className="text-4xl font-bold mb-4">채용공고</h1>
-          <p className="text-blue-100">다양한 개발자 채용정보를 확인해보세요</p>
+          <h1 className="text-4xl font-bold mb-4">채용정보</h1>
+          <p className="text-blue-100">다양한 개발자 채용 정보를 확인하세요</p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-8 -mt-8">
-        {/* 검색 카드 */}
+        {/* 검색 및 필터 카드 */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="검색어를 입력하세요"
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
             <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={() => handleTabChange('all')}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
+                ${currentTab === 'all' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
-              검색
+              <span className="flex items-center gap-2">
+                <BriefcaseIcon className="w-4 h-4" />
+                전체 공고
+              </span>
             </button>
-          </form>
-        </div>
-
-        {/* 채용공고 목록 */}
-        <div className="space-y-4 mb-8">
-          {jobPostings.map((posting) => (
-            <Link
-              key={posting.id}
-              href={`/job-posting/${posting.id}`}
-              className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h2 className="text-xl font-semibold mb-2">{posting.subject}</h2>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-600">{posting.experienceLevel.name}</span>
-                      <span className="text-gray-400">•</span>
-                      <span className="text-gray-600">{posting.requireEducate.name}</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium 
-                      ${posting.jobPostingStatus === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'}`}
-                    >
-                      {posting.jobPostingStatus === 'ACTIVE' ? '진행중' : '마감'}
-                    </span>
-                    <span className="text-blue-600 font-medium">{posting.salary.name}</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center gap-2">
-                    <span>지원자 {posting.applyCnt}명</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span>시작일: {formatDate(posting.openDate)}</span>
-                    <span>마감일: {formatDate(posting.closeDate)}</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-
-          {isLoading && (
-            [...Array(3)].map((_, index) => (
-              <div key={`skeleton-${index}`} className="bg-white p-6 rounded-xl shadow-sm animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
-                <div className="flex justify-between">
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* 더보기 버튼 */}
-        {!isLoading && hasMore && (
-          <div className="flex justify-center mb-8">
             <button
-              onClick={loadMore}
-              className="px-6 py-3 text-blue-600 bg-white border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+              onClick={() => handleTabChange('voted')}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
+                ${currentTab === 'voted' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
-              더보기
+              <span className="flex items-center gap-2">
+                <HeartIcon className="w-4 h-4" />
+                관심 공고
+              </span>
             </button>
           </div>
+        </div>
+
+        {/* 공고 목록 */}
+        {isLoading ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+                <div className="flex gap-2 mb-4">
+                  <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
+                  <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
+                </div>
+                <div className="h-7 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-full"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* 공고 목록 */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {posts.map((posting) => (
+                <Link
+                  key={posting.id}
+                  href={`/job-posting/${posting.id}`}
+                  className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-200/75"
+                >
+                  <div className="p-6">
+                    <div className="flex items-start justify-between">
+                      <h2 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                        {posting.subject}
+                      </h2>
+                      {posting.isVoter && (
+                        <HeartIcon className="w-5 h-5 text-red-500 flex-shrink-0" />
+                      )}
+                    </div>
+
+                    <div className="mt-4 space-y-3">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <BuildingOfficeIcon className="w-4 h-4 mr-2" />
+                        <span>{posting.experienceLevel.name}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <AcademicCapIcon className="w-4 h-4 mr-2" />
+                        <span>{posting.requireEducate.name}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <CurrencyDollarIcon className="w-4 h-4 mr-2" />
+                        <span>{posting.salary.name}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-sm text-gray-500">
+                          <UserGroupIcon className="w-4 h-4 mr-1" />
+                          <span>지원자 {posting.applyCnt}명</span>
+                        </div>
+                        <div className="flex items-center text-sm">
+                          <CalendarIcon className="w-4 h-4 mr-1" />
+                          <span className={posting.jobPostingStatus === 'ACTIVE' ? 'text-blue-600' : 'text-red-600'}>
+                            {posting.jobPostingStatus === 'ACTIVE' 
+                              ? `D-${Math.ceil((new Date(posting.closeDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}` 
+                              : '마감'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* 데이터가 없을 때 */}
+            {posts.length === 0 && (
+              <div className="bg-white rounded-xl shadow-md p-12 text-center">
+                <div className="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                  <BriefcaseIcon className="h-10 w-10 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">등록된 공고가 없습니다</h3>
+                <p className="text-gray-500">
+                  {currentTab === 'voted' 
+                    ? '관심있는 공고를 등록해보세요!' 
+                    : '곧 새로운 공고가 등록될 예정입니다.'}
+                </p>
+              </div>
+            )}
+
+            {/* 페이지네이션 */}
+            {totalPages > 1 && (
+              <div className="flex justify-center gap-2 mt-8">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                      currentPage === i
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-white text-gray-600 hover:bg-gray-50 border'
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
