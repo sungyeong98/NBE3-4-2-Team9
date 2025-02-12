@@ -1,10 +1,5 @@
 package com.backend.domain.recruitmentUser.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.backend.domain.post.dto.PostPageResponse;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentStatus;
@@ -16,8 +11,11 @@ import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * RecruitmentUserService 유저 모집 신청 및 모집 관련 조회를 담당하는 서비스 클래스입니다.
@@ -93,12 +91,18 @@ public class RecruitmentUserService {
      */
     public RecruitmentPostResponse getAcceptedPosts(
             SiteUser siteUser,
-            RecruitmentUserStatus status,
+            String status,
             Pageable pageable) {
+        RecruitmentUserStatus recruitmentUserStatus = RecruitmentUserStatus.from(status);
 
-        Page<PostPageResponse> posts = postRepository.findRecruitmentAll(siteUser.getId(), status, pageable);
+        if (recruitmentUserStatus == null) {
+            throw new GlobalException(GlobalErrorCode.RECRUITMENT_STATUS_NOT_SUPPORT);
+        }
 
-        return new RecruitmentPostResponse(status, posts);
+        Page<PostPageResponse> posts = postRepository
+            .findRecruitmentAll(siteUser.getId(), recruitmentUserStatus, pageable);
+
+        return new RecruitmentPostResponse(recruitmentUserStatus, posts);
     }
 
     // ==============================
