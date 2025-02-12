@@ -2,6 +2,7 @@ package com.backend.domain.comment.controller;
 
 import com.backend.domain.comment.dto.request.CommentRequestDto;
 import com.backend.domain.comment.dto.response.CommentCreateResponseDto;
+import com.backend.domain.comment.dto.response.CommentModifyResponseDto;
 import com.backend.domain.comment.dto.response.CommentResponseDto;
 import com.backend.domain.comment.service.CommentService;
 import com.backend.global.response.GenericResponse;
@@ -21,12 +22,14 @@ public class ApiV1CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    public GenericResponse<Page<CommentCreateResponseDto>> getComments(
-            @PathVariable Long postId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public GenericResponse<Page<CommentResponseDto>> getComments(
+            @PathVariable("postId") Long postId,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        Page<CommentCreateResponseDto> commentPage = commentService.getComments(postId, page, size);
+        Page<CommentResponseDto> commentPage = commentService
+                .getComments(postId, page, size, customUserDetails.getSiteUser());
 
         return GenericResponse.of(
                 true,
@@ -40,42 +43,41 @@ public class ApiV1CommentController {
 
     @PostMapping
     public GenericResponse<CommentCreateResponseDto> createComment(
-        @PathVariable("postId") Long postId,
-        @Valid @RequestBody CommentRequestDto requestDto,
-        @AuthenticationPrincipal CustomUserDetails user) {
+            @PathVariable("postId") Long postId,
+            @Valid @RequestBody CommentRequestDto requestDto,
+            @AuthenticationPrincipal CustomUserDetails user) {
 
         CommentCreateResponseDto commentResponseDto = commentService.createComment(requestDto, postId, user);
 
         return GenericResponse.of(
-            true,
-            HttpStatus.CREATED.value(),
-             commentResponseDto,
-            "댓글이 정상적으로 생성되었습니다."
+                true,
+                HttpStatus.CREATED.value(),
+                commentResponseDto,
+                "댓글이 정상적으로 생성되었습니다."
         );
     }
 
     @PatchMapping("/{id}")
-    public GenericResponse<CommentResponseDto> modifyComment(
-        @PathVariable("postId") Long postId,
-        @PathVariable("id") Long commentId,
-        @RequestBody CommentRequestDto commentRequestDto,
-        @AuthenticationPrincipal CustomUserDetails user
+    public GenericResponse<CommentModifyResponseDto> modifyComment(
+            @PathVariable("postId") Long postId,
+            @PathVariable("id") Long commentId,
+            @RequestBody CommentRequestDto commentRequestDto,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        CommentResponseDto commentModifyResponseDto = commentService.modifyComment(postId,
-            commentId, commentRequestDto, user);
+        CommentModifyResponseDto commentModifyResponseDto = commentService.modifyComment(postId,
+                commentId, commentRequestDto, user);
 
         return GenericResponse.of(
-            true,
-            HttpStatus.OK.value(),
-            commentModifyResponseDto,
-            "댓글 수정에 성공하였습니다."
+                true,
+                HttpStatus.OK.value(),
+                commentModifyResponseDto,
+                "댓글 수정에 성공하였습니다."
         );
     }
 
     @DeleteMapping("/{id}")
     public GenericResponse<Void> deleteComment(
-            @PathVariable("postId") String postId,
             @PathVariable("id") Long id,
             @AuthenticationPrincipal CustomUserDetails user) {
 

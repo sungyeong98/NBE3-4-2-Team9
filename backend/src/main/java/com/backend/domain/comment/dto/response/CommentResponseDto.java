@@ -1,6 +1,5 @@
 package com.backend.domain.comment.dto.response;
 
-import com.backend.domain.comment.entity.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,24 +14,34 @@ import java.time.ZonedDateTime;
 public class CommentResponseDto {
 
     /**
-     * { "id": 1, "content": "작성한 댓글 내용", "createdAt": "2025-02-07T14:27:28.271879+09:00",
-     * "modifiedAt": "2025-02-07T14:27:28.271879+09:00", "isAuthor" : "작성자가 맞는지" }
+     * {
+     * "id": 1,
+     * "content": "작성한 댓글 내용",
+     * "createdAt": "2025-02-07T14:27:28.271879+09:00",
+     * "modifiedAt": "2025-02-07T14:27:28.271879+09:00",
+     * "profileImageUrl" : url
+     * "authorName" : 작성자 이름
+     * }
      */
 
     private Long id;
     private String content;
     private ZonedDateTime createdAt;
     private ZonedDateTime modifiedAt;
+    private String profileImageUrl;
+    private String authorName;
     private boolean isAuthor;
 
-    public static CommentResponseDto convertEntity(Comment comment, boolean isAuthor) {
-        return CommentResponseDto.builder()
-            .id(comment.getId())
-            .content(comment.getContent())
-            .createdAt(comment.getCreatedAt())
-            .modifiedAt(comment.getModifiedAt())
-            .isAuthor(isAuthor)
-            .build();
+    public CommentResponseDto(Long id, String content, ZonedDateTime createdAt, ZonedDateTime modifiedAt, String profileImageUrl, String authorName) {
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.profileImageUrl = profileImageUrl;
+        this.authorName = authorName;
     }
 
+    public void setIsAuthor(boolean isAuthor) {
+        this.isAuthor = isAuthor;
+    }
 }

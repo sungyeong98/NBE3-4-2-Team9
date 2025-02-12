@@ -2,6 +2,7 @@ package com.backend.domain.comment.service;
 
 import com.backend.domain.comment.dto.request.CommentRequestDto;
 import com.backend.domain.comment.dto.response.CommentCreateResponseDto;
+import com.backend.domain.comment.dto.response.CommentModifyResponseDto;
 import com.backend.domain.comment.dto.response.CommentResponseDto;
 import com.backend.domain.comment.entity.Comment;
 import com.backend.domain.comment.repository.CommentRepository;
@@ -49,7 +50,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDto modifyComment(Long postId, Long commentId, CommentRequestDto dto, CustomUserDetails user) {
+    public CommentModifyResponseDto modifyComment(Long postId, Long commentId, CommentRequestDto dto, CustomUserDetails user) {
 
         // 게시글정보가 db에 있는지에 대한 검증
         postRepository.findById(postId).orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
@@ -65,7 +66,7 @@ public class CommentService {
         comment.ChangeContent(dto.getContent());
         Comment modifiedComment = commentRepository.save(comment);
 
-        return CommentResponseDto.convertEntity(modifiedComment, true);
+        return CommentModifyResponseDto.convertEntity(modifiedComment, true);
     }
 
     @Transactional
@@ -82,14 +83,26 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
+    @Transactional(readOnly = true)
+    public Page<CommentResponseDto> getComments(Long postId, int page, int size, SiteUser siteUser) {
 
-    public Page<CommentCreateResponseDto> getComments(Long postId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        Page<Comment> commentPage = commentRepository.findByPost_PostId(postId, pageable);
+//        Page<CommentResponseDto> allByPostId = commentRepository.findAllByPostId(postId, pageable);
+        Page<Comment> allByPostId = commentRepository.findAll(postId, pageable);
 
-        return commentPage.map(CommentCreateResponseDto::convertEntity);
+        Page<CommentResponseDto> result = allByPostId.map((c) -> {
+            return CommentResponseDto.builder()
+                    .id(c.getId())
+                    .authorName(c.getSiteUser().getName())
+                    .profileImageUrl(c.getSiteUser().getProfileImg())
+                    .content(c.getContent())
+                    .createdAt(c.getCreatedAt())
+                    .modifiedAt(c.getModifiedAt())
+                    .isAuthor(c.getSiteUser().getId().equals(siteUser.getId()))
+                    .build();
+        });
 
-
+        return result;
     }
 }

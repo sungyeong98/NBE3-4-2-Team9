@@ -11,10 +11,7 @@ import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.security.custom.CustomUserDetails;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ApiV1CommentControllerTest {
 
     static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
@@ -216,6 +214,29 @@ public class ApiV1CommentControllerTest {
                 .andExpect(jsonPath("$.code").value(GlobalErrorCode.COMMENT_NOT_AUTHOR.getCode()))
                 .andExpect(jsonPath("$.message").value(GlobalErrorCode.COMMENT_NOT_AUTHOR.getMessage()));
 
+    }
+
+    @DisplayName("댓글전체 조회 성공 테스트")
+    @Test
+    @Order(1)
+    void get_comment_success() throws Exception {
+
+        // given
+        Long postId = givenPost.getPostId();
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/v1/posts/{postId}/comments", postId)
+                .header("Authorization", "Bearer " + accessToken1)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.content.length()").value(3));
     }
 
 }

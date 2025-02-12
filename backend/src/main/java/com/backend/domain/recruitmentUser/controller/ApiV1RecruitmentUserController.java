@@ -41,7 +41,7 @@ public class ApiV1RecruitmentUserController {
     @PostMapping("/{postId}")
     public GenericResponse<Void> applyRecruitment(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long postId) {
+            @PathVariable("postId") Long postId) {
 
         recruitmentUserService.saveRecruitment(
                 userDetails.getSiteUser(),
@@ -61,7 +61,7 @@ public class ApiV1RecruitmentUserController {
     @DeleteMapping("/{postId}")
     public GenericResponse<Void> cancelRecruitment(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long postId) {
+            @PathVariable("postId") Long postId) {
 
         recruitmentUserService.cancelRecruitment(
                 userDetails.getSiteUser(),
@@ -83,9 +83,9 @@ public class ApiV1RecruitmentUserController {
     @GetMapping("/accepted-posts")
     public GenericResponse<RecruitmentPostResponse> getAcceptedPosts(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(defaultValue = "ACCEPTED") RecruitmentUserStatus status,
-            @RequestParam(defaultValue = "0") int pageNum,
-            @RequestParam(defaultValue = "10") int pageSize) {
+            @RequestParam(defaultValue = "ACCEPTED", name = "status") RecruitmentUserStatus status,
+            @RequestParam(defaultValue = "0", name = "pageNum") int pageNum,
+            @RequestParam(defaultValue = "10", name = "pageSize") int pageSize) {
 
         Pageable pageable = PageRequest.of(pageNum, pageSize,
                 Sort.by(Sort.Direction.ASC, "createdAt"));
