@@ -88,7 +88,10 @@ public class PostQueryRepository {
 			.on(recruitmentUser.siteUser.id.eq(userId).and(recruitmentUser.status.eq(status)))
 			.groupBy(post.postId, post.subject, post.category.name,
 				post.author.name, post.author.profileImg, post.createdAt)
-			.where(post.category.name.eq(CategoryName.RECRUITMENT.getValue()))
+			.where(
+				post.category.name.eq(CategoryName.RECRUITMENT.getValue())
+					.and(recruitmentUser.siteUser.id.eq(userId))
+					.and(recruitmentUser.status.eq(status)))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
