@@ -53,17 +53,19 @@ public class ApiV1UserController {
             @RequestBody UserModifyProfileRequest req,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        SiteUser siteUser = userService.getUserById(user_id);
+//        SiteUser siteUser = userService.getUserById(user_id);
+//
+//        if (customUserDetails == null) {
+//            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
+//        }
+//
+//        if (!user_id.equals(customUserDetails.getSiteUser().getId())) {
+//            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
+//        }
+//
+//        userService.modifyUser(siteUser, req);
 
-        if (customUserDetails == null) {
-            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-        }
-
-        if (!user_id.equals(customUserDetails.getSiteUser().getId())) {
-            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
-        }
-
-        userService.modifyUser(siteUser, req);
+        userService.modifyUser(user_id, customUserDetails, req);
 
         return GenericResponse.of(
                 true,
