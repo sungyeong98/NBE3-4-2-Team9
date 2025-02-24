@@ -2,10 +2,8 @@ package com.backend.domain.user.service;
 
 import com.backend.domain.jobskill.entity.JobSkill;
 import com.backend.domain.jobskill.repository.JobSkillRepository;
-import com.backend.domain.user.dto.request.JobSkillRequest;
 import com.backend.domain.user.dto.request.UserModifyProfileRequest;
 import com.backend.domain.user.entity.SiteUser;
-import com.backend.domain.user.entity.UserRole;
 import com.backend.domain.user.repository.UserRepository;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
@@ -14,9 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +35,14 @@ public class UserService {
         if (id != customUserDetails.getSiteUser().getId()) {
             throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
         }
+    }
+
+    public SiteUser getUser(long id, CustomUserDetails customUserDetails) {
+        isValidUser(id, customUserDetails);
+
+        SiteUser user = getUserById(id);
+
+        return user;
     }
 
     @Transactional

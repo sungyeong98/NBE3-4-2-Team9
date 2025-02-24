@@ -2,10 +2,7 @@ package com.backend.domain.user.controller;
 
 import com.backend.domain.user.dto.request.UserModifyProfileRequest;
 import com.backend.domain.user.dto.response.UserGetProfileResponse;
-import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.service.UserService;
-import com.backend.global.exception.GlobalErrorCode;
-import com.backend.global.exception.GlobalException;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -30,20 +27,10 @@ public class ApiV1UserController {
             @PathVariable(name = "user_id") Long user_id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
             ) {
-        SiteUser siteUser = userService.getUserById(user_id);
-
-        if (customUserDetails == null) {
-            throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
-        }
-
-        if (!user_id.equals(customUserDetails.getSiteUser().getId())) {
-            throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
-        }
-
         return GenericResponse.of(
                 true,
                 HttpStatus.OK.value(),
-                new UserGetProfileResponse(siteUser)
+                new UserGetProfileResponse(userService.getUser(user_id, customUserDetails))
         );
     }
 
