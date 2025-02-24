@@ -45,7 +45,7 @@ public class ApiV1RecruitmentUserController {
                 postId
         );
 
-        return GenericResponse.of(true, HttpStatus.CREATED.value());
+        return GenericResponse.ok(HttpStatus.CREATED.value());
     }
 
     /**
@@ -65,7 +65,7 @@ public class ApiV1RecruitmentUserController {
                 postId
         );
 
-        return GenericResponse.of(true, HttpStatus.OK.value());
+        return GenericResponse.ok();
     }
 
     /**
@@ -93,6 +93,6 @@ public class ApiV1RecruitmentUserController {
                 pageable
         );
 
-        return GenericResponse.of(true, HttpStatus.OK.value(), acceptedPosts);
+        return GenericResponse.ok(acceptedPosts);
     }
 }

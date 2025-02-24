@@ -33,7 +33,7 @@ public class ApiV1FreePostController {
 
 		PostResponse postResponse = freePostService.findById(postId, customUserDetails.getSiteUser());
 
-		return GenericResponse.of(true, HttpStatus.OK.value(), postResponse);
+		return GenericResponse.ok(postResponse);
 	}
 
 	@PostMapping
@@ -44,7 +44,7 @@ public class ApiV1FreePostController {
 		PostCreateResponse postCreateResponse = freePostService.save(freePostRequest,
 			customUserDetails.getSiteUser());
 
-		return GenericResponse.of(true, HttpStatus.CREATED.value(), postCreateResponse);
+		return GenericResponse.ok(HttpStatus.CREATED.value(), postCreateResponse);
 	}
 
 	@PatchMapping("/{postId}")
@@ -56,7 +56,7 @@ public class ApiV1FreePostController {
 		PostResponse postResponse = freePostService.update(postId, freePostRequest,
 			customUserDetails.getSiteUser());
 
-		return GenericResponse.of(true, HttpStatus.OK.value(), postResponse);
+		return GenericResponse.ok(postResponse);
 	}
 
 	@DeleteMapping("/{postId}")
@@ -66,6 +66,6 @@ public class ApiV1FreePostController {
 
 		freePostService.delete(postId, customUserDetails.getSiteUser());
 
-		return GenericResponse.of(true, HttpStatus.OK.value());
+		return GenericResponse.ok();
 	}
 }

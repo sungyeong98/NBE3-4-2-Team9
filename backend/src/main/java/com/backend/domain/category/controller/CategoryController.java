@@ -29,7 +29,7 @@ public class CategoryController {
     @GetMapping
     public GenericResponse<List<CategoryResponse>> getAllCategory() {
         List<CategoryResponse> categorieList = categoryService.categoryList();
-        return GenericResponse.of(true, HttpStatus.OK.value(), categorieList);
+        return GenericResponse.ok( categorieList);
     }
 
     // 카테고리 추가 (관리자만 가능)
@@ -37,7 +37,7 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.CREATED)     // 200번이 나와서 임시로 CREATED 설정
     public GenericResponse<CategoryResponse> createCategory(@RequestBody @Validated CategoryRequest categoryRequest) {
         CategoryResponse categoryResponse = categoryService.createCategory(categoryRequest);
-        return GenericResponse.of(true, HttpStatus.CREATED.value(), categoryResponse);
+        return GenericResponse.ok(HttpStatus.CREATED.value(), categoryResponse);
     }
 
     // 카테고리 수정 (관리자만 가능)
@@ -45,13 +45,13 @@ public class CategoryController {
     public GenericResponse<CategoryResponse> updateCategory(
             @RequestBody @Validated CategoryRequest categoryRequest, @PathVariable("id") Long id) {
         CategoryResponse categoryResponse = categoryService.updateCategory(id, categoryRequest);
-        return GenericResponse.of(true, HttpStatus.OK.value(), categoryResponse);
+        return GenericResponse.ok(categoryResponse);
     }
 
     // 카테고리 삭제 (관리자만 가능)
     @DeleteMapping("/{id}")
     public GenericResponse<Void> deleteCategory(@PathVariable("id") Long id) {
         categoryService.deleteCategory(id);
-        return GenericResponse.of(true, HttpStatus.OK.value());
+        return GenericResponse.ok();
     }
 }
