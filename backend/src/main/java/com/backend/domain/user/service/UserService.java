@@ -3,6 +3,7 @@ package com.backend.domain.user.service;
 import com.backend.domain.jobskill.entity.JobSkill;
 import com.backend.domain.jobskill.repository.JobSkillRepository;
 import com.backend.domain.user.dto.request.UserModifyProfileRequest;
+import com.backend.domain.user.dto.response.UserGetProfileResponse;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.repository.UserRepository;
 import com.backend.global.exception.GlobalErrorCode;
@@ -21,12 +22,25 @@ public class UserService {
     private final UserRepository userRepository;
     private final JobSkillRepository jobSkillRepository;
 
+    /**
+     * 유저 id를 찾기 위한 메서드 입니다.
+     *
+     * @param id
+     * @return {@link SiteUser}
+     */
     public SiteUser getUserById(long id) {
         return userRepository.findById(id).orElseThrow(
                 () -> new GlobalException(GlobalErrorCode.USER_NOT_FOUND)
         );
     }
 
+    /**
+     * 유저 검증을 위한 메서드 입니다.
+     *
+     * @param id
+     * @param customUserDetails
+     *
+     */
     public void isValidUser(long id, CustomUserDetails customUserDetails) {
         if (customUserDetails == null) {
             throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
@@ -37,6 +51,13 @@ public class UserService {
         }
     }
 
+    /**
+     * 유저 정보를 가져오기 위한 메서드 입니다.
+     *
+     * @param id
+     * @param customUserDetails
+     * @return {@link SiteUser}
+     */
     public SiteUser getUser(long id, CustomUserDetails customUserDetails) {
         isValidUser(id, customUserDetails);
 
@@ -45,6 +66,13 @@ public class UserService {
         return user;
     }
 
+    /**
+     * 유저 정보를 수정하기 위한 메서드 입니다.
+     *
+     * @param id
+     * @param customUserDetails
+     * @param req
+     */
     @Transactional
     public void modifyUser(long id, CustomUserDetails customUserDetails, UserModifyProfileRequest req) {
         isValidUser(id, customUserDetails);

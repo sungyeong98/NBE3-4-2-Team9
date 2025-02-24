@@ -22,6 +22,13 @@ public class ApiV1UserController {
 
     private final UserService userService;
 
+    /**
+     * 유저 정보를 출력하기 위한 메서드 입니다.
+     *
+     * @param user_id 유저 고유 식별 id
+     * @param customUserDetails
+     * @return {@link GenericResponse<UserGetProfileResponse>}
+     */
     @GetMapping("/users/{user_id}")
     public GenericResponse<UserGetProfileResponse> getProfile(
             @PathVariable(name = "user_id") Long user_id,
@@ -34,6 +41,14 @@ public class ApiV1UserController {
         );
     }
 
+    /**
+     * 유저 정보를 수정하기 위한 메서드 입니다.
+     *
+     * @param user_id 유저 고유 식별 id
+     * @param req 유저 프로필 수정 DTO
+     * @param customUserDetails
+     * @return {@link GenericResponse<Void>}
+     */
     @PatchMapping("/users/{user_id}")
     public GenericResponse<Void> modifyProfile(
             @PathVariable(name = "user_id") Long user_id,
