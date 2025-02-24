@@ -25,37 +25,37 @@ public class ApiV1UserController {
     /**
      * 유저 정보를 출력하기 위한 메서드 입니다.
      *
-     * @param user_id 유저 고유 식별 id
+     * @param userId 유저 고유 식별 id
      * @param customUserDetails
      * @return {@link GenericResponse<UserGetProfileResponse>}
      */
     @GetMapping("/users/{user_id}")
     public GenericResponse<UserGetProfileResponse> getProfile(
-            @PathVariable(name = "user_id") Long user_id,
+            @PathVariable(name = "user_id") Long userId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
             ) {
         return GenericResponse.of(
                 true,
                 HttpStatus.OK.value(),
-                new UserGetProfileResponse(userService.getUser(user_id, customUserDetails))
+                new UserGetProfileResponse(userService.getUser(userId, customUserDetails))
         );
     }
 
     /**
      * 유저 정보를 수정하기 위한 메서드 입니다.
      *
-     * @param user_id 유저 고유 식별 id
+     * @param userId 유저 고유 식별 id
      * @param req 유저 프로필 수정 DTO
      * @param customUserDetails
      * @return {@link GenericResponse<Void>}
      */
     @PatchMapping("/users/{user_id}")
     public GenericResponse<Void> modifyProfile(
-            @PathVariable(name = "user_id") Long user_id,
+            @PathVariable(name = "user_id") Long userId,
             @RequestBody UserModifyProfileRequest req,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        userService.modifyUser(user_id, customUserDetails, req);
+        userService.modifyUser(userId, customUserDetails, req);
 
         return GenericResponse.of(
                 true,
