@@ -32,27 +32,7 @@ public class UserService {
         );
     }
 
-//    @Transactional
-//    public void modifyUser(SiteUser siteUser, UserModifyProfileRequest req) {
-//        SiteUser user = getUserById(siteUser.getId());
-//
-//        if (req.getJobSkills() != null) {
-//            user.getJobSkills().clear();
-//
-//            req.getJobSkills().forEach(jobSkillReq -> {
-//                JobSkill jobSkill = jobSkillRepository.findByName(jobSkillReq.getName())
-//                        .orElseThrow(() -> new GlobalException(GlobalErrorCode.INVALID_JOB_SKILL));
-//                user.getJobSkills().add(jobSkill);
-//            });
-//        }
-//
-//        user.modifyProfile(req.getIntroduction(), req.getJob());
-//    }
-
-    @Transactional
-    public void modifyUser(long id, CustomUserDetails customUserDetails, UserModifyProfileRequest req) {
-        SiteUser user = getUserById(id);
-
+    public void isValidUser(long id, CustomUserDetails customUserDetails) {
         if (customUserDetails == null) {
             throw new GlobalException(GlobalErrorCode.USER_NOT_FOUND);
         }
@@ -60,6 +40,13 @@ public class UserService {
         if (id != customUserDetails.getSiteUser().getId()) {
             throw new GlobalException(GlobalErrorCode.UNAUTHORIZATION_USER);
         }
+    }
+
+    @Transactional
+    public void modifyUser(long id, CustomUserDetails customUserDetails, UserModifyProfileRequest req) {
+        isValidUser(id, customUserDetails);
+
+        SiteUser user = getUserById(id);
 
         if (req.getJobSkills() != null) {
             user.getJobSkills().clear();
