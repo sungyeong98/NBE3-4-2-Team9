@@ -8,12 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backend.domain.chat.converter.ChatConverter;
 import com.backend.domain.chat.dto.request.ChatRequest;
 import com.backend.domain.chat.dto.response.ChatResponse;
 import com.backend.domain.chat.dto.response.ChatResponses;
 import com.backend.domain.chat.dto.response.ChatsInPost;
 import com.backend.domain.chat.entity.Chat;
-import com.backend.domain.chat.mapper.ChatMapper;
 import com.backend.domain.chat.repository.ChatRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,14 +24,13 @@ import lombok.RequiredArgsConstructor;
 public class ChatService {
 
 	private final ChatRepository chatRepository;
-	private final ChatMapper chatMapper;
 
 	/**
 	 * 채팅 저장
 	 */
 	@Transactional
 	public ChatResponse save(ChatRequest chatRequest, Long postId, Map<String, Object> header) {
-		Chat chat = chatMapper.toChat(chatRequest, postId);
+		Chat chat = ChatConverter.toChat(chatRequest, postId);
 		Chat savedChat = chatRepository.save(chat);
 
 		return toChatResponse(savedChat, header);
@@ -53,7 +52,7 @@ public class ChatService {
 
 
 	private ChatResponse toChatResponse(Chat chat, Map<String, Object> header) {
-		return chatMapper.toChatResponse(
+		return ChatConverter.toChatResponse(
 			chat,
 			(String)header.get("username"),
 			(String)header.get("profileImg")
