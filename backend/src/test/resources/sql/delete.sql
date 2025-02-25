@@ -8,7 +8,7 @@ TRUNCATE TABLE post;
 TRUNCATE TABLE job_posting_job_skill;
 TRUNCATE TABLE job_posting;
 TRUNCATE TABLE job_skill;
-TRUNCATE TABLE chat;
+-- TRUNCATE TABLE chat;
 TRUNCATE TABLE site_user;
 TRUNCATE TABLE category;
 
