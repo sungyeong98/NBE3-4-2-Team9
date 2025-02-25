@@ -27,6 +27,7 @@ public class CategoryService {
         return toResponseList(categoryList);
     }
 
+    @Transactional
     // 카테고리 추가 (관리자만 등록 가능)
     public CategoryResponse createCategory(CategoryRequest categoryRequest) {
 
