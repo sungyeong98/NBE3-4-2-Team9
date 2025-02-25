@@ -2,7 +2,6 @@ package com.backend.domain.chat.controller;
 
 import static org.springframework.http.MediaType.*;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +26,7 @@ public class ApiV1ChatController {
 		@PathVariable(name = "postId") String postId) {
 
 		ChatResponses result = chatService.getAllByPostId(postId);
-		return GenericResponse.ok(HttpStatus.OK.value(), result, "요청 성공");
+		return GenericResponse.ok(result, "요청 성공");
 	}
 
 }
