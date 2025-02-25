@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #eceff1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header {
+            background: #128ff2;
+            color: white;
+            padding: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .chat-box {
+            display: none;
+            flex-direction: column;
+            height: 75vh;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .chat-controls input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1.1em;
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .chat-controls button {
+            padding: 10px 15px;
+            font-size: 1em;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .chat-controls button:hover {
+            background: #e68900;
+        }
+
+        #messageArea {
+            list-style: none;
+            padding: 15px;
+            margin: 10px 0;
+            height: 500px;
+            overflow-y: auto;
+            border-radius: 5px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #ccc;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 8px 0;
+            font-size: 1.1em;
+            word-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .my-message {
+            background: #128ff2;
+            color: white;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+        }
+
+        .other-message {
+            background: #e5e5e5;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+        }
+
+        .message strong {
+            font-size: 0.85em;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 4px;
+            display: block; /* 이름을 한 줄 차지하도록 설정 */
+        }
+
+        .other-message strong {
+            color: #333;
+        }
+
+        .message p {
+            margin: 5px 0;
+            font-size: 1em;
+        }
+
+        .message .timestamp {
+            font-size: 0.2em;
+            color: #ddd;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .other-message .timestamp {
+            color: #555;
+        }
+
+        .message .timestamp {
+            font-size: 0.2em;
+            color: #777;
+            position: absolute;
+            bottom: -18px;
+            right: 5px;
+        }
+
+        .loading {
+            display: none;
+            font-size: 1.2em;
+            color: #128ff2;
+            margin: 10px 0;
+        }
+
+        .message-form {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .message-form input {
+            flex: 1;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .message-form button {
+            padding: 12px 18px;
+            font-size: 1.1em;
+            background: #128ff2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .message-form button:hover {
+            background: #0b7dda;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="chat-header">WebSocket Chat</div>
+    <div id="connect-section" class="chat-controls">
+        <input type="text" id="authToken" aria-label="Bearer Token" placeholder="Enter Bearer Token">
+        <input type="number" id="postId" aria-label="Post ID" placeholder="Enter Post ID" value="1">
+        <button onclick="connect()" aria-label="Connect to chat">Connect</button>
+    </div>
+    <div id="chat-box" class="chat-box">
+        <ul id="messageArea"></ul>
+        <div id="loading" class="loading">Loading chat history...</div>
+        <form class="message-form" onsubmit="sendMessage(event)">
+            <input type="text" id="message" aria-label="Message" placeholder="Type a message...">
+            <button type="submit" aria-label="Send message">Send</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+    let stompClient = null;
+    let userId = null;
+    let subscription = null;
+
+    function connect() {
+        const authToken = document.getElementById("authToken").value.trim();
+        const postId = document.getElementById("postId").value.trim();
+
+        if (!authToken) {
+            alert("Please enter a Bearer token.");
+            return;
+        }
+        if (!postId) {
+            alert("Please enter a Post ID.");
+            return;
+        }
+
+        document.getElementById("connect-section").style.display = "none";
+        document.getElementById("chat-box").style.display = "flex";
+
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({Authorization: authToken},
+            function (frame) {
+                console.log("✅ Connected", frame);
+                userId = getUserIdFromToken(authToken);
+                subscribeToChat(postId);
+            }, function (error) {
+                console.error("❌ Connection error:", error);
+                alert("Connection error: " + error);
+            });
+    }
+
+    function getUserIdFromToken(token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.id.toString();
+    }
+
+
+    function subscribeToChat(postId) {
+        const topicPath = `/topic/${postId}`;
+        subscription = stompClient.subscribe(topicPath, function (message) {
+            displayMessage(JSON.parse(message.body));
+        });
+        loadChatHistory(postId);
+    }
+
+    function sendMessage(event) {
+        event.preventDefault();
+        const messageContent = document.getElementById("message").value.trim();
+        if (!messageContent || !stompClient) {
+            return;
+        }
+        const postId = document.getElementById("postId").value.trim();
+        const message = {
+            userId: userId,
+            type: "CHAT",
+            content: messageContent
+        };
+        stompClient.send(`/pub/msg/${postId}`, {}, JSON.stringify(message));
+        document.getElementById("message").value = "";
+    }
+
+    function displayMessage(chat) {
+        const messageArea = document.getElementById("messageArea");
+        const messageElement = document.createElement("li");
+        messageElement.classList.add("message");
+
+        const isMyMessage = chat.userId === userId;
+        messageElement.classList.add(isMyMessage ? "my-message" : "other-message");
+
+        const username = chat.username || 'Unknown User';
+
+        // 시간과 분만 추출 (오전/오후 자동 유지)
+        const date = new Date(chat.createdAt);
+        const timeString = date.toLocaleTimeString("ko-KR", {hour: "2-digit", minute: "2-digit"});
+
+        messageElement.innerHTML = `
+        <strong>${username}</strong>
+        <p>${chat.content}</p>
+        <span class="timestamp">${timeString}</span>
+    `;
+
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+
+    function loadChatHistory(postId) {
+        const loadingIndicator = document.getElementById("loading");
+        loadingIndicator.style.display = "block";
+
+        fetch(`/api/v1/chat/list/${postId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("messageArea").innerHTML = "";
+                if (data.success) {
+                    data.data.chats.forEach(chat => displayMessage(chat));
+                } else {
+                    alert("Failed to load chat history: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("❌ Error fetching chat history:", error);
+                alert("Error fetching chat history: " + error);
+            })
+            .finally(() => {
+                loadingIndicator.style.display = "none";
+            });
+    }
+
+</script>
+</body>
+</html>
