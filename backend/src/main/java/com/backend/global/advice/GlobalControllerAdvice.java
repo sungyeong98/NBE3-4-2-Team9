@@ -5,7 +5,6 @@ import com.backend.global.exception.GlobalException;
 import com.backend.global.response.ErrorDetail;
 import com.backend.global.response.GenericResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +37,13 @@ public class GlobalControllerAdvice {
 		GlobalException globalException) {
 		log.error("handlerGlobalException: ", globalException);
 
-		GenericResponse<Void> genericResponse = GenericResponse.of(
-			false,
+		GenericResponse<Void> genericResponse = GenericResponse.fail(
 			globalException.getGlobalErrorCode().getCode(),
 			globalException.getMessage()
 		);
 
-		return ResponseEntity.status(globalException.getStatus().value()).body(genericResponse);
+		return ResponseEntity.status(globalException.getStatus().value())
+			.body(genericResponse);
 	}
 
 	/**
@@ -81,9 +80,13 @@ public class GlobalControllerAdvice {
 			errors.add(customError);
 		}
 
+		GenericResponse<List<ErrorDetail>> genericResponse = GenericResponse.fail(
+			globalErrorCode.getCode(),
+			errors,
+			globalErrorCode.getMessage()
+		);
+
 		return ResponseEntity.status(globalErrorCode.getHttpStatus().value())
-			.body(GenericResponse.of(false, globalErrorCode.getCode(), errors,
-				globalErrorCode.getMessage())
-			);
+			.body(genericResponse);
 	}
 }

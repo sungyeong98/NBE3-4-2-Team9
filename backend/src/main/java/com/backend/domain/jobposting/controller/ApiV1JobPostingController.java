@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +43,7 @@ public class ApiV1JobPostingController {
 
 		Page<JobPostingPageResponse> findAll = jobPostingService.findAll(jobPostingSearchCondition);
 
-		return GenericResponse.of(true, HttpStatus.OK.value(), findAll);
+		return GenericResponse.ok(findAll);
 	}
 
 	/**
@@ -60,7 +59,7 @@ public class ApiV1JobPostingController {
 		JobPostingDetailResponse jobPostingDetailResponse = jobPostingService
 			.findDetailById(jobPostingId, customUserDetails.getSiteUser().getId());
 
-		return GenericResponse.of(true, HttpStatus.OK.value(), jobPostingDetailResponse);
+		return GenericResponse.ok(jobPostingDetailResponse);
 	}
 
 	/**
@@ -77,6 +76,6 @@ public class ApiV1JobPostingController {
 			jobPostingSearchCondition, customUserDetails.getSiteUser()
 		);
 
-		return GenericResponse.of(true, HttpStatus.OK.value(), findAllVoter);
+		return GenericResponse.ok(findAllVoter);
 	}
 }

@@ -6,7 +6,6 @@ import com.backend.domain.user.service.UserService;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,9 +33,7 @@ public class ApiV1UserController {
             @PathVariable(name = "user_id") Long userId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
             ) {
-        return GenericResponse.of(
-                true,
-                HttpStatus.OK.value(),
+        return GenericResponse.ok(
                 new UserGetProfileResponse(userService.getUser(userId, customUserDetails))
         );
     }
@@ -57,10 +54,7 @@ public class ApiV1UserController {
     ) {
         userService.modifyUser(userId, customUserDetails, req);
 
-        return GenericResponse.of(
-                true,
-                HttpStatus.OK.value()
-        );
+        return GenericResponse.ok();
     }
 
 }

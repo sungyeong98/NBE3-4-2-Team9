@@ -2,7 +2,6 @@ package com.backend.global.security.filter;
 
 import com.backend.domain.user.dto.request.LoginRequest;
 import com.backend.domain.user.dto.response.LoginResponse;
-import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.redis.repository.RedisRepository;
 import com.backend.global.response.GenericResponse;
@@ -13,6 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -20,9 +21,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -54,7 +52,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest req, HttpServletResponse resp, AuthenticationException failed) throws IOException {
         AuthResponseUtil.failLogin(
                 resp,
-                GenericResponse.of(false, GlobalErrorCode.UNAUTHORIZATION_USER.getCode()),
+                GenericResponse.fail(GlobalErrorCode.UNAUTHORIZATION_USER.getCode()),
                 HttpServletResponse.SC_UNAUTHORIZED,
                 objectMapper
         );
@@ -76,7 +74,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 accessToken,
                 jwtUtil.setJwtCookie("refreshToken", refreshToken, REFRESH_EXPIRATION),
                 HttpServletResponse.SC_OK,
-                GenericResponse.of(true, 200, new LoginResponse(userDetails.getUsername()), "로그인이 성공적으로 이루어졌습니다."),
+                GenericResponse.ok(new LoginResponse(userDetails.getUsername()), "로그인이 성공적으로 이루어졌습니다."),
                 objectMapper
         );
     }

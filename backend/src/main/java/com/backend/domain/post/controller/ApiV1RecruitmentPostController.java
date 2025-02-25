@@ -33,7 +33,7 @@ public class ApiV1RecruitmentPostController {
 
 		PostResponse postResponse = recruitmentPostService.findById(postId, customUserDetails.getSiteUser());
 
-		return GenericResponse.of(true, HttpStatus.OK.value(), postResponse);
+		return GenericResponse.ok(postResponse);
 	}
 
 	// 모집 게시글 생성
@@ -46,7 +46,7 @@ public class ApiV1RecruitmentPostController {
 			recruitmentPostRequest,
 			customUserDetails.getSiteUser()
 		);
-		return GenericResponse.of(true, HttpStatus.CREATED.value(), postCreateResponse);
+		return GenericResponse.ok(HttpStatus.CREATED.value(), postCreateResponse);
 	}
 
 	// 모집 게사글 수정
@@ -57,7 +57,7 @@ public class ApiV1RecruitmentPostController {
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		PostResponse result = recruitmentPostService.update(postId, requestDto, userDetails.getSiteUser());
-		return GenericResponse.of(true, HttpStatus.OK.value(), result);
+		return GenericResponse.ok(result);
 	}
 
 	// 모집 게시글 삭제
@@ -67,7 +67,7 @@ public class ApiV1RecruitmentPostController {
 		@AuthenticationPrincipal CustomUserDetails customUserDetails
 	) {
 		recruitmentPostService.delete(postId, customUserDetails.getSiteUser());
-		return GenericResponse.of(true, HttpStatus.OK.value());
+		return GenericResponse.ok();
 	}
 
 }
