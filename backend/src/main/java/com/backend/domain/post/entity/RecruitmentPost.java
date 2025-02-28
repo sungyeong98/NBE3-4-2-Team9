@@ -1,7 +1,6 @@
 package com.backend.domain.post.entity;
 
 import com.backend.domain.jobposting.entity.JobPosting;
-import com.backend.domain.user.entity.SiteUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -32,15 +31,15 @@ public class RecruitmentPost extends Post {
     @ManyToOne
     @JoinColumn(name = "job_id", nullable = true)
     private JobPosting jobPosting;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private SiteUser author;
-
+	
 	// 게시글 수정(모집 게시판)
 	public void updatePost(String subject, String content, Integer numOfApplicants) {
 		super.updatePost(subject, content);
 		this.numOfApplicants = numOfApplicants;
+	}
+
+	public void updateRecruitmentStatus(RecruitmentStatus recruitmentStatus) {
+		this.recruitmentStatus = recruitmentStatus;
 	}
 
 }

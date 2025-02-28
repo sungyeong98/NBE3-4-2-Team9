@@ -1,6 +1,7 @@
 package com.backend.domain.post.repository.recruitment;
 
 import com.backend.domain.post.entity.RecruitmentPost;
+import java.util.List;
 import java.util.Optional;
 
 public interface RecruitmentPostRepository {
@@ -11,4 +12,6 @@ public interface RecruitmentPostRepository {
 	RecruitmentPost save(RecruitmentPost recruitmentPost);
 
 	void deleteById(Long id);
+
+	List<RecruitmentPost> findAll();
 }

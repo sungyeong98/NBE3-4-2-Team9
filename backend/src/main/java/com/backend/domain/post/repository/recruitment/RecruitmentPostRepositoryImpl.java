@@ -1,6 +1,7 @@
 package com.backend.domain.post.repository.recruitment;
 
 import com.backend.domain.post.entity.RecruitmentPost;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -29,5 +30,10 @@ public class RecruitmentPostRepositoryImpl implements RecruitmentPostRepository 
 	@Override
 	public void deleteById(Long id) {
 		recruitmentPostJpaRepository.deleteById(id);
+	}
+
+	@Override
+	public List<RecruitmentPost> findAll() {
+		return recruitmentPostJpaRepository.findAll();
 	}
 }

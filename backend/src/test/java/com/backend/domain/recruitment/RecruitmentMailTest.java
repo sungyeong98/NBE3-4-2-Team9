@@ -1,7 +1,20 @@
 package com.backend.domain.recruitment;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.backend.domain.post.entity.Post;
+import com.backend.domain.post.entity.RecruitmentPost;
+import com.backend.domain.post.entity.RecruitmentStatus;
+import com.backend.domain.post.repository.PostJpaRepository;
+import com.backend.domain.post.repository.recruitment.RecruitmentPostRepository;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
+import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
+import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
+import com.backend.domain.recruitmentUser.service.RecruitmentAuthorService;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.repository.UserRepository;
+import com.backend.global.mail.service.MailService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -10,17 +23,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-
-import com.backend.domain.post.entity.Post;
-import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostJpaRepository;
-import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
-import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
-import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
-import com.backend.domain.recruitmentUser.service.RecruitmentAuthorService;
-import com.backend.domain.user.entity.SiteUser;
-import com.backend.domain.user.repository.UserRepository;
-import com.backend.global.mail.service.MailService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,6 +45,9 @@ public class RecruitmentMailTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RecruitmentPostRepository recruitmentPostRepository;
+
     // 실제 Bean 대신 Mock 사용
     @Autowired
     private MailService mailService;
@@ -52,7 +57,7 @@ public class RecruitmentMailTest {
     public void testUpdateRecruitmentStatusAndSendEmail() {
 
         // 1. SQL 데이터에서 모집 게시글(모집 게시판, 예: "테스트 제목6")을 조회
-        Post post = postRepository.findAll().stream()
+        RecruitmentPost post = recruitmentPostRepository.findAll().stream()
                 .filter(p -> "테스트 제목6".equals(p.getSubject()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));
@@ -87,7 +92,7 @@ public class RecruitmentMailTest {
         recruitmentAuthorService.updateRecruitmentStatus(post);
 
         // 5. DB에서 해당 Post를 다시 조회하여 모집 상태가 CLOSED로 업데이트되었는지 검증
-        Post updatedPost = postRepository.findById(post.getPostId())
+        RecruitmentPost updatedPost = recruitmentPostRepository.findById(post.getPostId())
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
         assertEquals(RecruitmentStatus.CLOSED, updatedPost.getRecruitmentStatus(),
                 "모집 상태가 CLOSED로 업데이트되어야 합니다.");
@@ -146,7 +151,7 @@ public class RecruitmentMailTest {
     @DisplayName("OPEN => CLOSED 테스트")
     public void CloseTest() {
         // 1. SQL 데이터에서 모집 게시글을 조회 (null 상태)
-        Post post = postRepository.findAll().stream()
+        RecruitmentPost post = recruitmentPostRepository.findAll().stream()
                 .filter(p -> "테스트 제목5".equals(p.getSubject()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));
@@ -180,7 +185,7 @@ public class RecruitmentMailTest {
         recruitmentAuthorService.updateRecruitmentStatus(post);
 
         // 6. DB에서 해당 Post를 다시 조회하여 모집 상태가 CLOSED로 업데이트되었는지 검증
-        Post updatedPost = postRepository.findById(post.getPostId())
+        RecruitmentPost updatedPost = recruitmentPostRepository.findById(post.getPostId())
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
         // 7. 모집 인원 수가 num_of_applicants에 도달했으므로 상태는 CLOSED로 변경되어야 함
@@ -195,7 +200,7 @@ public class RecruitmentMailTest {
     @DisplayName("인원이 다 차있지않으면 OPEN으로 나오는지 테스트")
     public void testRecruitmentStatusOpen() {
         // 1. SQL 데이터에서 모집 게시글을 조회 (recruitment_status가 null로 설정)
-        Post post = postRepository.findAll().stream()
+        RecruitmentPost post = recruitmentPostRepository.findAll().stream()
                 .filter(p -> "테스트 제목5".equals(p.getSubject()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));
@@ -222,7 +227,7 @@ public class RecruitmentMailTest {
         recruitmentAuthorService.updateRecruitmentStatus(post);
 
         // 6. DB에서 해당 Post를 다시 조회하여 모집 상태가 OPEN으로 유지되었는지 검증
-        Post updatedPost = postRepository.findById(post.getPostId())
+        RecruitmentPost updatedPost = recruitmentPostRepository.findById(post.getPostId())
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
         // 현재 지원자가 한 명일 때, 모집 인원이 다 차지 않았으므로 상태는 OPEN이어야 함
