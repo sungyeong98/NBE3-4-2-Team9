@@ -17,6 +17,11 @@ public class RecruitmentPostRepositoryImpl implements RecruitmentPostRepository 
 	}
 
 	@Override
+	public Optional<RecruitmentPost> findByIdFetch(Long id) {
+		return recruitmentPostJpaRepository.findByIdFetch(id);
+	}
+
+	@Override
 	public RecruitmentPost save(RecruitmentPost recruitmentPost) {
 		return recruitmentPostJpaRepository.save(recruitmentPost);
 	}

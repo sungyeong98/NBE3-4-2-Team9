@@ -9,7 +9,6 @@ import com.backend.domain.post.conveter.PostConverter;
 import com.backend.domain.post.dto.PostCreateResponse;
 import com.backend.domain.post.dto.PostResponse;
 import com.backend.domain.post.dto.RecruitmentPostRequest;
-import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentPost;
 import com.backend.domain.post.repository.PostRepository;
 import com.backend.domain.post.repository.recruitment.RecruitmentPostRepository;
@@ -101,7 +100,7 @@ public class RecruitmentPostService {
 	public PostResponse update(Long postId, RecruitmentPostRequest recruitmentPostRequest,
 		SiteUser siteUser) {
 
-		Post findPost = getPost(postId);
+		RecruitmentPost findPost = getPost(postId);
 
 		if (!findPost.getAuthor().getId().equals(siteUser.getId())) {
 			throw new GlobalException(GlobalErrorCode.POST_NOT_AUTHOR);
@@ -127,7 +126,7 @@ public class RecruitmentPostService {
 	@Transactional
 	public void delete(Long postId, SiteUser siteUser) {
 
-		Post findPost = getPost(postId);
+		RecruitmentPost findPost = getPost(postId);
 
 		validateAuthor(siteUser, findPost);
 
@@ -145,7 +144,7 @@ public class RecruitmentPostService {
 	 * @param findPost 조회된 게시글
 	 * @throws GlobalException 사용자가 게시글의 작성자가 아닐 경우 예외 발생
 	 */
-	private static void validateAuthor(SiteUser siteUser, Post findPost) {
+	private static void validateAuthor(SiteUser siteUser, RecruitmentPost findPost) {
 		if (findPost.getAuthor() != siteUser) {
 			throw new GlobalException(GlobalErrorCode.POST_NOT_AUTHOR); // 작성자가 아닐 경우 예외 발생
 		}
@@ -162,8 +161,8 @@ public class RecruitmentPostService {
 	 * @return 조회된 게시글 엔티티
 	 * @throws GlobalException 게시글이 존재하지 않을 경우 예외 발생
 	 */
-	private Post getPost(Long postId) {
-		return postRepository.findByIdFetch(postId)
+	private RecruitmentPost getPost(Long postId) {
+		return recruitmentPostRepository.findByIdFetch(postId)
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 	}
 
