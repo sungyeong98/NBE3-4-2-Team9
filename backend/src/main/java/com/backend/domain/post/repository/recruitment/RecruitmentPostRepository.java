@@ -9,4 +9,6 @@ public interface RecruitmentPostRepository {
 	Optional<RecruitmentPost> findByIdFetch(Long id);
 
 	RecruitmentPost save(RecruitmentPost recruitmentPost);
+
+	void deleteById(Long id);
 }

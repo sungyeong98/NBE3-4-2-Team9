@@ -49,6 +49,7 @@ public class RecruitmentPostService {
 	 */
 	@Transactional(readOnly = true)
 	public PostResponse findById(Long postId, SiteUser siteUser) {
+		//TODO 추후 수정
 		return postRepository.findPostResponseById(postId, siteUser.getId())
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 	}
@@ -130,7 +131,7 @@ public class RecruitmentPostService {
 
 		validateAuthor(siteUser, findPost);
 
-		postRepository.deleteById(postId);
+		recruitmentPostRepository.deleteById(postId);
 	}
 
 	// ==============================

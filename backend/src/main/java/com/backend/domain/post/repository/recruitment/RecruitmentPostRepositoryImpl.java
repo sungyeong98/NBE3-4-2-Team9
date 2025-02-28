@@ -25,4 +25,9 @@ public class RecruitmentPostRepositoryImpl implements RecruitmentPostRepository 
 	public RecruitmentPost save(RecruitmentPost recruitmentPost) {
 		return recruitmentPostJpaRepository.save(recruitmentPost);
 	}
+
+	@Override
+	public void deleteById(Long id) {
+		recruitmentPostJpaRepository.deleteById(id);
+	}
 }
