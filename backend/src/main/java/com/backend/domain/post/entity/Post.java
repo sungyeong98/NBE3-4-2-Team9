@@ -1,16 +1,11 @@
 package com.backend.domain.post.entity;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.backend.domain.category.entity.Category;
 import com.backend.domain.comment.entity.Comment;
 import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.voter.entity.Voter;
 import com.backend.global.baseentity.BaseEntity;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,19 +19,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 // 게시판 엔티티
 @Entity
 @Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "post")
-@AllArgsConstructor
 public class Post extends BaseEntity {
 
 	// postId: 게시글의 고유 식별자(PK, Auto Increment)
@@ -59,6 +56,7 @@ public class Post extends BaseEntity {
 	private Category category;
 
 	// 모집 게시판에만 필요한 부분
+	// TODO 모집 게시판에 들어가는 부분 제거 예정
 	private ZonedDateTime recruitmentClosingDate; // 모집 기간
 	private Integer numOfApplicants; // 모집 인원
 
