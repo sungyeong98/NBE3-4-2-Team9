@@ -63,7 +63,6 @@ public class PostConverter {
             .authorName(post.getAuthor().getName()) // 작성자 이름
             .authorImg(post.getAuthor().getProfileImg()) // 작성자 프로필 이미지
             .createdAt(post.getCreatedAt()) // 생성일
-	        //TODO 추후 수정
             .numOfApplicants(
 				post.getNumOfApplicants() != null ? post.getNumOfApplicants() : null) // 모집 인원
             .recruitmentStatus(
