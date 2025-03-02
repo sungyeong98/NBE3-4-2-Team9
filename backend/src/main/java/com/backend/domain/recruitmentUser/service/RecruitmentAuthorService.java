@@ -2,7 +2,7 @@ package com.backend.domain.recruitmentUser.service;
 
 import com.backend.domain.post.entity.RecruitmentPost;
 import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.post.repository.post.PostRepository;
 import com.backend.domain.post.repository.recruitment.RecruitmentPostRepository;
 import com.backend.domain.recruitmentUser.dto.response.RecruitmentUserPageResponse;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUser;

@@ -7,10 +7,10 @@ import com.backend.domain.jobposting.entity.JobPosting;
 import com.backend.domain.jobposting.repository.JobPostingRepository;
 import com.backend.domain.post.conveter.PostConverter;
 import com.backend.domain.post.dto.PostCreateResponse;
-import com.backend.domain.post.dto.PostResponse;
 import com.backend.domain.post.dto.RecruitmentPostRequest;
+import com.backend.domain.post.dto.RecruitmentPostResponse;
 import com.backend.domain.post.entity.RecruitmentPost;
-import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.post.repository.post.PostRepository;
 import com.backend.domain.post.repository.recruitment.RecruitmentPostRepository;
 import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
 import com.backend.domain.user.entity.SiteUser;
@@ -44,13 +44,13 @@ public class RecruitmentPostService {
 	/**
 	 * @param postId   조회할 게시글 아이디
 	 * @param siteUser 로그인한 사용자
-	 * @return {@link PostResponse}
+	 * @return {@link RecruitmentPostResponse}
 	 * @throws GlobalException 게시글이 존재하지 않을 때 예외 발생
 	 */
 	@Transactional(readOnly = true)
-	public PostResponse findById(Long postId, SiteUser siteUser) {
-		//TODO 추후 수정
-		return postRepository.findPostResponseById(postId, siteUser.getId())
+	public RecruitmentPostResponse findById(Long postId, SiteUser siteUser) {
+
+		return recruitmentPostRepository.findPostResponseById(postId, siteUser.getId())
 			.orElseThrow(() -> new GlobalException(GlobalErrorCode.POST_NOT_FOUND));
 	}
 
@@ -98,7 +98,7 @@ public class RecruitmentPostService {
 	 * @throws GlobalException 게시글이 존재하지 않거나, 작성자가 아닐 경우 예외 발생
 	 */
 	@Transactional
-	public PostResponse update(Long postId, RecruitmentPostRequest recruitmentPostRequest,
+	public RecruitmentPostResponse update(Long postId, RecruitmentPostRequest recruitmentPostRequest,
 		SiteUser siteUser) {
 
 		RecruitmentPost findPost = getPost(postId);
@@ -106,7 +106,7 @@ public class RecruitmentPostService {
 		if (!findPost.getAuthor().getId().equals(siteUser.getId())) {
 			throw new GlobalException(GlobalErrorCode.POST_NOT_AUTHOR);
 		}
-//		validateAuthor(siteUser, findPost);
+		validateAuthor(siteUser, findPost);
 
 		findPost.updatePost(
 			recruitmentPostRequest.getSubject(),

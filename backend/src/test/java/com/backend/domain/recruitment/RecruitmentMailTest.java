@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.backend.domain.post.entity.Post;
 import com.backend.domain.post.entity.RecruitmentPost;
 import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostJpaRepository;
+import com.backend.domain.post.repository.post.PostJpaRepository;
 import com.backend.domain.post.repository.recruitment.RecruitmentPostRepository;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;

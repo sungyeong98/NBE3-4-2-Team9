@@ -3,9 +3,9 @@ package com.backend.domain.recruitmentUser.service;
 import com.backend.domain.post.dto.PostPageResponse;
 import com.backend.domain.post.entity.RecruitmentPost;
 import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.PostRepository;
+import com.backend.domain.post.repository.post.PostRepository;
 import com.backend.domain.post.repository.recruitment.RecruitmentPostRepository;
-import com.backend.domain.recruitmentUser.dto.response.RecruitmentPostResponse;
+import com.backend.domain.recruitmentUser.dto.response.RecruitmentUserPostResponse;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUser;
 import com.backend.domain.recruitmentUser.entity.RecruitmentUserStatus;
 import com.backend.domain.recruitmentUser.repository.RecruitmentUserRepository;
@@ -91,7 +91,7 @@ public class RecruitmentUserService {
      * @param pageable 페이징 정보
      * @return 사용자가 특정 상태로 참여한 모집 게시글 목록 (Page<PostResponseDto>)
      */
-    public RecruitmentPostResponse getAcceptedPosts(
+    public RecruitmentUserPostResponse getAcceptedPosts(
             SiteUser siteUser,
             String status,
             Pageable pageable) {
@@ -105,7 +105,7 @@ public class RecruitmentUserService {
         Page<PostPageResponse> posts = postRepository
             .findRecruitmentAll(siteUser.getId(), recruitmentUserStatus, pageable);
 
-        return new RecruitmentPostResponse(recruitmentUserStatus, posts);
+        return new RecruitmentUserPostResponse(recruitmentUserStatus, posts);
     }
 
     // ==============================

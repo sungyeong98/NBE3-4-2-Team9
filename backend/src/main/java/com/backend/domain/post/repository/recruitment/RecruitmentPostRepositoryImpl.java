@@ -1,5 +1,6 @@
 package com.backend.domain.post.repository.recruitment;
 
+import com.backend.domain.post.dto.RecruitmentPostResponse;
 import com.backend.domain.post.entity.RecruitmentPost;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 public class RecruitmentPostRepositoryImpl implements RecruitmentPostRepository {
 
 	private final RecruitmentPostJpaRepository recruitmentPostJpaRepository;
+	private final RecruitmentPostQueryRepository recruitmentPostQueryRepository;
 
 	@Override
 	public Optional<RecruitmentPost> findById(Long id) {
@@ -35,5 +37,10 @@ public class RecruitmentPostRepositoryImpl implements RecruitmentPostRepository 
 	@Override
 	public List<RecruitmentPost> findAll() {
 		return recruitmentPostJpaRepository.findAll();
+	}
+
+	@Override
+	public Optional<RecruitmentPostResponse> findPostResponseById(Long postId, Long siteUserId) {
+		return recruitmentPostQueryRepository.findPostResponseById(postId, siteUserId);
 	}
 }
