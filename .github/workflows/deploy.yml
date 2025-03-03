@@ -61,7 +61,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: ghcr.io/${{ github.repository }}/ci-cd-backend
+        images: ghcr.io/${{ github.repository }}/backend
         tags: |
           latest
           ${{ needs.makeTagAndRelease.outputs.tag_name }}
