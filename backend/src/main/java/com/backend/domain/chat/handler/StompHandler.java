@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
 
-	public static final String DEFAULT_PATH = "/topic/";
+	public static final String DEFAULT_PATH = "/sub/";
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 	private final RecruitmentUserRepository recruitmentUserRepository;
