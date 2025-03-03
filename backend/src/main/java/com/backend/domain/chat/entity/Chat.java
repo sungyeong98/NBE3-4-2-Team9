@@ -1,11 +1,9 @@
 package com.backend.domain.chat.entity;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +26,6 @@ public class Chat {
 	private String content;
 	private MessageType type;
 
-	@CreatedDate
-	private LocalDateTime createdAt;
+	@Column(name = "createdAt", updatable = false)
+	private String createdAt;
 }
