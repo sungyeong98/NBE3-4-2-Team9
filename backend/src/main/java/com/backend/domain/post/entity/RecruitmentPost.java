@@ -1,6 +1,9 @@
 package com.backend.domain.post.entity;
 
+import java.time.ZonedDateTime;
+
 import com.backend.domain.jobposting.entity.JobPosting;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -8,7 +11,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.ZonedDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 @DiscriminatorValue("recruitment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitmentPost extends Post {
-
+	//TODO 추후 모집 종료에 따른 비즈니스 로직 구현할 것
     private ZonedDateTime recruitmentClosingDate;
     private Integer numOfApplicants;
 

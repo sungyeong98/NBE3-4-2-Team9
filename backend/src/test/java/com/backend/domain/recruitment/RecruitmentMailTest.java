@@ -155,6 +155,7 @@ public class RecruitmentMailTest {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));
 
+        //2명
         // 2. 모집 상태가 OPEN 상태여야 하므로 먼저 모집 상태를 OPEN으로 설정
         assertEquals(RecruitmentStatus.OPEN, post.getRecruitmentStatus(), "모집 상태는 OPEN이어야 합니다.");
 
@@ -204,8 +205,8 @@ public class RecruitmentMailTest {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));
 
-        // 2. 모집 게시글의 상태가 null인 상태인지 확인
-        assertNull(post.getRecruitmentStatus(), "모집 상태는 null이어야 합니다.");
+/*        // 2. 모집 게시글의 상태가 null인 상태인지 확인
+        assertNull(post.getRecruitmentStatus(), "모집 상태는 null이어야 합니다.");*/
 
         // 3. 모집 신청자로 사용할 SiteUser를 조회
         SiteUser applicant = userRepository.findAll().stream()

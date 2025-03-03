@@ -1,15 +1,18 @@
 package com.backend.domain.post.repository.recruitment;
 
-import static com.backend.domain.post.entity.QRecruitmentPost.recruitmentPost;
-import static com.backend.domain.recruitmentUser.entity.QRecruitmentUser.recruitmentUser;
-import static com.backend.domain.voter.entity.QVoter.voter;
+import static com.backend.domain.post.entity.QRecruitmentPost.*;
+import static com.backend.domain.recruitmentUser.entity.QRecruitmentUser.*;
+import static com.backend.domain.voter.entity.QVoter.*;
+
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
 
 import com.backend.domain.post.dto.QRecruitmentPostResponse;
 import com.backend.domain.post.dto.RecruitmentPostResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
