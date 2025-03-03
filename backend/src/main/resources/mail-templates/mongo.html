@@ -251,8 +251,8 @@
 
 
     function subscribeToChat(postId) {
-        const topicPath = `/topic/${postId}`;
-        subscription = stompClient.subscribe(topicPath, function (message) {
+        const subPath = `/sub/${postId}`;
+        subscription = stompClient.subscribe(subPath, function (message) {
             displayMessage(JSON.parse(message.body));
         });
         loadChatHistory(postId);
@@ -270,7 +270,7 @@
             type: "CHAT",
             content: messageContent
         };
-        stompClient.send(`/pub/msg/${postId}`, {}, JSON.stringify(message));
+        stompClient.send(`/pub/chat/${postId}`, {}, JSON.stringify(message));
         document.getElementById("message").value = "";
     }
 
