@@ -1,22 +1,10 @@
 package com.backend.domain.recruitment;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.backend.domain.post.entity.Post;
-import com.backend.domain.post.entity.RecruitmentStatus;
-import com.backend.domain.post.repository.post.PostRepository;
-import com.backend.domain.recruitmentUser.dto.request.AuthorRequest;
-import com.backend.domain.user.entity.SiteUser;
-import com.backend.domain.user.repository.UserRepository;
-import com.backend.global.security.custom.CustomUserDetails;
-import com.backend.standard.util.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -30,6 +18,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.backend.domain.post.entity.RecruitmentPost;
+import com.backend.domain.post.entity.RecruitmentStatus;
+import com.backend.domain.post.repository.post.PostRepository;
+import com.backend.domain.post.repository.recruitment.RecruitmentPostRepository;
+import com.backend.domain.recruitmentUser.dto.request.AuthorRequest;
+import com.backend.domain.user.entity.SiteUser;
+import com.backend.domain.user.repository.UserRepository;
+import com.backend.global.security.custom.CustomUserDetails;
+import com.backend.standard.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -50,6 +49,9 @@ public class RecruitmentUserTest {
 
     @Autowired
     PostRepository postRepository;
+
+    @Autowired
+    RecruitmentPostRepository recruitmentPostRepository;
 
     @Autowired
     JwtUtil jwtUtil;
@@ -148,7 +150,7 @@ public class RecruitmentUserTest {
                 .andDo(print());
 
         // API 호출 후, DB에서 해당 게시글을 다시 조회하여 모집 상태가 CLOSED로 업데이트되었는지 확인
-        Post updatedPost = postRepository.findById(postId)
+        RecruitmentPost updatedPost = recruitmentPostRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
         // 만약 current_user_count가 최대 모집 인원 이상이면, 내부 로직에 따라 상태가 CLOSED여야 합니다.
@@ -173,7 +175,7 @@ public class RecruitmentUserTest {
                 .andDo(print());
 
         // 승인 요청 후, DB에서 해당 게시글을 다시 조회
-        Post updatedPost = postRepository.findById(postId)
+        RecruitmentPost updatedPost = recruitmentPostRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
         assertEquals(RecruitmentStatus.OPEN, updatedPost.getRecruitmentStatus(),

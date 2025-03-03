@@ -1,9 +1,16 @@
 package com.backend.domain.recruitment;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.backend.domain.post.entity.Post;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+
 import com.backend.domain.post.entity.RecruitmentPost;
 import com.backend.domain.post.entity.RecruitmentStatus;
 import com.backend.domain.post.repository.post.PostJpaRepository;
@@ -15,14 +22,6 @@ import com.backend.domain.recruitmentUser.service.RecruitmentAuthorService;
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.domain.user.repository.UserRepository;
 import com.backend.global.mail.service.MailService;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -114,7 +113,7 @@ public class RecruitmentMailTest {
     @DisplayName("유저 Count 테스트")
     public void testCurrentUserCountIncrease() {
         // 1. 모집 게시글을 조회 (제목이 '테스트 제목6'인 게시글)
-        Post post = postRepository.findAll().stream()
+        RecruitmentPost post = recruitmentPostRepository.findAll().stream()
                 .filter(p -> "테스트 제목6".equals(p.getSubject()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));

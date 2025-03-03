@@ -52,20 +52,13 @@ values (1, CURRENT_DATE + 1, 'testLink', 'testCompany', 2, 3, 1, '경력 1~3년'
         CURRENT_DATE, 0, '학력 무관', 99, '면접 후 결정', '테스트 제목12', 'testUrl', 12);
 
 -- Post 데이터 생성
-INSERT INTO post (created_at, modified_at, content, num_of_applicants, recruitment_closing_date,
-                  recruitment_status, subject, category_id, job_id, user_id)
-VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', 3, CURRENT_DATE + 1, null, 'testSubject', 1,
-        null, 1),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용2', 3, CURRENT_DATE + 1, null, '테스트 제목2', 1,
-        null, 1),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용3', 3, CURRENT_DATE + 1, null, '테스트 제목3', 1,
-        null, 2),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용4', 3, CURRENT_DATE + 1, null, '테스트 제목4', 2,
-        null, 2),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', 2, CURRENT_DATE + 1, null, '테스트 제목5', 2,
-        null, 3),
-       (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', 1, CURRENT_DATE + 1, null, '테스트 제목6', 2,
-        null, 3);
+INSERT INTO post (created_at, modified_at, content, subject, category_id, user_id, post_type)
+VALUES (CURRENT_DATE, CURRENT_DATE, 'testContent1', 'testSubject', 1,1, 'free'),
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용2', '테스트 제목2', 1,1, 'free'),
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용3', '테스트 제목3', 1,2, 'free'),
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용4', '테스트 제목4', 2,2, 'free'),
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용5', '테스트 제목5', 2,3, 'free'),
+       (CURRENT_DATE, CURRENT_DATE, '테스트 내용6', '테스트 제목6', 2,3, 'free');
 
 -- Comment 데이터 생성
 INSERT INTO comment (content, post_id, user_id, created_at, modified_at)
