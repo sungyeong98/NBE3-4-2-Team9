@@ -30,6 +30,9 @@ jobs:
     - name: Build with Gradle
       run: |
         cd backend
+        echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+        echo "${{ secrets.APPLICATION_DEV_YML }}" > src/main/resources/application-dev.yml
+        echo "${{ secrets.APPLICATION_OAUTH_YML }}" > src/main/resources/application-oauth.yml
         ./gradlew bootJar
     - name: Create Tag
       id: create_tag
