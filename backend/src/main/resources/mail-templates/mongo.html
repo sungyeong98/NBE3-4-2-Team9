@@ -270,6 +270,7 @@
             type: "CHAT",
             content: messageContent
         };
+        stompClient.send(`/pub/chat/${postId}`, {}, JSON.stringify(message));
         document.getElementById("message").value = "";
     }
 
