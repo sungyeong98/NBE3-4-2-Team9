@@ -16,17 +16,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.http.HttpMethod;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -54,7 +53,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (refreshToken == null) {
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, GlobalErrorCode.BAD_REQUEST.getCode()),
+                    GenericResponse.fail(),
                     HttpServletResponse.SC_BAD_REQUEST,
                     objectMapper);
             return;
@@ -66,7 +65,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (!redisRepository.get(username).equals(refreshToken)) {
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, GlobalErrorCode.BAD_REQUEST.getCode()),
+                    GenericResponse.fail(),
                     HttpServletResponse.SC_BAD_REQUEST,
                     objectMapper
             );
@@ -92,7 +91,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 newAccessToken,
                 jwtUtil.setJwtCookie("refreshToken", newRefreshToken, REFRESH_EXPIRATION),
                 HttpServletResponse.SC_OK,
-                GenericResponse.of(true, 200, userDetails.getUsername(), "AccessToken 재발급 성공"),
+                GenericResponse.ok(userDetails.getUsername(), "AccessToken 재발급 성공"),
                 objectMapper);
     }
 
@@ -113,7 +112,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
+                    GenericResponse.fail(GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
                     HttpServletResponse.SC_UNAUTHORIZED,
                     objectMapper);
             return;
@@ -146,13 +145,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
+                    GenericResponse.fail(GlobalErrorCode.UNAUTHENTICATION_USER.getCode()),
                     HttpServletResponse.SC_UNAUTHORIZED,
                     objectMapper);
         } catch (JwtException e) {
             AuthResponseUtil.failLogin(
                     resp,
-                    GenericResponse.of(false, GlobalErrorCode.INVALID_TOKEN.getCode()),
+                    GenericResponse.fail(GlobalErrorCode.INVALID_TOKEN.getCode()),
                     HttpServletResponse.SC_UNAUTHORIZED,
                     objectMapper);
         }

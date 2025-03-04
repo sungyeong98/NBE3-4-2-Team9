@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -153,14 +154,14 @@ public class SecurityConfig {
 				.authenticationEntryPoint((request, response, authException) ->
 				{
 					AuthResponseUtil.failLogin(
-						response, GenericResponse.of(false, 401),
+						response, GenericResponse.fail(HttpStatus.UNAUTHORIZED.value()),
 						HttpServletResponse.SC_UNAUTHORIZED, objectMapper);
 				}))
 			.exceptionHandling(exception -> exception
 				.accessDeniedHandler((request, response, authException) ->
 				{
 					AuthResponseUtil.failLogin(
-						response, GenericResponse.of(false, 403), HttpServletResponse.SC_FORBIDDEN,
+						response, GenericResponse.fail(HttpStatus.FORBIDDEN.value()), HttpServletResponse.SC_FORBIDDEN,
 						objectMapper);
 				}))
 			.logout(logout -> logout

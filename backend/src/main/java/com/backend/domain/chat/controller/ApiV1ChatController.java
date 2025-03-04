@@ -13,9 +13,8 @@ import com.backend.domain.chat.service.ChatService;
 import com.backend.global.response.GenericResponse;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chat")

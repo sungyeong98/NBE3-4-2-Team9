@@ -7,25 +7,22 @@ import com.backend.global.config.AppConfig;
 import com.backend.global.redis.repository.RedisRepository;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
-import com.backend.standard.util.AuthResponseUtil;
 import com.backend.standard.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -81,7 +78,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //                objectMapper
 //        );
 
-        GenericResponse<KakaoLoginResponse> response = GenericResponse.of(true, HttpStatus.OK.value(), kakaoLoginResponse, "카카오 로그인에 성공하였습니다.");
+        GenericResponse<KakaoLoginResponse> response = GenericResponse.ok(
+            kakaoLoginResponse,
+            "카카오 로그인에 성공하였습니다."
+        );
+
         resp.getWriter().write(objectMapper.writeValueAsString(response));
 
         String userInfo = URLEncoder.encode(objectMapper.writeValueAsString(kakaoLoginResponse), StandardCharsets.UTF_8);

@@ -1,6 +1,6 @@
 package com.backend.domain.recruitmentUser.controller;
 
-import com.backend.domain.recruitmentUser.dto.response.RecruitmentPostResponse;
+import com.backend.domain.recruitmentUser.dto.response.RecruitmentUserPostResponse;
 import com.backend.domain.recruitmentUser.service.RecruitmentUserService;
 import com.backend.global.response.GenericResponse;
 import com.backend.global.security.custom.CustomUserDetails;
@@ -45,7 +45,7 @@ public class ApiV1RecruitmentUserController {
                 postId
         );
 
-        return GenericResponse.of(true, HttpStatus.CREATED.value());
+        return GenericResponse.ok(HttpStatus.CREATED.value());
     }
 
     /**
@@ -65,7 +65,7 @@ public class ApiV1RecruitmentUserController {
                 postId
         );
 
-        return GenericResponse.of(true, HttpStatus.OK.value());
+        return GenericResponse.ok();
     }
 
     /**
@@ -78,7 +78,7 @@ public class ApiV1RecruitmentUserController {
      * @return 모집 승인된 게시글 목록 (Page<PostResponseDto>)
      */
     @GetMapping("/accepted-posts")
-    public GenericResponse<RecruitmentPostResponse> getAcceptedPosts(
+    public GenericResponse<RecruitmentUserPostResponse> getAcceptedPosts(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "ACCEPTED", name = "status") String status,
             @RequestParam(defaultValue = "0", name = "pageNum") int pageNum,
@@ -87,12 +87,12 @@ public class ApiV1RecruitmentUserController {
         Pageable pageable = PageRequest.of(pageNum, pageSize,
                 Sort.by(Sort.Direction.ASC, "createdAt"));
 
-        RecruitmentPostResponse acceptedPosts = recruitmentUserService.getAcceptedPosts(
+        RecruitmentUserPostResponse acceptedPosts = recruitmentUserService.getAcceptedPosts(
                 userDetails.getSiteUser(),
                 status,
                 pageable
         );
 
-        return GenericResponse.of(true, HttpStatus.OK.value(), acceptedPosts);
+        return GenericResponse.ok(acceptedPosts);
     }
 }
