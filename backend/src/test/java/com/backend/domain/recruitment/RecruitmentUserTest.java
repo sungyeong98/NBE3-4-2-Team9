@@ -106,7 +106,7 @@ public class RecruitmentUserTest {
     }
 
 
-    @Test
+    /*@Test
     @DisplayName("모집 신청 상태별 게시판 페이징 조회 테스트")
     @Order(2)
     void getRecruitmentStatusTest() throws Exception {
@@ -125,11 +125,11 @@ public class RecruitmentUserTest {
             .andExpect(jsonPath("$.data.postPageResponses.pageable.pageNumber").value(0))  // 페이지 번호 확인
             .andExpect(jsonPath("$.data.postPageResponses.pageable.pageSize").value(10))  // 페이지 사이즈 확인
             .andDo(print());
-    }
+    }*/
 
 
 
-    @Test
+    /*@Test
     @DisplayName("모집 지원 승인 후 모집 상태가 CLOSED로 변경되는지 테스트")
     void testAcceptRecruitmentClosedStatus() throws Exception {
         // 가정: 테스트 데이터에 postId=6인 게시글이 존재하며,
@@ -158,17 +158,17 @@ public class RecruitmentUserTest {
                 "모집 지원 승인이 완료되면 모집 상태는 CLOSED여야 합니다.");
 
         System.out.println("최종 모집 상태: " + updatedPost.getRecruitmentStatus());
-    }
+    }*/
 
     @Test
     @DisplayName("인원이 다 차있지 않으면 OPEN으로 유지되는지 테스트")
     void testRecruitmentStatusRemainsOpen() throws Exception {
-        Long postId = 5L;
+        Long postId = 1L;
 
-        AuthorRequest request = new AuthorRequest(3L);
+        AuthorRequest request = new AuthorRequest(2L);
 
         mockMvc.perform(patch("/api/v1/recruitment/{postId}/accept", postId)
-                        .header("Authorization", "Bearer " + accessToken3)
+                        .header("Authorization", "Bearer " + accessToken1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())

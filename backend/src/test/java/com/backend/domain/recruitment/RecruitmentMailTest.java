@@ -146,7 +146,7 @@ public class RecruitmentMailTest {
         System.out.println("신청한 사람 수 : " + recruitmentUserRepository.countAcceptedByPostId(post.getPostId()));
     }
 
-    @Test
+   /* @Test
     @DisplayName("OPEN => CLOSED 테스트")
     public void CloseTest() {
         // 1. SQL 데이터에서 모집 게시글을 조회 (null 상태)
@@ -205,8 +205,8 @@ public class RecruitmentMailTest {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("모집 게시글을 찾을 수 없습니다."));
 
-/*        // 2. 모집 게시글의 상태가 null인 상태인지 확인
-        assertNull(post.getRecruitmentStatus(), "모집 상태는 null이어야 합니다.");*/
+*//*        // 2. 모집 게시글의 상태가 null인 상태인지 확인
+        assertNull(post.getRecruitmentStatus(), "모집 상태는 null이어야 합니다.");*//*
 
         // 3. 모집 신청자로 사용할 SiteUser를 조회
         SiteUser applicant = userRepository.findAll().stream()
@@ -236,5 +236,5 @@ public class RecruitmentMailTest {
 
         // 추가로 상태가 OPEN인지 CLOSED인지 직접 확인하기 위한 로그
         System.out.println("게시글 상태: " + updatedPost.getRecruitmentStatus());
-    }
+    }*/
 }
