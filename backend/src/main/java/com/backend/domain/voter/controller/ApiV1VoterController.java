@@ -40,7 +40,7 @@ public class ApiV1VoterController {
 			voterCreateRequest.targetId(),
 			voterCreateRequest.voterType());
 
-		return GenericResponse.of(true, HttpStatus.CREATED.value(), voterCreateResponse);
+		return GenericResponse.ok(HttpStatus.CREATED.value(), voterCreateResponse);
 	}
 
 	@DeleteMapping("/{targetId}")
@@ -53,6 +53,6 @@ public class ApiV1VoterController {
 
 		voterService.delete(voterTypeEnum, targetId, customUserDetails.getSiteUser());
 
-		return GenericResponse.of(true, HttpStatus.OK.value());
+		return GenericResponse.ok();
 	}
 }

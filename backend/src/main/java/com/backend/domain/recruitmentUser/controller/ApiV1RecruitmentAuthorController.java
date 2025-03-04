@@ -1,9 +1,15 @@
 package com.backend.domain.recruitmentUser.controller;
 
+import com.backend.domain.recruitmentUser.dto.request.AuthorRequest;
+import com.backend.domain.recruitmentUser.dto.response.RecruitmentUserPageResponse;
+import com.backend.domain.recruitmentUser.service.RecruitmentAuthorService;
+import com.backend.global.response.GenericResponse;
+import com.backend.global.security.custom.CustomUserDetails;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,15 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.backend.domain.recruitmentUser.dto.request.AuthorRequest;
-import com.backend.domain.recruitmentUser.dto.response.RecruitmentUserPageResponse;
-import com.backend.domain.recruitmentUser.service.RecruitmentAuthorService;
-import com.backend.global.response.GenericResponse;
-import com.backend.global.security.custom.CustomUserDetails;
-
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +42,7 @@ public class ApiV1RecruitmentAuthorController {
 
         recruitmentAuthorService.recruitmentAccept(userDetails.getSiteUser(), postId,
                 request.userId());
-        return GenericResponse.of(true, HttpStatus.OK.value());
+        return GenericResponse.ok();
     }
 
     /**
@@ -67,7 +64,7 @@ public class ApiV1RecruitmentAuthorController {
                 postId,
                 request.userId()
         );
-        return GenericResponse.of(true, HttpStatus.OK.value());
+        return GenericResponse.ok();
     }
 
     /**
@@ -93,7 +90,7 @@ public class ApiV1RecruitmentAuthorController {
                 postId,
                 pageable
         );
-        return GenericResponse.of(true, HttpStatus.OK.value(), appliedUsers);
+        return GenericResponse.ok(appliedUsers);
     }
 
     /**
@@ -119,6 +116,6 @@ public class ApiV1RecruitmentAuthorController {
                 postId,
                 pageable
         );
-        return GenericResponse.of(true, HttpStatus.OK.value(), acceptedUsers);
+        return GenericResponse.ok(acceptedUsers);
     }
 }
