@@ -1,22 +1,26 @@
 package com.backend.standard.util;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+
 import com.backend.domain.user.entity.SiteUser;
 import com.backend.global.exception.GlobalErrorCode;
 import com.backend.global.exception.GlobalException;
 import com.backend.global.security.custom.CustomUserDetails;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
@@ -109,7 +113,7 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ JWT 토큰에서 Claims(정보) 가져오기
+     * JWT 토큰에서 Claims(정보) 가져오기
      */
     public Claims getClaims(String token) {
         try {
@@ -124,7 +128,7 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ JWT 토큰 검증 (유효성 체크)
+     * JWT 토큰 검증 (유효성 체크)
      */
     public void validateToken(String token) {
         try {

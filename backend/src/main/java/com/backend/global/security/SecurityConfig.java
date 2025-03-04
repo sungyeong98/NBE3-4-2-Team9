@@ -115,7 +115,7 @@ public class SecurityConfig {
 				// 나머지 특정 권한이 필요한 URL들
 				authorizeRequests
 					//전체 허용
-          .requestMatchers("/h2-console/**", "/ws/**").permitAll()
+					.requestMatchers("/h2-console/**", "/ws/**").permitAll()
 					.requestMatchers(HttpMethod.POST, "/api/v1/adm/login").permitAll()
 
 					//어드민 권한만 사용 가능
@@ -128,7 +128,7 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.GET,
 						"/api/v1/job-posting/{id}", "/api/v1/job-posting/voter",
 						"/api/v1/free/posts/{postId}", "/api/v1/recruitment/posts/{postId}",
-							"/api/v1/posts/{postId}/comments")
+						"/api/v1/posts/{postId}/comments")
 					.hasAnyRole("USER", "ADMIN")
 
 					.requestMatchers(HttpMethod.DELETE,
@@ -191,10 +191,10 @@ public class SecurityConfig {
 			Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		// CORS 설정
 		configuration.setAllowedOrigins(
-				List.of(
-						"http://localhost:3000",
-						"http://localhost:8080"
-				)
+			List.of(
+				"http://localhost:3000",
+				"http://localhost:8080"
+			)
 		);
 		// 자격 증명 허용 설정
 		configuration.setAllowCredentials(true);
