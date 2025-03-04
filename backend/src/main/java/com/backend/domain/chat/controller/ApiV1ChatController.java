@@ -27,7 +27,7 @@ public class ApiV1ChatController {
 		@PathVariable(name = "postId") String postId) {
 
 		ChatResponses result = chatService.getAllByPostId(postId);
-		return GenericResponse.of(true, HttpStatus.OK.value(), result, "요청 성공");
+		return GenericResponse.ok(true, HttpStatus.OK.value(), result, "요청 성공");
 	}
 
 }
