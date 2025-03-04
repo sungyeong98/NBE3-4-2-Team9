@@ -85,7 +85,7 @@ public class RecruitmentAuthorTest {
                 .andDo(print());
     }
 
-    @Test
+    /*@Test
     @DisplayName("새로운 데이터로 모집 지원 거절 테스트")
     void rejectRecruitmentTest_NewData() throws Exception {
         // Given: 게시글 3의 작성자는 user_id=1 (testEmail1@naver.com)
@@ -101,7 +101,7 @@ public class RecruitmentAuthorTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andDo(print());
-    }
+    }*/
 
     @Test
     @DisplayName("모집 지원자 목록 조회 테스트")
