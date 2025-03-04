@@ -6,11 +6,13 @@ services:
     ports:
       - "6379:6379"
     command: redis-server --notify-keyspace-events Ex
+    volumes:
+      - redis_data:/data
     networks:
       - backend_network
 
   mongodb:
-    image: mongo:latest
+    image: mongo
     container_name: mongodb_container
     ports:
       - "27017:27017"
@@ -24,3 +26,6 @@ services:
 networks:
   backend_network:
     driver: bridge
+
+volumes:
+  redis_data:
