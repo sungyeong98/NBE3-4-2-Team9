@@ -1,29 +1,31 @@
 package com.backend.domain.chat.entity;
 
-import com.backend.global.baseentity.BaseEntity;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Entity
+@Document(collection = "chat")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Chat extends BaseEntity {
+public class Chat {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "chat_id")
-	private Long id;
+	private String id;
 
-	private Long postId;
-
-	private Long userId;
-
-	@Column(columnDefinition = "TEXT")
+	private String postId;
+	private String userId;
+	private String username;
 	private String content;
-
-	@Enumerated(EnumType.STRING)
 	private MessageType type;
+
+	@Column(name = "createdAt", updatable = false)
+	private String createdAt;
 }
